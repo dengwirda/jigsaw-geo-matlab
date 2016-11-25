@@ -8,7 +8,7 @@
 
 # `Installation`
 
-`JIGSAW` itself is a fully self-contained executable, without dependencies on third-party libraries or run-time packages. To make use of `JIGSAW`'s  scripting interface, users are required to have access to a working <a href="http://www.mathworks.com">`MATLAB`</a> and/or <a href="https://www.gnu.org/software/octave">`OCTAVE`</a> installation.
+`JIGSAW-GEO` itself is a fully self-contained executable, without dependencies on third-party libraries or run-time packages. To make use of `JIGSAW-GEO`'s  scripting interface, users are required to have access to a working <a href="http://www.mathworks.com">`MATLAB`</a> and/or <a href="https://www.gnu.org/software/octave">`OCTAVE`</a> installation.
 
 # `Starting Out`
 
