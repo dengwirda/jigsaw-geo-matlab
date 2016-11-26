@@ -1,5 +1,9 @@
 # `JIGSAW-GEO: Grid-generation for geophysics`
 
+<p align="center">
+  <img src = "../master/jigsaw-geo/img/earth-topo-voro-small.jpg">
+</p>
+
 <a href="https://sites.google.com/site/dengwirda/jigsaw">`JIGSAW-GEO`</a> is an algorithm for the generation of non-uniform, locally-orthogonal staggered unstructured grids for geophysical applications on the sphere. Typical applications include large-scale atmospheric simulation, ocean-modelling and numerical weather predicition. `JIGSAW-GEO` is designed to generate high-quality staggered Voronoi/Delaunay dual meshes using a combination of Frontal-Delaunay refinement and hill-climbing type mesh optimisation. 
 
 `JIGSAW-GEO` is a stand-alone mesh generator written in `C++`, based on the general-purpose meshing package <a href="https://github.com/dengwirda/jigsaw-matlab">`JIGSAW`</a>. This toolbox provides a <a href="http://www.mathworks.com">`MATLAB`</a> / <a href="https://www.gnu.org/software/octave">`OCTAVE`</a> based scripting interface, including file I/O, mesh visualisation and post-processing facilities. 
