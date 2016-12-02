@@ -1,7 +1,7 @@
 # `JIGSAW-GEO: Grid-generation for geophysics`
 
 <p align="center">
-  <img src = "../master/jigsaw-geo/img/earth-topo-voro-small.jpg">
+  <img src = "../master/jigsaw-geo/img/earth-topo-VORO-7-Y-small.jpg">
 </p>
 
 <a href="https://sites.google.com/site/dengwirda/jigsaw">`JIGSAW-GEO`</a> is an algorithm for the generation of non-uniform, locally-orthogonal staggered unstructured grids for geophysical modelling on the sphere. Typical applications include large-scale atmospheric simulation, ocean-modelling and numerical weather predicition. `JIGSAW-GEO` is designed to generate high-quality staggered Voronoi/Delaunay dual meshes using a combination of Frontal-Delaunay refinement and hill-climbing type mesh optimisation. 
