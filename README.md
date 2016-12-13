@@ -17,6 +17,10 @@
 # `Starting Out`
 
 After downloading and unzipping the current <a href="https://github.com/dengwirda/jigsaw-geo-matlab/archive/master.zip">repository</a>, navigate to the installation directory within <a href="http://www.mathworks.com">`MATLAB`</a> / <a href="https://www.gnu.org/software/octave">`OCTAVE`</a> and run the set of examples contained in `meshdemo.m`:
+````
+meshdemo(1); % a uniform resolution global grid
+meshdemo(2); % global grid with regional "patch"
+````
 
 # `Attribution!`
 
