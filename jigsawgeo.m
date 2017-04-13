@@ -125,7 +125,14 @@ function [varargout] = jigsawgeo(opts)
     
 %-- call JIGSAW and capture stdout
     if (exist(jexename,'file') == +2)
+   
    [status, result] = system(jexetext, '-echo');
+   
+%-- OCTAVE doesn't handle '-echo'!
+    if (exist('OCTAVE_VERSION', 'builtin') > 0)
+        fprintf(1,'%s',result) ;
+    end
+    
     else
     error('JIGSAW: executable not found.') ;
     end
