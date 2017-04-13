@@ -10,9 +10,13 @@
 #
 #       bin\WIN-64\jigsaw-geo64r.exe example.jig
 #
-#   On LNX-64 platforms:
+#   On GLX-64 platforms:
 #
 #       bin/GLX-64/jigsaw-geo64r     example.jig
+#
+#   On MAC-64 platforms:
+#
+#       bin/MAC-64/jigsaw-geo64r     example.jig
 #
 #   This command calls JIGSAW-GEO using the configuration data contain-
 #   ed in "example.jig", which, in its unmodified form, builds a sample 
@@ -33,7 +37,7 @@
 #       geometry file (is required at input).
 #
     
-    geom_file = dat/test.geo
+    geom_file = dat/earth-sphere.geo
 
 #   ---> MESH_FILE - 'MESHNAME.MSH', a string containing the name of the 
 #       output file (will be created on output).
