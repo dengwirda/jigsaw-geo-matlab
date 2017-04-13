@@ -105,7 +105,7 @@ function demo1
     'position',[.05,.05,.90,.90]);
     set(gca,'clipping','off');
     caxis([min(topo(:))*4./3., +0.]) ;
-    view(-80,+10);
+    view(+10,+20);
     colormap('hot');
     brighten(+0.75); drawnow ;
     
