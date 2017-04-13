@@ -4,7 +4,9 @@
   <img src = "../master/jigsaw-geo/img/JIGSAW-southern-ocean-voronoi.jpg">
 </p>
 
-`JIGSAW-GEO` is an algorithm for the generation of non-uniform, locally-orthogonal staggered unstructured grids for geophysical modelling on the sphere. Typical applications include large-scale atmospheric simulation, ocean-modelling and numerical weather predicition. `JIGSAW-GEO` is designed to generate high-quality staggered Voronoi/Delaunay dual meshes using a combination of Frontal-Delaunay refinement and hill-climbing type mesh optimisation. 
+`JIGSAW-GEO` is an algorithm for the generation of non-uniform, locally-orthogonal, staggered unstructured grids for geophysical modelling on the sphere. Typical applications include large-scale atmospheric simulation, ocean-modelling and numerical weather predicition. `JIGSAW-GEO` is designed to generate high-quality staggered Voronoi/Delaunay dual meshes using a combination of Frontal-Delaunay refinement and hill-climbing type mesh optimisation. 
+
+`JIGSAW-GEO` is typically able to produce the very high-quality grids required by a number of geophysical solvers (`MPAS`, `SUNTANS`, etc), generating highly optimised Delaunay-based meshes that are `locally-orthogonal`, `centroidal` and `well-centred`.
 
 `JIGSAW-GEO` is a stand-alone mesh generator written in `C++`, based on the general-purpose meshing package <a href="https://github.com/dengwirda/jigsaw-matlab">`JIGSAW`</a>. This toolbox provides a <a href="http://www.mathworks.com">`MATLAB`</a> / <a href="https://www.gnu.org/software/octave">`OCTAVE`</a> based scripting interface, including file I/O, mesh visualisation and post-processing facilities. 
 
@@ -24,7 +26,7 @@ meshdemo(2); % global grid with regional "patch"
 
 # `Attribution!`
 
-If you make use of `JIGSAW-GEO` please include a reference to the following. Additional information regarding the formulation of the underlying `JIGSAW` mesh-generator can be found <a href="https://github.com/dengwirda/jigsaw-matlab">here</a>.
+If you make use of `JIGSAW-GEO` please include a reference to the following. Additional information regarding the formulation of the underlying `JIGSAW` mesh-generator can also be found <a href="https://github.com/dengwirda/jigsaw-matlab">here</a>.
 
 `[1]` - Darren Engwirda, Locally-orthogonal, unstructured grid-generation for general circulation modelling on the sphere, under review, (https://arxiv.org/abs/1611.08996), 2016.
 
