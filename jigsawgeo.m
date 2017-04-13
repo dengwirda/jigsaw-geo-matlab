@@ -13,8 +13,7 @@ function [varargout] = jigsawgeo(opts)
 %   ---------------
 %
 %   OPTS.GEOM_FILE - 'GEOMNAME.GEO', a string containing the name of the 
-%       geometry file (is required at input). See MAKEMSH for additional
-%       details regarding the creation of *.MSH files.
+%       geometry file (is required at input).
 %
 %   OPTS.JCFG_FILE - 'JCFGNAME.JIG', a string containing the name of the 
 %       cofig. file (will be created on output).
@@ -70,11 +69,10 @@ function [varargout] = jigsawgeo(opts)
 %   See the fulltext articles for additional information and references.
 
 %---------------------------------------------------------------------
-%   JIGSAW-GEO-0.9.3.x
 %   Darren Engwirda
 %   github.com/dengwirda/jigsaw-geo-matlab
-%   10-Dec-2016
-%   d_engwirda@outlook.com
+%   13-Apr-2017
+%   engwirda [at] mit [dot] edu
 %---------------------------------------------------------------------
 %
 
@@ -95,29 +93,15 @@ function [varargout] = jigsawgeo(opts)
 
 %-- default to _debug binary
     if (strcmp(jexename,''))
-    switch (computer)
-        case 'PCWIN'  
-        jexename = [filepath, ...
-            '\jigsaw-geo\bin\WIN-32\jigsaw-geo32d.exe'];
-        
-        case 'PCWIN64'
+    if (ispc())
         jexename = [filepath, ...
             '\jigsaw-geo\bin\WIN-64\jigsaw-geo64d.exe'];
-        
-        case {'GLNX86','i586-pc-linux-gnu'}
-        jexename = [filepath, ...
-            '/jigsaw-geo/bin/GLX-32/jigsaw-geo32d'];
-        
-        case {'GLNXA64','x86_64-pc-linux-gnu'}
-        jexename = [filepath, ...
-            '/jigsaw-geo/bin/GLX-64/jigsaw-geo64d'];
-        
-        case 'MACI64'
+    elseif (ismac ())
         jexename = [filepath, ...
             '/jigsaw-geo/bin/MAC-64/jigsaw-geo64d'];
-        
-        otherwise
-        error('JIGSAW: unsupported platform');  
+    elseif (isunix())
+        jexename = [filepath, ...
+            '/jigsaw-geo/bin/GLX-64/jigsaw-geo64d'];
     end
     end
     
@@ -125,43 +109,29 @@ function [varargout] = jigsawgeo(opts)
     
 %-- switch to release binary
     if (strcmp(jexename,''))
-    switch (computer)
-        case 'PCWIN'  
-        jexename = [filepath, ...
-            '\jigsaw-geo\bin\WIN-32\jigsaw-geo32r.exe'];
-        
-        case 'PCWIN64'
+    if (ispc())
         jexename = [filepath, ...
             '\jigsaw-geo\bin\WIN-64\jigsaw-geo64r.exe'];
-        
-        case {'GLNX86','i586-pc-linux-gnu'}
-        jexename = [filepath, ...
-            '/jigsaw-geo/bin/GLX-32/jigsaw-geo32r'];
-        
-        case {'GLNXA64','x86_64-pc-linux-gnu'}
-        jexename = [filepath, ...
-            '/jigsaw-geo/bin/GLX-64/jigsaw-geo64r'];
-        
-        case 'MACI64'
+    elseif (ismac ())
         jexename = [filepath, ...
             '/jigsaw-geo/bin/MAC-64/jigsaw-geo64r'];
-        
-        otherwise
-        error('JIGSAW: unsupported platform');
+    elseif (isunix())
+        jexename = [filepath, ...
+            '/jigsaw-geo/bin/GLX-64/jigsaw-geo64r'];
     end
     end
   
-    jexetext = [jexename, ' ', opts.jcfg_file];
+    jexetext = [jexename, ' ', opts.jcfg_file] ;
     
 %-- call JIGSAW and capture stdout
     if (exist(jexename,'file') == +2)
-   [status,result] = system(jexetext, '-echo');
+   [status, result] = system(jexetext, '-echo');
     else
     error('JIGSAW: executable not found.') ;
     end
 
     if (nargout == +1)
-    varargout(1) = {readmsh(opts.mesh_file)} ;
+    varargout{1} = readmsh(opts.mesh_file) ;
     end
     
 end
@@ -380,4 +350,6 @@ function pushints(ffid,data,name,list)
     end
 
 end
+
+
 

@@ -1,8 +1,8 @@
 function meshdemo(varargin)
 %MESHDEMO run demo problems for JIGSAW-GEO.
 %
-%   MESHDEMO(N) runs the N-TH demo problem. Two demo problems are cur-
-%   rently available:
+%   MESHDEMO(N) calls the N-TH demo problem. Two demo problems are 
+%   currently available:
 %
 %   - DEMO-1: generate a uniform resolution (150km) global grid.
 %
@@ -15,8 +15,8 @@ function meshdemo(varargin)
 %---------------------------------------------------------------------
 %   Darren Engwirda
 %   github.com/dengwirda/jigsaw-geo-matlab
-%   10-Dec-2016
-%   d_engwirda@outlook.com
+%   13-Apr-2017
+%   engwirda [at] mit [dot] edu
 %---------------------------------------------------------------------
 %
 
@@ -26,7 +26,7 @@ function meshdemo(varargin)
 
     if (nargin >= 1), n = varargin{1}; end
        
-    switch (n)
+    switch  (n)
         case 1, demo1 ;
         case 2, demo2 ;
         
@@ -43,7 +43,7 @@ function demo1
 
 %-- setup files for JIGSAW
     opts.geom_file = ...            % radius file
-        ['jigsaw-geo/dat/test.geo'];
+        ['jigsaw-geo/dat/earth-sphere.geo' ];
     
     opts.hfun_file = ...            % length file
         ['jigsaw-geo/dat/uniform-150km.dat'];
@@ -54,13 +54,13 @@ function demo1
     opts.mesh_file = ...            % output file
         ['jigsaw-geo/out/',name,'.msh'];
        
-%-- meshing options for JIGSAW
+%-- JIGSAW options.
     opts.mesh_kern = 'delfront';
     opts.mesh_dims = 2 ;
     opts.mesh_snk2 = 0.100 ;
     
     opts.hfun_scal = 'absolute';
-    opts.hfun_hmax = 1000. ;
+    opts.hfun_hmax = 5000. ;
     
 %-- build the mesh!
     mesh = jigsawgeo(opts) ;
@@ -71,8 +71,6 @@ function demo1
     
     alat = linspace(-.5*pi,+.5*pi,size(topo,1));
     alon = linspace(-1.*pi,+1.*pi,size(topo,2));
-    
-   %figure; surf(alon,alat,topo);
     
     xrad = mesh.point.coord(:,1) .^ 2 ...
          + mesh.point.coord(:,2) .^ 2 ...
@@ -104,9 +102,9 @@ function demo1
     'facelighting','flat','edgelighting','none', ...
     'linewidth',.75);
     set(gcf,'color','w','units','normalized', ...
-    'position',[.1,.1,.8,.8]);
+    'position',[.05,.05,.90,.90]);
     set(gca,'clipping','off');
-    caxis([min(topo(:)), +0.]) ;
+    caxis([min(topo(:))*4./3., +0.]) ;
     view(-80,+10);
     colormap('hot');
     brighten(+0.75); drawnow ;
@@ -121,10 +119,10 @@ function demo2
 %   formly resolved (150km) background grid. 
 
     name = 'regional-25km' ;
-
+    
 %-- setup files for JIGSAW
     opts.geom_file = ...            % radius file
-        ['jigsaw-geo/dat/test.geo'];
+        ['jigsaw-geo/dat/earth-sphere.geo' ];
     
     opts.hfun_file = ...            % length file
         ['jigsaw-geo/dat/regional-25km.dat'];
@@ -135,13 +133,13 @@ function demo2
     opts.mesh_file = ...            % output file
         ['jigsaw-geo/out/',name,'.msh'];
        
-%-- meshing options for JIGSAW
+%-- JIGSAW options.
     opts.mesh_kern = 'delfront';
     opts.mesh_dims = 2 ;
     opts.mesh_snk2 = 0.100 ;
     
     opts.hfun_scal = 'absolute';
-    opts.hfun_hmax = 1000. ;
+    opts.hfun_hmax = 5000. ;
     
 %-- build the mesh!
     mesh = jigsawgeo(opts) ;
@@ -152,8 +150,6 @@ function demo2
     
     alat = linspace(-.5*pi,+.5*pi,size(topo,1));
     alon = linspace(-1.*pi,+1.*pi,size(topo,2));
-    
-   %figure; surf(alon,alat,topo);
     
     xrad = mesh.point.coord(:,1) .^ 2 ...
          + mesh.point.coord(:,2) .^ 2 ...
@@ -175,6 +171,7 @@ function demo2
     patch('faces',mesh.tria3.index(zlev<=0,1:3), ...
     'vertices',mesh.point.coord(:,1:3), ...
     'facevertexcdata',zlev(zlev<=0.,:), ...
+
     'facecolor','flat','edgecolor',[.2,.2,.2], ...
     'facelighting','flat','edgelighting','none', ...
     'linewidth',.75);
@@ -185,10 +182,10 @@ function demo2
     'facelighting','flat','edgelighting','none', ...
     'linewidth',.75);
     set(gcf,'color','w','units','normalized', ...
-    'position',[.1,.1,.8,.8]);
+    'position',[.05,.05,.90,.90]);
     set(gca,'clipping','off');
-    caxis([min(topo(:)), +0.]) ;
-    view(+10,+10);
+    caxis([min(topo(:))*4./3., +0.]) ;
+    view(-80,+10);
     colormap('hot');
     brighten(+0.75); drawnow ;
     
