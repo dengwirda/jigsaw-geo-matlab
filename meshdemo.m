@@ -102,7 +102,7 @@ function demo1
     'facelighting','flat','edgelighting','none', ...
     'linewidth',.75);
     set(gcf,'color','w','units','normalized', ...
-    'position',[.05,.05,.90,.90]);
+    'position',[.1,.1,.8,.8]);
     set(gca,'clipping','off');
     caxis([min(topo(:))*4./3., +0.]) ;
     view(-80,+10);
@@ -181,7 +181,7 @@ function demo2
     'facelighting','flat','edgelighting','none', ...
     'linewidth',.75);
     set(gcf,'color','w','units','normalized', ...
-    'position',[.05,.05,.90,.90]);
+    'position',[.1,.1,.8,.8]);
     set(gca,'clipping','off');
     caxis([min(topo(:))*4./3., +0.]) ;
     view(+10,+20);
