@@ -38,8 +38,7 @@
     rmation and references.
 
     Darren Engwirda
-    06-Dec-2016
-    engwirda@mit.edu
-
+    13-Apr-2017
+    engwirda [at] mit [dot] edu
 
 
