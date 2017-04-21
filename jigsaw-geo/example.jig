@@ -50,13 +50,7 @@
 #
 
     hfun_file = dat/uniform-150km.dat
-
-
-
-    hfun_scal = absolute
-    hfun_hmax = 1000.0
-
-
+    
 
 #   OPTIONAL fields (MESH):
 #   ----------------------
