@@ -22,6 +22,7 @@ After downloading and unzipping the current <a href="https://github.com/dengwird
 ````
 meshdemo(1); % a uniform resolution global grid
 meshdemo(2); % global grid with regional "patch"
+meshdemo(3); % design a multi-resolution grid-spacing function
 ````
 
 # `Attribution!`
