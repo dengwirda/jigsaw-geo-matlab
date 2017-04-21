@@ -6,34 +6,34 @@ function makemsh(name,mesh)
 %   The following entities are optionally written to "NAME.MSH". Ent-
 %   ities are written if they are present in the sructure MESH:
 %
-%   MESH.POINT.COORD - [NPxND] array of point coordinates, where ND 
+% - MESH.POINT.COORD - [NPxND] array of point coordinates, where ND 
 %       is the number of spatial dimenions.
 %
-%   MESH.EDGE2.INDEX - [N2x 3] array of indexing for edge-2 elements, 
+% - MESH.EDGE2.INDEX - [N2x 3] array of indexing for edge-2 elements, 
 %       where INDEX(K,1:2) is an array of "points" associated with 
 %       the K-TH edge, and INDEX(K,3) is an ID tag for the K-TH edge.
 %
-%   MESH.TRIA3.INDEX - [N3x 4] array of indexing for tria-3 elements, 
+% - MESH.TRIA3.INDEX - [N3x 4] array of indexing for tria-3 elements, 
 %       where INDEX(K,1:3) is an array of "points" associated with 
 %       the K-TH tria, and INDEX(K,4) is an ID tag for the K-TH tria.
 %
-%   MESH.QUAD4.INDEX - [N4x 5] array of indexing for quad-4 elements, 
+% - MESH.QUAD4.INDEX - [N4x 5] array of indexing for quad-4 elements, 
 %       where INDEX(K,1:4) is an array of "points" associated with 
 %       the K-TH quad, and INDEX(K,5) is an ID tag for the K-TH quad.
 %
-%   MESH.TRIA4.INDEX - [M4x 5] array of indexing for tria-4 elements, 
+% - MESH.TRIA4.INDEX - [M4x 5] array of indexing for tria-4 elements, 
 %       where INDEX(K,1:4) is an array of "points" associated with 
 %       the K-TH tria, and INDEX(K,5) is an ID tag for the K-TH tria.
 %
-%   MESH.HEXA8.INDEX - [M8x 9] array of indexing for hexa-8 elements, 
+% - MESH.HEXA8.INDEX - [M8x 9] array of indexing for hexa-8 elements, 
 %       where INDEX(K,1:8) is an array of "points" associated with 
 %       the K-TH hexa, and INDEX(K,9) is an ID tag for the K-TH hexa.
 %
-%   MESH.WEDG6.INDEX - [M6x 7] array of indexing for wedg-6 elements, 
+% - MESH.WEDG6.INDEX - [M6x 7] array of indexing for wedg-6 elements, 
 %       where INDEX(K,1:6) is an array of "points" associated with 
 %       the K-TH  wedg, and INDEX(K,7) is an ID tag for the K-TH wedg.
 %
-%   MESH.PYRA5.INDEX - [M5x 6] array of indexing for pyra-5 elements, 
+% - MESH.PYRA5.INDEX - [M5x 6] array of indexing for pyra-5 elements, 
 %       where INDEX(K,1:5) is an array of "points" associated with 
 %       the K-TH pyra, and INDEX(K,6) is an ID tag for the K-TH pyra.
 %
@@ -45,7 +45,7 @@ function makemsh(name,mesh)
 %   Darren Engwirda
 %   github.com/dengwirda/jigsaw-matlab
 %   22-Mar-2016
-%   d_engwirda@outlook.com
+%   engwirda@mit.edu
 %---------------------------------------------------------------------
 %
 

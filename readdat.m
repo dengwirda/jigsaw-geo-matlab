@@ -6,17 +6,17 @@ function [data] = readdat(name)
 %   The following entities are optionally read from "NAME.DAT". Ent-
 %   ities are loaded if they are present in the file:
 %
-%   ARRAY - [N1 x N2 x ... X Nm] n-dim. array data, returned in col-
+% - ARRAY - [N1 x N2 x ... X Nm] n-dim. array data, returned in col-
 %   umn-wise ordering.
 %
-%   See also JIGSAWGEO
+%   See also JIGSAWGEO, MAKEDAT
 %
 
 %---------------------------------------------------------------------
 %   Darren Engwirda
 %   github.com/dengwirda/jigsaw-geo-matlab
 %   10-Dec-2016
-%   d_engwirda@outlook.com
+%   engwirda@mit.edu
 %---------------------------------------------------------------------
 %
 

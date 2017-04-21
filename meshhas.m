@@ -5,7 +5,7 @@ function [okay] = meshhas(mesh,varargin)
 %   Darren Engwirda
 %   github.com/dengwirda/jigsaw-matlab
 %   22-Mar-2016
-%   d_engwirda@outlook.com
+%   engwirda@mit.edu
 %---------------------------------------------------------------------
 %
 

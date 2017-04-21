@@ -1,76 +1,72 @@
-function [cost] = meshcost(mesh)
+function [cost] = meshcost(mesh,varargin)
 %MESHCOST calculate cost metrics for a given mesh.
 
 %---------------------------------------------------------------------
 %   Darren Engwirda
 %   github.com/dengwirda/jigsaw-matlab
 %   02-Jul-2016
-%   d_engwirda@outlook.com
+%   engwirda@mit.edu
 %---------------------------------------------------------------------
 %
 
-    cost = [];
+    cost = []; hfun = []; harg = {};
     
-    if (meshhas(mesh,'point')&&...
-        meshhas(mesh,'tria3'))
+    if (nargin>=+2), hfun = varargin{1}; end
+    if (nargin>=+3), harg = varargin(2:end); end
+  
+    if(~meshhas(mesh,'point')), return ; end  
     
-        cost.tria3.score = ...
-            score2(mesh.point.coord(:,1:end-1), ...
-                   mesh.tria3.index(:,1:end-1)) ;
-        cost.tria3.angle = ...
-            angle2(mesh.point.coord(:,1:end-1), ...
-                   mesh.tria3.index(:,1:end-1)) ;
+    if (meshhas(mesh,'tria3'))
+    
+        cost.tria3.score = score2 (  ...
+        mesh.point.coord(:,1:end-1), ...
+        mesh.tria3.index(:,1:end-1)) ;
+        
+        cost.tria3.angle = angle2 (  ...
+        mesh.point.coord(:,1:end-1), ...
+        mesh.tria3.index(:,1:end-1)) ;
 
     end
     
-    if (meshhas(mesh,'point')&&...
-        meshhas(mesh,'tria4'))
+    if (meshhas(mesh,'tria4'))
     
-        cost.tria4.score = ...
-            score3(mesh.point.coord(:,1:end-1), ...
-                   mesh.tria4.index(:,1:end-1)) ;
-        cost.tria4.angle = ...
-            angle3(mesh.point.coord(:,1:end-1), ...
-                   mesh.tria4.index(:,1:end-1)) ;
+        cost.tria4.score = score3 (  ...
+        mesh.point.coord(:,1:end-1), ...
+        mesh.tria4.index(:,1:end-1)) ;
+        
+        cost.tria4.angle = angle3 (  ...
+        mesh.point.coord(:,1:end-1), ...
+        mesh.tria4.index(:,1:end-1)) ;
     
     end
 
-    if (meshhas(mesh,'point','sizfn'))
+    if (~isempty(hfun))
+        
+        hpts = feval(hfun, ...
+        mesh.point.coord(:,1:end-1),harg{:}) ;
         
     if (meshhas(mesh,'edge2'))
   
-        hvec = zeros(size(mesh.point.coord,1),1) ;
-        hvec(mesh.point.sizfn.index) = ...
-             mesh.point.sizfn.value ;
-        
-        cost.edge2.hfunc = ...
-            hfunc1(mesh.point.coord(:,1:end-1), ...
-                   mesh.edge2.index(:,1:end-1), ...
-                   hvec) ;
+        cost.edge2.hfunc = hfunc1 (  ...
+        mesh.point.coord(:,1:end-1), ...
+        mesh.edge2.index(:,1:end-1), ...
+        hpts) ;
                          
     end
     if (meshhas(mesh,'tria3'))
   
-        hvec = zeros(size(mesh.point.coord,1),1) ;
-        hvec(mesh.point.sizfn.index) = ...
-             mesh.point.sizfn.value ;
-        
-        cost.tria3.hfunc = ...
-            hfunc2(mesh.point.coord(:,1:end-1), ...
-                   mesh.tria3.index(:,1:end-1), ...
-                   hvec) ;
+        cost.tria3.hfunc = hfunc2 (  ...
+        mesh.point.coord(:,1:end-1), ...
+        mesh.tria3.index(:,1:end-1), ...
+        hpts) ;
         
     end
     if (meshhas(mesh,'tria4'))
   
-        hvec = zeros(size(mesh.point.coord,1),1) ;
-        hvec(mesh.point.sizfn.index) = ...
-             mesh.point.sizfn.value ;
-        
-        cost.tria4.hfunc = ...
-            hfunc3(mesh.point.coord(:,1:end-1), ...
-                   mesh.tria4.index(:,1:end-1), ...
-                   hvec) ;
+        cost.tria4.hfunc = hfunc3 (  ...
+        mesh.point.coord(:,1:end-1), ...
+        mesh.tria4.index(:,1:end-1), ...
+        hpts) ;
         
     end
     
@@ -78,15 +74,17 @@ function [cost] = meshcost(mesh)
     
 end
 
+%---------------------------------------------------------------------
+
 function [ad] = mad(ff)
-%MAD mean absolute deviation (from the mean).
+%MAD mean absolute deviation from the mean.
 
     ad = mean(abs(ff-mean(ff))) ;
     
 end
 
 function [hr] = hfunc1(pp,ee,hh)
-%HFUNC1 calc. relative sizing for 1-edges.
+%HFUNC1 calc. relative spacing for 1-edges.
 
     ev = pp(ee(:,2),:)-pp(ee(:,1),:);
     el = sqrt(sum(ev.^2,+2)); 
@@ -97,7 +95,7 @@ function [hr] = hfunc1(pp,ee,hh)
 end
 
 function [hr] = hfunc2(pp,t2,hh)
-%HFUNC2 calc. relative sizing for 2-trias.
+%HFUNC2 calc. relative spacing for 2-trias.
 
     ee = [t2(:,[1,2])
           t2(:,[2,3])
@@ -114,7 +112,7 @@ function [hr] = hfunc2(pp,t2,hh)
 end
 
 function [hr] = hfunc3(pp,t3,hh)
-%HFUNC3 calc. relative sizing for 3-trias.
+%HFUNC3 calc. relative spacing for 3-trias.
 
     ee = [t3(:,[1,2])
           t3(:,[2,3])
@@ -150,7 +148,7 @@ function [nvec] = trianorm(pp,t2)
 end
 
 function [dcos] = angle2(pp,t2)
-%ANGLE2 calc. dihedral angles for 2-trias.
+%ANGLE2 calc. dihedral-angles for 2-trias.
 
     ev12 = pp(t2(:,2),:)-pp(t2(:,1),:);
     ev23 = pp(t2(:,3),:)-pp(t2(:,2),:);
@@ -174,7 +172,7 @@ function [dcos] = angle2(pp,t2)
 end
 
 function [dcos] = angle3(pp,t3)
-%ANGLE3 calc. dihedral angles for 3-trias.
+%ANGLE3 calc. dihedral-angles for 3-trias.
 
     fv11 = trianorm(pp,t3(:,[1,2,3]));
     fv22 = trianorm(pp,t3(:,[1,2,4]));
@@ -191,7 +189,7 @@ function [dcos] = angle3(pp,t3)
     fv33 = fv33./[lv33,lv33,lv33];
     fv44 = fv44./[lv44,lv44,lv44];
     
-    % across six edges
+    % across the six edges
     % 11,22
     % 11,33
     % 11,44
@@ -212,7 +210,7 @@ function [dcos] = angle3(pp,t3)
 end
 
 function [vol2] = vol2(pp,t2)
-%VOL2 calc. volumes for 2-trias.
+%VOL2 calc. "volumes" for 2-trias.
 
     d12 = pp(t2(:,2),:)-pp(t2(:,1),:) ;
     d13 = pp(t2(:,3),:)-pp(t2(:,1),:) ;
@@ -231,13 +229,14 @@ function [vol2] = vol2(pp,t2)
         vol2 = 0.5 * vol2;    
         
         otherwise
-        error('VOL2: unsupported dimension.');
+    error('VOL2: unsupported dimension.');
+    
     end
     
 end
 
 function [vol3] = vol3(pp,t3)
-%VOL3 calc. volumes for 3-trias.
+%VOL3 calc. "volumes" for 3-trias.
 
     vv14 = pp(t3(:,4),:)-pp(t3(:,1),:);
     vv24 = pp(t3(:,4),:)-pp(t3(:,2),:);
