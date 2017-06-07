@@ -29,7 +29,7 @@ meshdemo(3); % design a multi-resolution grid-spacing function
 
 If you make use of `JIGSAW-GEO` please include a reference to the following. Additional information regarding the formulation of the underlying `JIGSAW` mesh-generator can also be found <a href="https://github.com/dengwirda/jigsaw-matlab">here</a>.
 
-`[1]` - Darren Engwirda, Locally-orthogonal, unstructured grid-generation for general circulation modelling on the sphere, under review, (https://arxiv.org/abs/1611.08996), 2016.
+`[1]` - Darren Engwirda: JIGSAW-GEO (1.0): locally orthogonal staggered unstructured grid generation for general circulation modelling on the sphere, Geosci. Model Dev., 10, 2117-2140, https://doi.org/10.5194/gmd-10-2117-2017, 2017.
 
 `[2]` - Darren Engwirda, Multi-resolution unstructured grid-generation for geophysical applications on the sphere, Research note, Proceedings of the 24th International Meshing Roundtable, (https://arxiv.org/abs/1512.00307), 2015.
 
