@@ -60,7 +60,7 @@ can be used to build a `JIGSAW` shared library. See the headers in <a href="../m
 	* Create a new, empty MSVC project.
 	* Import the jigsaw.cpp file, this contains the main() entry-point.
 	* Modify the MSVC project settings to include the directory "../src/libcpp/" directory.
-	* Modify the MSVC project settings and select "Disable Language Extensions" (i.e. just standard c++ here).
+	* Modify the MSVC project settings and select "Disable Language Extensions" (i.e. just standard c++ !).
 
 ### `Folder Structure`
 
