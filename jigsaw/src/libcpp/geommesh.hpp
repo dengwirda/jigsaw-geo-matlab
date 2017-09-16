@@ -146,13 +146,13 @@
 #   include "geom_mesh/iter_pred_euclidean_2.hpp"
 
 #   include "geom_mesh/iter_mesh_euclidean_3.hpp"
-#   include "geom_mesh/iter_pred_euclidean_3.hpp"
+//  include "geom_mesh/iter_pred_euclidean_3.hpp"
 
-#   include "geom_mesh/iter_mesh_ellipsoid_3.hpp"
+//  include "geom_mesh/iter_mesh_ellipsoid_3.hpp"
 #   include "geom_mesh/iter_pred_ellipsoid_3.hpp"
 
 #   include "geom_mesh/iter_mesh_2.hpp"
-#   include "geom_mesh/iter_mesh_3.hpp"
+//  include "geom_mesh/iter_mesh_3.hpp"
 
 
 #   endif   //  __GEOMMESH__
