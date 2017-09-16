@@ -4,13 +4,14 @@
   <img src = "../master/jigsaw-geo/img/JIGSAW-southern-ocean-voronoi.jpg">
 </p>
 
-`JIGSAW(GEO)` is an algorithm for the generation of non-uniform, locally-orthogonal, staggered unstructured grids for geophysical modelling on the sphere. Typical applications include large-scale atmospheric simulation, ocean-modelling and numerical weather predicition. `JIGSAW(GEO)` is designed to generate high-quality staggered Voronoi/Delaunay dual meshes using a combination of Frontal-Delaunay refinement and hill-climbing type mesh optimisation. 
+`JIGSAW(GEO)` is a set of algorithms designed to generate complex, unstructured grids for geophysical modelling applications, including `locally-orthogonal` `staggered Delaunay/Voronoi` tessellations appropriate for unstructured `finite-volume/element` type general circulation models. Grids can be generated both in local, two-dimensional domains and over general spheroidal surfaces. Typical applications include large-scale atmospheric simulation, ocean-modelling and numerical weather predicition, as well as coastal ocean modelling and ice-sheet dynamics.
 
-`JIGSAW(GEO)` is typically able to produce the very high-quality grids required by a number of geophysical solvers (`MPAS`, `SUNTANS`, etc), generating highly optimised Delaunay-based meshes that are `locally-orthogonal`, `centroidal` and `well-centred`.
+`JIGSAW(GEO)` is a stand-alone mesh generator written in `C++`, based on the general-purpose meshing package <a href="https://github.com/dengwirda/jigsaw-matlab">`JIGSAW`</a>. This toolbox provides a <a href="http://www.mathworks.com">`MATLAB`</a> / <a href="https://www.gnu.org/software/octave">`OCTAVE`</a> based scripting interface, including file I/O, mesh visualisation and post-processing facilities. The underlying `JIGSAW` library is a collection of unstructured triangle- and tetrahedron-based meshing algorithms, designed to produce very high quality Delaunay-based grids for computational simulation. `JIGSAW` includes both Delaunay "refinement" based algorithms for the 
+construction of new meshes, as well as optimisation driven methods for the "improvement" of existing grids. `JIGSAW` supports both two- and three-dimensional operations, catering to a variety of planar, surface and volumetric configurations.
 
-`JIGSAW(GEO)` is a stand-alone mesh generator written in `C++`, based on the general-purpose meshing package <a href="https://github.com/dengwirda/jigsaw-matlab">`JIGSAW`</a>. This toolbox provides a <a href="http://www.mathworks.com">`MATLAB`</a> / <a href="https://www.gnu.org/software/octave">`OCTAVE`</a> based scripting interface, including file I/O, mesh visualisation and post-processing facilities. 
+`JIGSAW(GEO)` is typically able to produce the very high-quality `staggered` `Voronoi` type grids required by a number of unstructued geophysical solvers (i.e. <a href="https://github.com/MPAS-Dev/MPAS-Release">`MPAS`</a>, <a href="http://www.emg.cmar.csiro.au/www/en/emg/software/EMS/hydrodynamics/Unstructured.html">`COMPAS`</a>, etc), generating highly optimised, multi-resolution type Delaunay-based meshes that are `locally-orthogonal`, `centroidal` and `well-centred`.
 
-`JIGSAW(GEO)` has been tested on various `64-bit` `Windows`, `Mac` and `Linux` platforms.
+`JIGSAW(GEO)` has been compiled and tested on various `64-bit` `Linux` , `Windows` and `Mac` based platforms.
 
 ## `Installation`
 
@@ -20,12 +21,21 @@
 
 After downloading and unzipping the current <a href="https://github.com/dengwirda/jigsaw-geo-matlab/archive/master.zip">repository</a>, navigate to the installation directory within <a href="http://www.mathworks.com">`MATLAB`</a> / <a href="https://www.gnu.org/software/octave">`OCTAVE`</a> and run the set of examples contained in `meshdemo.m`:
 ````
-meshdemo(1); % a uniform resolution global grid
-meshdemo(2); % global grid with regional "patch"
-meshdemo(3); % design a multi-resolution grid-spacing function
+meshdemo(1); % a simple, two-dimensional domain
+meshdemo(2); % a multi-resolution grid for the Australian region
+meshdemo(3); % a uniform resolution global grid
+meshdemo(4); % global grid with regional "patch"
+meshdemo(5); % design a multi-resolution grid-spacing function
 ````
 
-## `Attribution!`
+## `Licence`
+
+This program may be freely redistributed under the condition that the copyright notices (including this entire header) are not removed, and no compensation is received through use of the software.  Private, research, and institutional use is free.  You may distribute modified versions of this code UNDER THE CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR NOTICE IS GIVEN OF THE MODIFICATIONS. Distribution of this code as part of a commercial system is permissible ONLY BY DIRECT ARRANGEMENT WITH THE AUTHOR. (If you are not directly supplying this code to a customer, and you are instead telling them how they can obtain it for free, then you are not required to make any arrangement with me.) 
+
+Disclaimer:  Neither I nor: Columbia University, The Massachusetts Institute of Technology, The University of Sydney, nor the National Aeronautics and Space Administration warrant this code in any way whatsoever.  This code is provided "as-is" to be 
+used at your own risk.
+
+## `References!`
 
 If you make use of `JIGSAW(GEO)` please include a reference to the following. Additional information regarding the formulation of the underlying `JIGSAW` mesh-generator can also be found <a href="https://github.com/dengwirda/jigsaw-matlab">here</a>.
 
