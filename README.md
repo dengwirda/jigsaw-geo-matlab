@@ -31,7 +31,7 @@ construction of new meshes, as well as optimisation driven methods for the impro
 
 The `MATLAB` / `OCTAVE` interface is provided for convenience - you don't have to use it, but it's probably the easiest way to get started!
 
-It's also possible to interact with the `JIGSAW` back-end directly, either through (i) scripting: building text file inputs and calling the `JIGSAW` executable from the command-line, or (ii) programmatically: using `JIGSAW` data-structures within your own applications and calling the library via its `API`.
+It's also possible to interact with the `JIGSAW` back-end directly, either through `(i)` scripting: building text file inputs and calling the `JIGSAW` executable from the command-line, or `(ii)` programmatically: using `JIGSAW` data-structures within your own applications and calling the library via its `API`.
 
 ## `Getting Started`
 
