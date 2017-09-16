@@ -15,7 +15,7 @@ construction of new meshes, as well as optimisation driven methods for the "impr
 
 ## `Code Structure`
 
-`JIGSAW(GEO)` is a multi-part library, consisting of a `MATLAB`/`OCTAVE` front-end, and a `C++` back-end. All of the heavy-lifting is done in the `C++` layer, the interface contains additional scripts for file I/O, visualisation and general data processing.
+`JIGSAW(GEO)` is a multi-part library, consisting of a `MATLAB`/`OCTAVE` front-end, and a `C++` back-end. All of the heavy-lifting is done in the `C++` layer - the interface contains additional scripts for file I/O, visualisation and general data processing.
 
 	JIGASW(GEO)::
 	├── mesh-util -- MATLAB/OCTAVE utilities
@@ -29,7 +29,10 @@ construction of new meshes, as well as optimisation driven methods for the "impr
 	    └── uni -- unit tests and libjigsaw example programs
 
 
-The `MATLAB/OCTAVE` interface is provided for convenience - you don't have to use it, but it's probably the easiest way to get started! 
+The `MATLAB`/`OCTAVE` interface is provided for convenience - you don't have to use it, but it's probably the easiest way to get started!
+
+It's also possible to interact with the `JIGSAW` back-end directly, either through (i) scripting: building text file inputs and calling the `JIGSAW` executable from the command-line or (ii) programmatically: using the JIGSAW data-structures within your own applications and calling the `JIGSAW` library via its `API`.
+
 
 ## `Getting Started`
 
