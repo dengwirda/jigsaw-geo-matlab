@@ -64,7 +64,7 @@ can be used to build a `JIGSAW` shared library. See the headers in <a href="../m
 
 ### `Folder Structure`
 
-Once you have built the `JIGSAW` binaries, place them in the appropraiet sub-folders in`../jigsaw/bin/` and/or `../jigsaw/lib/` directories, so that they can be found by the `MATLAB` / `OCTAVE` interface, and the unit tests in `../jigsaw/uni/`. If you wish to support multiple platforms, simply build binaries for each `OS` and place them in the appropriate directory - the `MATLAB` / `OCATVE` interface will do an `OS`-dependent lookup to call the appropriate binary.
+Once you have built the `JIGSAW` binaries, place them in the appropriate sub-folders in`../jigsaw/bin/` and/or `../jigsaw/lib/` directories, so that they can be found by the `MATLAB` / `OCTAVE` interface, and the unit tests in `../jigsaw/uni/`. If you wish to support multiple platforms, simply build binaries for each `OS` and place them in the appropriate directory - the `MATLAB` / `OCATVE` interface will do an `OS`-dependent lookup to call the appropriate binary.
 
 ## `Example Problems`
 
