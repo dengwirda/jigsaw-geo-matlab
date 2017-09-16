@@ -12,11 +12,11 @@
 
 `JIGSAW(GEO)` has been tested on various `64-bit` `Windows`, `Mac` and `Linux` platforms.
 
-# `Installation`
+## `Installation`
 
 `JIGSAW(GEO)` itself is a fully self-contained executable, without dependencies on third-party libraries or run-time packages. To make use of `JIGSAW(GEO)`'s  scripting interface, users are required to have access to a working <a href="http://www.mathworks.com">`MATLAB`</a> and/or <a href="https://www.gnu.org/software/octave">`OCTAVE`</a> installation.
 
-# `Starting Out`
+## `Starting Out`
 
 After downloading and unzipping the current <a href="https://github.com/dengwirda/jigsaw-geo-matlab/archive/master.zip">repository</a>, navigate to the installation directory within <a href="http://www.mathworks.com">`MATLAB`</a> / <a href="https://www.gnu.org/software/octave">`OCTAVE`</a> and run the set of examples contained in `meshdemo.m`:
 ````
@@ -25,7 +25,7 @@ meshdemo(2); % global grid with regional "patch"
 meshdemo(3); % design a multi-resolution grid-spacing function
 ````
 
-# `Attribution!`
+## `Attribution!`
 
 If you make use of `JIGSAW(GEO)` please include a reference to the following. Additional information regarding the formulation of the underlying `JIGSAW` mesh-generator can also be found <a href="https://github.com/dengwirda/jigsaw-matlab">here</a>.
 
