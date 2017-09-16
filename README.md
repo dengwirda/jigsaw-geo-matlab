@@ -1,7 +1,7 @@
 ## `JIGSAW(GEO): Grid-generation for geophysical modelling`
 
 <p align="center">
-  <img src = "../master/jigsaw-geo/img/JIGSAW-southern-ocean-voronoi.jpg">
+  <img src = "../master/jigsaw/img/JIGSAW-southern-ocean-voronoi.jpg">
 </p>
 
 `JIGSAW(GEO)` is a set of algorithms designed to generate complex, unstructured grids for geophysical modelling applications, including `locally-orthogonal` `staggered` `Delaunay` / `Voronoi` tessellations appropriate for unstructured `finite-volume` / `element` type general circulation models. Grids can be generated in local two-dimensional domains, and over general spheroidal surfaces. Typical applications include: large-scale atmospheric simulation, ocean-modelling and numerical weather predicition, as well as coastal ocean modelling and ice-sheet dynamics.
