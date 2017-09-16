@@ -39,7 +39,7 @@ The first step is to compile the code! The `JIGSAW` src can be found in <a href=
 
 `JIGSAW` is a `header-only` package - there is only the single main `jigsaw.cpp` file that simply `#include`'s the rest of the library as headers. The resulting build process should be fairly straight-forward as a result. `JIGSAW` does not currently dependent on any external packages or libraries.
 
-### `On Linux/Mac`
+#### `On Linux/Mac`
 
 `JIGSAW` has been successfully built using various versions of the `g++` and `llvm` compilers. Since the build process is a simple one-liner, there's no `make` script - instead:
 
@@ -53,7 +53,7 @@ can be used to build a `JIGSAW` executable, while:
 
 can be used to build a `JIGSAW` shared library. See the headers in <a href="../master/jigsaw/inc/">`../jigsaw/inc/`</a> for details on the `API`. The `#define __lib_jigsaw` directive in `jigsaw.cpp` toggles the source between executable and shared-library modes.
 
-### `On Windows`
+#### `On Windows`
 
 `JIGSAW` has been successfully built using various versions of the `msvc` compiler. I do not provide a sample `msvc` project, but the following steps can be used to create one:
 
@@ -62,7 +62,7 @@ can be used to build a `JIGSAW` shared library. See the headers in <a href="../m
 	* Modify the MSVC project settings to include the directory "../src/libcpp/" directory.
 	* Modify the MSVC project settings and select "Disable Language Extensions" (i.e. just standard c++ !).
 
-### `Folder Structure`
+#### `Folder Structure`
 
 Once you have built the `JIGSAW` binaries, place them in the appropriate sub-folders in`../jigsaw/bin/` and/or `../jigsaw/lib/` directories, so that they can be found by the `MATLAB` / `OCTAVE` interface, and the unit tests in `../jigsaw/uni/`. If you wish to support multiple platforms, simply build binaries for each `OS` and place them in the appropriate directory - the `MATLAB` / `OCATVE` interface will do an `OS`-dependent lookup to call the appropriate binary.
 
