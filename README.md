@@ -35,11 +35,11 @@ It's also possible to interact with the `JIGSAW` back-end directly, either throu
 
 ## `Getting Started`
 
-The first step is to compile the code! The `JIGSAW` src can be found in <a href="../master/jigsaw/src/">`JIGSAW(GEO)/jigsaw/src/`</a>.
+The first step is to compile the code! The `JIGSAW` src can be found in <a href="../master/jigsaw/src/">`../jigsaw/src/`</a>.
 
 `JIGSAW` is a `header-only` package - there is only the single main `jigsaw.cpp` file that simply `#include`'s the rest of the library as headers. The resulting build process should be fairly straight-forward as a result. `JIGSAW` does not currently depened on any external packages or libraries.
 
-### `On Linux/Max`:
+### `On Linux/Max`
 
 `JIGSAW` has been successfully built using various versions of the `g++` and `llvm` compilers. Since the build process is a simple one-liner, there's no `make` script - instead:
 
@@ -51,21 +51,20 @@ can be used to build a `JIGSAW` executable, while:
 	g++ -std=c++11 -pedantic -Wall -O3 -flto -fPIC -D NDEBUG -I libcpp 
 	-static-libstdc++ jigsaw.cpp -shared -o libjigsaw64r.so
 
-can be used to build a `JIGSAW` shared library. See the headers in <a href="../master/jigsaw/inc/">`JIGSAW(GEO)/jigsaw/inc/`</a> for details on the `API`. The `#define __lib_jigsaw` directive in `jigsaw.cpp` toggles the source between executable and shared-library modes.
+can be used to build a `JIGSAW` shared library. See the headers in <a href="../master/jigsaw/inc/">`../jigsaw/inc/`</a> for details on the `API`. The `#define __lib_jigsaw` directive in `jigsaw.cpp` toggles the source between executable and shared-library modes.
 
-### `On Windows`:
+### `On Windows`
 
 `JIGSAW` has been successfully built using various versions of the `msvc` compiler. I do not provide a sample `msvc` project, but the following steps can be used to create one:
 
 	* Create a new, empty MSVC project.
 	* Import the jigsaw.cpp file, this contains the main() entry-point.
 	* Modify the MSVC project settings to include the directory "../src/libcpp/" directory.
-	* Modify the MSVC project settings to disable the ""
+	* Modify the MSVC project settings and select "Disable Language Extensions" (i.e. just standard c++ here).
 
-### `Folder Structure`:
+### `Folder Structure`
 
-Once you have built the `JIGSAW` binaries, place them in the `../jigsaw/bin/` and/or `../jigsaw/lib/` directories, so that they can be found by the `MATLAB`/`OCTAVE` interface, and the unit tests in `../jigsaw/uni/`. 
-
+Once you have built the `JIGSAW` binaries, place them in the appropraiet sub-folders in`../jigsaw/bin/` and/or `../jigsaw/lib/` directories, so that they can be found by the `MATLAB`/`OCTAVE` interface, and the unit tests in `../jigsaw/uni/`. If you wish to support multiple platforms, simply build binaries for each `OS` and place them in the appropriate directory - the `MATLAB`/`OCATVE` interface will do an `OS`-dependent lookup when calling the binary.
 
 ## `Example Problems`
 
