@@ -22,11 +22,11 @@ construction of new meshes, as well as optimisation driven methods for the "impr
 	└── jigsaw
 	    ├── src -- JIGSAW src code
 	    ├── inc -- JIGSAW header files (for libjigsaw)
-            ├── bin -- put JIGSAW exe binaries here
-            ├── lib -- put JIGSAW lib binaries here
-            ├── geo -- geometry definitions and input data
-            ├── out -- default folder for JIGSAW output
-            ├── uni -- unit tests and libjigsaw example programs
+	    ├── bin -- put JIGSAW exe binaries here
+	    ├── lib -- put JIGSAW lib binaries here
+	    ├── geo -- geometry definitions and input data
+	    ├── out -- default folder for JIGSAW output
+	    └── uni -- unit tests and libjigsaw example programs
 
 
 The `MATLAB/OCTAVE` interface is provided for convenience - you don't have to use it, but it's probably the easiest way to get started! 
