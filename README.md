@@ -76,6 +76,7 @@ meshdemo(3); % a uniform resolution spheroidal grid.
 meshdemo(4); % a global grid with regional "patch".
 meshdemo(5); % a global grid with multi-resolution grid-spacing constraints.
 ````
+Additionally, the <a href="../master/jigsaw/example.jig">`../jigsaw/example.jig`</a> file provides a description of `JIGSAW`'s configuration options, and can be used as a command-line example. A set of unit-tests and `libjigsaw` example programs are contained in <a href="../master/jigsaw/uni/">`../jigsaw/uni/`</a>. The `JIGSAW-API` is documented via the header files in <a href="../master/jigsaw/inc/">`../jigsaw/inc/`</a>.
 
 ## `Licence`
 
