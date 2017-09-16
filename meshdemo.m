@@ -400,7 +400,7 @@ function demo3
 %------------------------------------ build mesh via JIGSAW! 
     
     opts.hfun_scal = 'absolute';
-    opts.hfun_hmax = 20. ;
+    opts.hfun_hmax = 150. ;
     
     opts.mesh_dims = +2 ;               % 2-dim. simplexes
     
