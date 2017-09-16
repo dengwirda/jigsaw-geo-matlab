@@ -39,7 +39,7 @@ The first step is to compile the code! The `JIGSAW` src can be found in <a href=
 
 `JIGSAW` is a `header-only` package - there is only the single main `jigsaw.cpp` file that simply `#include`'s the rest of the library as headers. The resulting build process should be fairly straight-forward as a result. `JIGSAW` does not currently depened on any external packages or libraries.
 
-### `On Linux/Max`
+### `On Linux/Mac`
 
 `JIGSAW` has been successfully built using various versions of the `g++` and `llvm` compilers. Since the build process is a simple one-liner, there's no `make` script - instead:
 
