@@ -35,7 +35,7 @@ It's also possible to interact with the `JIGSAW` back-end directly, either throu
 
 ## `Getting Started`
 
-The first step is to compile the code! The `JIGSAW` src can be found in `JIGSAW(GEO)/jigsaw/src/`.
+The first step is to compile the code! The `JIGSAW` src can be found in <a href="../master/jigsaw/src/">`JIGSAW(GEO)/jigsaw/src/`</a>.
 
 `JIGSAW` is a `header-only` package - meaning that 
 
@@ -43,15 +43,15 @@ The first step is to compile the code! The `JIGSAW` src can be found in `JIGSAW(
 
 `JIGSAW` has been successfully built using various versions of the `g++` and `llvm` compilers. Since the build process is a simple one-liner, there's no `make` script - instead:
 
-	g++ -std=c++11 -pedantic -Wall -s -O3 -flto -D NDEBUG 
-	-I libcpp -static-libstdc++ jigsaw.cpp -o jigsaw64r
+	g++ -std=c++11 -pedantic -Wall -s -O3 -flto -D NDEBUG -I libcpp 
+	-static-libstdc++ jigsaw.cpp -o jigsaw64r
 	
 can be used to build a `JIGSAW` executable, while:
 
-	g++ -std=c++11 -pedantic -Wall -O3 -flto -fPIC -D NDEBUG 
-	-I libcpp -static-libstdc++ jigsaw.cpp -shared -o libjigsaw64r.so
+	g++ -std=c++11 -pedantic -Wall -O3 -flto -fPIC -D NDEBUG -I libcpp 
+	-static-libstdc++ jigsaw.cpp -shared -o libjigsaw64r.so
 
-can be used to build a `JIGSAW` shared library. See the headers in `JIGSAW(GEO)/jigsaw/inc/` for details on the `API`.
+can be used to build a `JIGSAW` shared library. See the headers in <a href="../master/jigsaw/inc/">`JIGSAW(GEO)/jigsaw/inc/`</a> for details on the `API`.
 
 ### `On Windows`:
 
