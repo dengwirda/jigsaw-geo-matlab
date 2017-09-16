@@ -4,18 +4,18 @@
   <img src = "../master/jigsaw-geo/img/JIGSAW-southern-ocean-voronoi.jpg">
 </p>
 
-`JIGSAW(GEO)` is a set of algorithms designed to generate complex, unstructured grids for geophysical modelling applications, including `locally-orthogonal` `staggered Delaunay/Voronoi` tessellations appropriate for unstructured `finite-volume/element` type general circulation models. Grids can be generated both in local, two-dimensional domains and over general spheroidal surfaces. Typical applications include large-scale atmospheric simulation, ocean-modelling and numerical weather predicition, as well as coastal ocean modelling and ice-sheet dynamics.
+`JIGSAW(GEO)` is a set of algorithms designed to generate complex, unstructured grids for geophysical modelling applications, including `locally-orthogonal` `staggered` `Delaunay/Voronoi` tessellations appropriate for unstructured `finite-volume/element` type general circulation models. Grids can be generated both in local, two-dimensional domains, and over general spheroidal surfaces. Typical applications include: large-scale atmospheric simulation, ocean-modelling and numerical weather predicition, as well as coastal ocean modelling and ice-sheet dynamics.
 
 `JIGSAW(GEO)` is a stand-alone mesh generator written in `C++`, based on the general-purpose meshing package <a href="https://github.com/dengwirda/jigsaw-matlab">`JIGSAW`</a>. This toolbox provides a <a href="http://www.mathworks.com">`MATLAB`</a> / <a href="https://www.gnu.org/software/octave">`OCTAVE`</a> based scripting interface, including file I/O, mesh visualisation and post-processing facilities. The underlying `JIGSAW` library is a collection of unstructured triangle- and tetrahedron-based meshing algorithms, designed to produce very high quality Delaunay-based grids for computational simulation. `JIGSAW` includes both Delaunay "refinement" based algorithms for the 
 construction of new meshes, as well as optimisation driven methods for the "improvement" of existing grids. `JIGSAW` supports both two- and three-dimensional operations, catering to a variety of planar, surface and volumetric configurations.
 
-`JIGSAW(GEO)` is typically able to produce the very high-quality `staggered` `Voronoi` type grids required by a number of unstructued geophysical solvers (i.e. <a href="https://github.com/MPAS-Dev/MPAS-Release">`MPAS`</a>, <a href="http://www.emg.cmar.csiro.au/www/en/emg/software/EMS/hydrodynamics/Unstructured.html">`COMPAS`</a>, etc), generating highly optimised, multi-resolution type Delaunay-based meshes that are `locally-orthogonal`, `centroidal` and `well-centred`.
+`JIGSAW(GEO)` is typically able to produce the very high-quality `staggered` `Voronoi` type grids required by a number of unstructued geophysical solvers (i.e. <a href="https://github.com/MPAS-Dev/MPAS-Release">`MPAS`</a>, <a href="http://www.emg.cmar.csiro.au/www/en/emg/software/EMS/hydrodynamics/Unstructured.html">`COMPAS`</a>, etc), generating highly optimised, multi-resolution meshes that are `locally-orthogonal`, `centroidal` and `well-centred`.
 
-`JIGSAW(GEO)` has been compiled and tested on various `64-bit` `Linux` , `Windows` and `Mac` based platforms.
+`JIGSAW(GEO)` has been compiled and tested on various `64-bit` `Linux` , `Windows` and `Mac` based platforms. 
 
 ## `Code Structure`
 
-`JIGSAW(GEO)` is a multi-part library, consisting of a `MATLAB`/`OCTAVE` front-end, and a `C++` back-end. All of the heavy-lifting is done in the `C++` layer - the interface contains additional scripts for file I/O, visualisation and general data processing.
+`JIGSAW(GEO)` is a multi-part library, consisting of a `MATLAB`/`OCTAVE` front-end, and a core `C++` back-end. All of the heavy-lifting is done in the `C++` layer - the interface contains additional scripts for file I/O, visualisation and general data processing:
 
 	JIGASW(GEO)::
 	├── mesh-util -- MATLAB/OCTAVE utilities
@@ -31,12 +31,36 @@ construction of new meshes, as well as optimisation driven methods for the "impr
 
 The `MATLAB`/`OCTAVE` interface is provided for convenience - you don't have to use it, but it's probably the easiest way to get started!
 
-It's also possible to interact with the `JIGSAW` back-end directly, either through (i) scripting: building text file inputs and calling the `JIGSAW` executable from the command-line or (ii) programmatically: using the JIGSAW data-structures within your own applications and calling the `JIGSAW` library via its `API`.
-
+It's also possible to interact with the `JIGSAW` back-end directly, either through (i) scripting: building text file inputs and calling the `JIGSAW` executable from the command-line, or (ii) programmatically: using the JIGSAW data-structures within your own applications and calling the `JIGSAW` library via its `API`.
 
 ## `Getting Started`
 
-The first step is to compile the code! 
+The first step is to compile the code! The `JIGSAW` src can be found in `JIGSAW(GEO)/jigsaw/src/`.
+
+`JIGSAW` is a `header-only` package - meaning that 
+
+### `On Linux/Max`:
+
+`JIGSAW` has been successfully built using various versions of the `g++` and `llvm` compilers. Since the build process is a simple one-liner, there's no `make` script - instead:
+
+	g++ -std=c++11 -pedantic -Wall -s -O3 -flto -D NDEBUG 
+	-I libcpp -static-libstdc++ jigsaw.cpp -o jigsaw64r
+	
+can be used to build a `JIGSAW` executable, while:
+
+	g++ -std=c++11 -pedantic -Wall -O3 -flto -fPIC -D NDEBUG 
+	-I libcpp -static-libstdc++ jigsaw.cpp -shared -o libjigsaw64r.so
+
+can be used to build a `JIGSAW` shared library. See the headers in `JIGSAW(GEO)/jigsaw/inc/` for details on the `API`.
+
+### `On Windows`:
+
+`JIGSAW` has been successfully built using various versions of the `msvc` compiler. 
+
+### `Folder Structure`:
+
+Once you have built the `JIGSAW` binaries, place them in the 
+
 
 ## `Example Problems`
 
