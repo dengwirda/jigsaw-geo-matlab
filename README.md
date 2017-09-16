@@ -13,19 +13,37 @@ construction of new meshes, as well as optimisation driven methods for the "impr
 
 `JIGSAW(GEO)` has been compiled and tested on various `64-bit` `Linux` , `Windows` and `Mac` based platforms.
 
-## `Installation`
+## `Code Structure`
 
-`JIGSAW(GEO)` itself is a fully self-contained executable, without dependencies on third-party libraries or run-time packages. To make use of `JIGSAW(GEO)`'s  scripting interface, users are required to have access to a working <a href="http://www.mathworks.com">`MATLAB`</a> and/or <a href="https://www.gnu.org/software/octave">`OCTAVE`</a> installation.
+`JIGSAW(GEO)` is a multi-part library, consisting of a `MATLAB`/`OCTAVE` front-end, and a `C++` back-end:
 
-## `Starting Out`
+	JIGASW(GEO)::
+	├── mesh-util -- MATLAB/OCTAVE utilities
+	└── jigsaw
+	    ├── src -- JIGSAW src code
+	    ├── inc -- JIGSAW header files (for libjigsaw)
+      ├── bin -- put JIGSAW exe binaries here
+      ├── lib -- put JIGSAW lib binaries here
+      ├── geo -- geometry definitions and input data
+      ├── out -- default folder for JIGSAW output
+      ├── uni -- unit tests and libjigsaw example programs
 
-After downloading and unzipping the current <a href="https://github.com/dengwirda/jigsaw-geo-matlab/archive/master.zip">repository</a>, navigate to the installation directory within <a href="http://www.mathworks.com">`MATLAB`</a> / <a href="https://www.gnu.org/software/octave">`OCTAVE`</a> and run the set of examples contained in `meshdemo.m`:
+
+The `MATLAB/OCTAVE` interface is provided for convenience -- you don't have to use it, but it's probably the easiest way to get started! 
+
+## `Getting Started`
+
+The first step is to compile the code! 
+
+## `Example Problems`
+
+After downloading and building the code, navigate to the root `JIGSAW(GEO)` directory within your <a href="http://www.mathworks.com">`MATLAB`</a> / <a href="https://www.gnu.org/software/octave">`OCTAVE`</a> installation to run the set of examples contained in `meshdemo.m`:
 ````
 meshdemo(1); % a simple, two-dimensional domain
 meshdemo(2); % a multi-resolution grid for the Australian region
-meshdemo(3); % a uniform resolution global grid
-meshdemo(4); % global grid with regional "patch"
-meshdemo(5); % design a multi-resolution grid-spacing function
+meshdemo(3); % a uniform resolution spheroidal grid
+meshdemo(4); % a global grid with regional "patch"
+meshdemo(5); % a global grid with multi-resolution grid-spacing constraints
 ````
 
 ## `Licence`
@@ -37,7 +55,7 @@ used at your own risk.
 
 ## `References!`
 
-If you make use of `JIGSAW(GEO)` please include a reference to the following. Additional information regarding the formulation of the underlying `JIGSAW` mesh-generator can also be found <a href="https://github.com/dengwirda/jigsaw-matlab">here</a>.
+If you make use of `JIGSAW(GEO)` please include a reference to the following. Additional information and references regarding the formulation of the underlying `JIGSAW` mesh-generator can also be found <a href="https://github.com/dengwirda/jigsaw-matlab">here</a>.
 
 `[1]` - Darren Engwirda: JIGSAW-GEO (1.0): locally orthogonal staggered unstructured grid generation for general circulation modelling on the sphere, Geosci. Model Dev., 10, 2117-2140, https://doi.org/10.5194/gmd-10-2117-2017, 2017.
 
