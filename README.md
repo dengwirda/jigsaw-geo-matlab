@@ -6,7 +6,7 @@
 
 `JIGSAW(GEO)` is a set of algorithms designed to generate complex, unstructured grids for geophysical modelling applications, including `locally-orthogonal` `staggered` `Delaunay/Voronoi` tessellations appropriate for unstructured `finite-volume/element` type general circulation models. Grids can be generated both in local, two-dimensional domains, and over general spheroidal surfaces. Typical applications include: large-scale atmospheric simulation, ocean-modelling and numerical weather predicition, as well as coastal ocean modelling and ice-sheet dynamics.
 
-`JIGSAW(GEO)` is a stand-alone mesh generator written in `C++`, based on the general-purpose meshing package <a href="https://github.com/dengwirda/jigsaw-matlab">`JIGSAW`</a>. This toolbox provides a <a href="http://www.mathworks.com">`MATLAB`</a> / <a href="https://www.gnu.org/software/octave">`OCTAVE`</a> based scripting interface, including file I/O, mesh visualisation and post-processing facilities. The underlying `JIGSAW` library is a collection of unstructured triangle- and tetrahedron-based meshing algorithms, designed to produce very high quality Delaunay-based grids for computational simulation. `JIGSAW` includes both Delaunay "refinement" based algorithms for the 
+`JIGSAW(GEO)` is a stand-alone mesh generator written in `c++`, based on the general-purpose meshing package <a href="https://github.com/dengwirda/jigsaw-matlab">`JIGSAW`</a>. This toolbox provides a <a href="http://www.mathworks.com">`MATLAB`</a> / <a href="https://www.gnu.org/software/octave">`OCTAVE`</a> based scripting interface, including file I/O, mesh visualisation and post-processing facilities. The underlying `JIGSAW` library is a collection of unstructured triangle- and tetrahedron-based meshing algorithms, designed to produce very high quality Delaunay-based grids for computational simulation. `JIGSAW` includes both Delaunay "refinement" based algorithms for the 
 construction of new meshes, as well as optimisation driven methods for the "improvement" of existing grids. `JIGSAW` supports both two- and three-dimensional operations, catering to a variety of planar, surface and volumetric configurations.
 
 `JIGSAW(GEO)` is typically able to produce the very high-quality `staggered` `Voronoi` type grids required by a number of unstructued geophysical solvers (i.e. <a href="https://github.com/MPAS-Dev/MPAS-Release">`MPAS`</a>, <a href="http://www.emg.cmar.csiro.au/www/en/emg/software/EMS/hydrodynamics/Unstructured.html">`COMPAS`</a>, etc), generating highly optimised, multi-resolution meshes that are `locally-orthogonal`, `centroidal` and `well-centred`.
@@ -15,7 +15,7 @@ construction of new meshes, as well as optimisation driven methods for the "impr
 
 ## `Code Structure`
 
-`JIGSAW(GEO)` is a multi-part library, consisting of a `MATLAB`/`OCTAVE` front-end, and a core `C++` back-end. All of the heavy-lifting is done in the `C++` layer - the interface contains additional scripts for file I/O, visualisation and general data processing:
+`JIGSAW(GEO)` is a multi-part library, consisting of a `MATLAB`/`OCTAVE` front-end, and a core `c++` back-end. All of the heavy-lifting is done in the `c++` layer - the interface contains additional scripts for file I/O, visualisation and general data processing:
 
 	JIGASW(GEO)::
 	├── mesh-util -- MATLAB/OCTAVE utilities
@@ -37,7 +37,7 @@ It's also possible to interact with the `JIGSAW` back-end directly, either throu
 
 The first step is to compile the code! The `JIGSAW` src can be found in <a href="../master/jigsaw/src/">`JIGSAW(GEO)/jigsaw/src/`</a>.
 
-`JIGSAW` is a `header-only` package - meaning that 
+`JIGSAW` is a `header-only` package - there is only the single main `jigsaw.cpp` file that simply `#include`'s the rest of the library as headers. The resulting build process should be fairly straight-forward as a result. `JIGSAW` does not currently depened on any external packages or libraries.
 
 ### `On Linux/Max`:
 
@@ -51,31 +51,36 @@ can be used to build a `JIGSAW` executable, while:
 	g++ -std=c++11 -pedantic -Wall -O3 -flto -fPIC -D NDEBUG -I libcpp 
 	-static-libstdc++ jigsaw.cpp -shared -o libjigsaw64r.so
 
-can be used to build a `JIGSAW` shared library. See the headers in <a href="../master/jigsaw/inc/">`JIGSAW(GEO)/jigsaw/inc/`</a> for details on the `API`.
+can be used to build a `JIGSAW` shared library. See the headers in <a href="../master/jigsaw/inc/">`JIGSAW(GEO)/jigsaw/inc/`</a> for details on the `API`. The `#define __lib_jigsaw` directive in `jigsaw.cpp` toggles the source between executable and shared-library modes.
 
 ### `On Windows`:
 
-`JIGSAW` has been successfully built using various versions of the `msvc` compiler. 
+`JIGSAW` has been successfully built using various versions of the `msvc` compiler. I do not provide a sample `msvc` project, but the following steps can be used to create one:
+
+	* Create a new, empty MSVC project.
+	* Import the jigsaw.cpp file, this contains the main() entry-point.
+	* Modify the MSVC project settings to include the directory "../src/libcpp/" directory.
+	* Modify the MSVC project settings to disable the ""
 
 ### `Folder Structure`:
 
-Once you have built the `JIGSAW` binaries, place them in the 
+Once you have built the `JIGSAW` binaries, place them in the `../jigsaw/bin/` and/or `../jigsaw/lib/` directories, so that they can be found by the `MATLAB`/`OCTAVE` interface, and the unit tests in `../jigsaw/uni/`. 
 
 
 ## `Example Problems`
 
 After downloading and building the code, navigate to the root `JIGSAW(GEO)` directory within your <a href="http://www.mathworks.com">`MATLAB`</a> / <a href="https://www.gnu.org/software/octave">`OCTAVE`</a> installation to run the set of examples contained in `meshdemo.m`:
 ````
-meshdemo(1); % a simple, two-dimensional domain
-meshdemo(2); % a multi-resolution grid for the Australian region
-meshdemo(3); % a uniform resolution spheroidal grid
-meshdemo(4); % a global grid with regional "patch"
-meshdemo(5); % a global grid with multi-resolution grid-spacing constraints
+meshdemo(1); % a simple, two-dimensional domain.
+meshdemo(2); % a multi-resolution grid for the Australian region.
+meshdemo(3); % a uniform resolution spheroidal grid.
+meshdemo(4); % a global grid with regional "patch".
+meshdemo(5); % a global grid with multi-resolution grid-spacing constraints.
 ````
 
 ## `Licence`
 
-This program may be freely redistributed under the condition that the copyright notices (including this entire header) are not removed, and no compensation is received through use of the software.  Private, research, and institutional use is free.  You may distribute modified versions of this code UNDER THE CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR NOTICE IS GIVEN OF THE MODIFICATIONS. Distribution of this code as part of a commercial system is permissible ONLY BY DIRECT ARRANGEMENT WITH THE AUTHOR. (If you are not directly supplying this code to a customer, and you are instead telling them how they can obtain it for free, then you are not required to make any arrangement with me.) 
+This program may be freely redistributed under the condition that the copyright notices (including this entire header) are not removed, and no compensation is received through use of the software.  Private, research, and institutional use is free.  You may distribute modified versions of this code `UNDER THE CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR NOTICE IS GIVEN OF THE MODIFICATIONS`. Distribution of this code as part of a commercial system is permissible `ONLY BY DIRECT ARRANGEMENT WITH THE AUTHOR`. (If you are not directly supplying this code to a customer, and you are instead telling them how they can obtain it for free, then you are not required to make any arrangement with me.) 
 
 Disclaimer:  Neither I nor: Columbia University, The Massachusetts Institute of Technology, The University of Sydney, nor the National Aeronautics and Space Administration warrant this code in any way whatsoever.  This code is provided "as-is" to be 
 used at your own risk.
