@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 05 September, 2017
+     * Last updated: 16 September, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -92,8 +92,10 @@
         iptr_type&_indx
         )
     {
-        _indx = _jpos * this->_ypos.count () 
-              + _ipos ;
+        iptr_type _ynum = 
+       (iptr_type)this->_ypos.count() ;
+
+        _indx = _jpos * _ynum + _ipos ;
     }
     
     /*
@@ -208,8 +210,8 @@
                 this->_xpos.tend(), 
             _ppos[0],std::less<real_type>()) ;
            
-            _jpos = 
-            _jits - this->_xpos.head() - 1 ;
+            _jpos = (iptr_type)
+           (_jits - this->_xpos.head() - 1 ) ;
         }
         else
         {
@@ -220,8 +222,8 @@
             _xdel = (_xmax - _xmin) /
                 (this->_xpos.count () - 1) ;
             
-            _jpos = std::floor (
-                (_ppos[+0]-_xmin) / _xdel) ;
+            _jpos = (iptr_type)
+               ((_ppos[+0]-_xmin) / _xdel) ;
         }
         
     /*---------------------------- find enclosing y-range */
@@ -233,8 +235,8 @@
                 this->_ypos.tend(), 
             _ppos[1],std::less<real_type>()) ;
            
-            _ipos = 
-            _iits - this->_ypos.head() - 1 ;
+            _ipos = (iptr_type)
+           (_iits - this->_ypos.head() - 1 ) ;
         }
         else
         {
@@ -245,8 +247,8 @@
             _ydel = (_ymax - _ymin) /
                 (this->_ypos.count () - 1) ;
             
-            _ipos = std::floor (
-                (_ppos[+1]-_ymin) / _ydel) ;
+            _ipos = (iptr_type)
+               ((_ppos[+1]-_ymin) / _ydel) ;
         }
         
         if (_ipos == 

@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 15 September, 2017
+     * Last updated: 16 September, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -408,7 +408,10 @@
         iptr_list _aset, _eset, _tset,
                   _amrk, _fail;
         real_list _qsrc, _qdst;
-        
+
+        __unreferenced(_emrk) ;
+        __unreferenced(_tmrk) ;
+
         _amrk.set_count(
             _mesh._set1.count(), 
                 containers::tight_alloc, -1) ;
@@ -772,9 +775,9 @@
         )
     {
         iptr_type static
-            constexpr _DMIN = (iptr_type) +5 ;          
+            constexpr _DEG_MIN = (iptr_type) +5 ;          
         iptr_type static
-            constexpr _DMAX = (iptr_type) +8 ;
+            constexpr _DEG_MAX = (iptr_type) +8 ;
     
         iptr_list _iset, _jset ;
         iptr_list _aset, _bset ;
@@ -798,7 +801,7 @@
                 typename
                 iptr_list::_write_it _tend ;
                 typename
-                iptr_list::size_type _einc ;
+                iptr_list::diff_type _einc ;
         
                 _eset.set_count(+0);
                 _mesh.node_edge(
@@ -838,7 +841,7 @@
                         _nmrk[_enod[1]] >= 0 )
                     {
                     
-                    if (_eset.count() > _DMAX)
+                    if (_eset.count() > _DEG_MAX)
                     {
                         real_type _good = 
                             (real_type) +1.000 ;
@@ -869,7 +872,7 @@
                         if (_move) break  ;
                     }
                     
-                    if (_eset.count() < _DMIN)
+                    if (_eset.count() < _DEG_MIN)
                     {
                         real_type _good = 
                             (real_type) +1.000 ;
@@ -923,17 +926,17 @@
         )
     {
         iptr_type _nmax = 
-        std::max( _nmrk.count() ,
-            _mesh._set1.count()
-                ) ;
+       (iptr_type)std::max( _nmrk.count() ,
+                      _mesh._set1.count()
+                    ) ;
         iptr_type _emax = 
-        std::max( _emrk.count() ,
-            _mesh._set2.count()
-                ) ;
+       (iptr_type)std::max( _emrk.count() ,
+                      _mesh._set2.count()
+                    ) ;
         iptr_type _tmax = 
-        std::max( _tmrk.count() ,
-            _mesh._set3.count()
-                ) ;
+       (iptr_type)std::max( _tmrk.count() ,
+                      _mesh._set3.count()
+                    ) ;
 
         _nmrk.set_count(_nmax,
             containers::
@@ -981,6 +984,8 @@
         high_resolution_clock::time_point _ttoc ;
         typename std ::chrono::
         high_resolution_clock _time;
+
+        __unreferenced(_time) ; // why does MSVC need this??
     #   endif//__use_timers
         
         iptr_list _nmrk, _emrk, _tmrk, 

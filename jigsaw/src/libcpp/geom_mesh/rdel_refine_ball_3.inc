@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 09 September, 2017
+     * Last updated: 16 September, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -117,8 +117,16 @@
     
         typename rdel_opts::node_kind 
         _kind =  rdel_opts::null_kind ;
-     
-        __unreferenced(_args);
+    
+		__unreferenced( _size) ;
+		__unreferenced( _mode) ;
+		__unreferenced( _pfac) ;
+		__unreferenced( _eold) ;
+		__unreferenced( _fold) ; 
+		__unreferenced( _eclr) ; 
+		__unreferenced( _tdim) ;
+		__unreferenced( _pass) ;
+        __unreferenced( _args) ;
 
         _nnew.set_count( +0) ;
         _nold.set_count( +0) ;

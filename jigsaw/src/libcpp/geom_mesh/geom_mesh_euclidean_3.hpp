@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 11 September, 2017
+     * Last updated: 16 September, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -662,8 +662,8 @@
              feat_list(_eadj, _set2);
 
             _npos->topo () =  
-                  _set2.count();
-
+               (char_type)_set2.count() ;
+            
             _npos->feat () = node_feat(
                 &_npos->node(0), _set2  , 
                     _opts) ;
@@ -701,7 +701,7 @@
                 &_epos->node(0), _fadj) ;
                 
             _epos->topo () =  
-                  _fadj.count();
+               (char_type)_fadj.count() ;
 
             _epos->feat () = edge_feat(
                 &_epos->node(0), _fadj  , 

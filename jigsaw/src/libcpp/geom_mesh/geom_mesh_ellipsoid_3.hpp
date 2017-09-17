@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 15 March, 2017
+     * Last updated: 16 September, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -93,6 +93,8 @@
         geom_opts &_opts
         )
     {
+        __unreferenced(_opts) ;
+
         this->_bmin[0] = -this->_radA ;
         this->_bmin[1] = -this->_radB ;
         this->_bmin[2] = -this->_radC ;

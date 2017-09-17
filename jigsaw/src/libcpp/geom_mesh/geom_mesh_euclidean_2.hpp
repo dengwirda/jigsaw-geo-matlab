@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 11 September, 2017
+     * Last updated: 16 September, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -332,7 +332,7 @@
                 &_npos->node(0), _eadj) ;
                 
             _npos->topo () =  
-                  _eadj.count();
+               (char_type)_eadj.count() ;
 
             _npos->feat () = node_feat(
                 &_npos->node(0), _eadj  , 
