@@ -98,19 +98,83 @@
      */
     
     __static_call
+    __normal_call void_type flip_next (
+        mesh_type &_mesh ,
+        iptr_type  _tpos ,
+        iptr_type  _epos ,
+        iptr_type &_tadj ,
+        iptr_type &_eadj ,
+        iptr_list &_tset
+        )
+    {
+        iptr_type _inod[3] ;
+        iptr_type _jnod[3] ;
+        mesh_type::tri3_type::
+        face_node(_inod, _epos, 2, 1) ;
+        _inod[ 0] = _mesh.
+        _set3[_tpos].node(_inod[0]) ;
+        _inod[ 1] = _mesh.
+        _set3[_tpos].node(_inod[1]) ;
+        _inod[ 2] = _mesh.
+        _set3[_tpos].node(_inod[2]) ;
+            
+        _tset.set_count(0) ;
+        
+        _mesh.edge_tri3(_inod, _tset) ;
+    
+        if (_tset.count()!=+2) return ;
+        
+        if (_tset[0] == _tpos)
+            _tadj = _tset[1] ;
+        else
+            _tadj = _tset[0] ;
+            
+        for(_eadj = 3 ; _eadj-- != 0; )
+        {
+        mesh_type::tri3_type::
+        face_node(_jnod, _eadj, 2, 1) ;
+        _jnod[ 0] = _mesh.
+        _set3[_tadj].node(_jnod[0]) ;
+        _jnod[ 1] = _mesh.
+        _set3[_tadj].node(_jnod[1]) ;
+        _jnod[ 2] = _mesh.
+        _set3[_tadj].node(_jnod[2]) ;
+            
+        if (_jnod[ 2] != _inod[ 0])
+        if (_jnod[ 2] != _inod[ 1])
+            break  ;           
+        }  
+   
+        if (_jnod[ 0] == _inod[ 0] &&
+            _jnod[ 1] == _inod[ 1] )
+        {
+            std::swap (
+        _mesh._set3[_tadj].node(0),
+        _mesh._set3[_tadj].node(1)) ;
+        }
+    }
+    
+    __static_call
     __normal_call void_type flip_sign (
         mesh_type &_mesh ,
         pred_type &_pred
         )
     {
-        iptr_type _mark  = +1;
-        iptr_type _tnum  = +0;
+        iptr_list _tset, _list, _seen ;
+ 
+        _seen.set_count( _mesh.
+            _set3.count(), 
+        containers::tight_alloc , +0) ;
         
-        for (auto _tria  = _mesh._set3.head();
-                  _tria != _mesh._set3.tend();
+        iptr_type _tnum  = +0 ;
+        iptr_type _epos  = +0 ; 
+        
+        for (auto _tria  = _mesh._set3.head() ;
+                  _tria != _mesh._set3.tend() ;
                 ++_tria, ++_tnum )
         {
-            if (_tria->mark() != +0) continue;
+            if (_tria->mark() <  +0) continue ;
+            if (_seen[_tnum ] >  +0) continue ;
             
             real_type _cost = _pred.cost (
                &_mesh._set1[
@@ -125,18 +189,37 @@
                 std::swap (
                     _tria->node(0) ,
                         _tria->node(1));
-            }            
-        }
-        
-        for (auto _tria  = _mesh._set3.head();
-                  _tria != _mesh._set3.tend();
-                ++_tria  )
-        {
-            if (_tria->mark() >= +0)
-            {
-                _tria->mark()  = +0 ;
             }
+            
+            _list.push_tail(_tnum) ;
+            _seen [_tnum] =  +1;
+            
+            for ( ; !_list.empty() ; )
+            {
+                iptr_type _tpos;
+                _list._pop_tail(_tpos) ;
+            
+                for (_epos = +3; _epos-- != +0; )
+                {       
+                    iptr_type _tadj = -1 ;
+                    iptr_type _eadj = -1 ;
+                     
+                    flip_next( _mesh, _tpos , 
+                        _epos, _tadj, _eadj , 
+                        _tset) ;
+                
+                    if (_tadj == -1) continue ;
+                   
+                    if (_seen[_tadj] == +0 )
+                    {                
+                        _seen[_tadj]  = +1 ;
+                        _list.push_tail(_tadj);
+                    }
+                }
+            }
+                        
         }
+       
     }
 
     /*
@@ -1052,6 +1135,8 @@
             _Qmax*(real_type).75 ;
         real_type _Qinc =
            (_Qmax - _Qmin) / + 5 ;
+   
+        flip_sign(_mesh , _pred) ;
    
         for (auto _iter = +1 ; 
             _iter <= _opts.iter(); ++_iter)

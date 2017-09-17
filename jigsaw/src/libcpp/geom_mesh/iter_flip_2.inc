@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 15 September, 2017
+     * Last updated: 16 September, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -122,9 +122,9 @@
         iptr_type _enod[3] ;
         mesh_type::tri3_type::
         face_node(_enod, _edge, 2, 1) ;
-        _enod[0] = _mesh.
+        _enod[ 0] = _mesh.
         _set3[_tria].node(_enod[0]) ;
-        _enod[1] = _mesh.
+        _enod[ 1] = _mesh.
         _set3[_tria].node(_enod[1]) ;
       
         _flip = false ;
