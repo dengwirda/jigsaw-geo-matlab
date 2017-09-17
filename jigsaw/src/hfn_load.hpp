@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 14 September, 2017
+     * Last updated: 16 September, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -107,6 +107,9 @@
             std::int32_t  _itag
             )
         {
+            __unreferenced(_ipos) ;
+            __unreferenced(_itag) ;
+
             if (this->_ndim == +2 &&
                 this->_kind == 
                     jmsh_kind::euclidean_mesh)
@@ -155,7 +158,7 @@
     /*-------------------------------- read COORD section */
         __normal_call void_type open_coord (
             std::int32_t _idim,
-            std::int32_t _ndim
+            std::int32_t
             )
         {   this->_idim =_idim;
         }
@@ -164,6 +167,8 @@
             double       _ppos
             )
         {
+            __unreferenced(_irow) ;
+
             if (this->_ndim == +2 &&
                 this->_kind == 
                     jmsh_kind::euclidean_grid)
@@ -298,6 +303,9 @@
             std::int32_t  _itag
             )
         {
+            __unreferenced(_ipos) ;
+            __unreferenced(_itag) ;
+
             if (this->_ndim == +2 &&
                 this->_kind == 
                     jmsh_kind::euclidean_mesh)
@@ -326,6 +334,9 @@
             std::int32_t  _itag
             )
         {
+            __unreferenced(_ipos) ;
+            __unreferenced(_itag) ;
+
             if (this->_ndim == +2)
             {
                 // 2-dimensional!!            
@@ -723,6 +734,8 @@
     {
         iptr_type _errv  = __no_error ;
 
+        __unreferenced(_jcfg) ;
+
         if (_hfun._ndim == +2 && 
             _hfun._kind ==
              jmsh_kind::euclidean_mesh)
@@ -836,13 +849,13 @@
                 }
             }
  
-            iptr_type  _xnum = _hfun.
+            auto _xnum = _hfun.
                 _euclidean_grid_2d._xpos.count();
                 
-            iptr_type  _ynum = _hfun.
+            auto _ynum = _hfun.
                 _euclidean_grid_2d._ypos.count();
                 
-            iptr_type  _hnum = _hfun.
+            auto _hnum = _hfun.
                 _euclidean_grid_2d._hmat.count();
  
             if (_hnum != _xnum * _ynum)
@@ -1000,16 +1013,16 @@
                 }
             }
  
-            iptr_type  _xnum = _hfun.
+            auto _xnum = _hfun.
                 _euclidean_grid_3d._xpos.count();
                 
-            iptr_type  _ynum = _hfun.
+            auto _ynum = _hfun.
                 _euclidean_grid_3d._ypos.count();
                 
-            iptr_type  _znum = _hfun.
+            auto _znum = _hfun.
                 _euclidean_grid_3d._zpos.count();
                 
-            iptr_type  _hnum = _hfun.
+            auto _hnum = _hfun.
                 _euclidean_grid_3d._hmat.count();
  
             if (_hnum!=_xnum*_ynum*_znum)
@@ -1081,13 +1094,13 @@
                 }
             }
  
-            iptr_type  _xnum = _hfun.
+            auto _xnum = _hfun.
                 _ellipsoid_grid_3d._xpos.count();
                 
-            iptr_type  _ynum = _hfun.
+            auto _ynum = _hfun.
                 _ellipsoid_grid_3d._ypos.count();
                 
-            iptr_type  _hnum = _hfun.
+            auto _hnum = _hfun.
                 _ellipsoid_grid_3d._hmat.count();
  
             if (_hnum != _xnum * _ynum)
@@ -1158,6 +1171,8 @@
 
         iptr_type _errv  = __no_error ;
         
+        __unreferenced(_jcfg) ;
+
         real_type _hmin = 
             +std::numeric_limits
                 <real_type>::infinity() ;
@@ -1264,10 +1279,10 @@
             
             _jlog.push("  \n") ;
             
-            iptr_type  _xnum = _hfun.
+            auto _xnum = _hfun.
                 _euclidean_grid_2d._xpos.count();
                 
-            iptr_type  _ynum = _hfun.
+            auto _ynum = _hfun.
                 _euclidean_grid_2d._ypos.count();
             
             __dumpINTS("|XGRID.|", _xnum)
@@ -1362,13 +1377,13 @@
             
             _jlog.push("  \n") ;
             
-            iptr_type  _xnum = _hfun.
+            auto _xnum = _hfun.
                 _euclidean_grid_3d._xpos.count();
                 
-            iptr_type  _ynum = _hfun.
+            auto _ynum = _hfun.
                 _euclidean_grid_3d._ypos.count();
                 
-            iptr_type  _znum = _hfun.
+            auto _znum = _hfun.
                 _euclidean_grid_3d._zpos.count();
             
             __dumpINTS("|XGRID.|", _xnum)
@@ -1405,10 +1420,10 @@
             
             _jlog.push("  \n") ;
             
-            iptr_type  _xnum = _hfun.
+            auto _xnum = _hfun.
                 _ellipsoid_grid_3d._xpos.count();
                 
-            iptr_type  _ynum = _hfun.
+            auto _ynum = _hfun.
                 _ellipsoid_grid_3d._ypos.count();
             
             __dumpINTS("|XGRID.|", _xnum)

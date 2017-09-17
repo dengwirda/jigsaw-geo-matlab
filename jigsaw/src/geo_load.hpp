@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 14 September, 2017
+     * Last updated: 16 September, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -114,6 +114,8 @@
             std::int32_t  _itag
             )
         {
+            __unreferenced(_ipos) ;
+
             if (this->_ndim == +2 &&
                 this->_kind == 
                     jmsh_kind::euclidean_mesh)
@@ -160,6 +162,8 @@
             std::int32_t  _itag
             )
         {
+            __unreferenced(_ipos) ;
+
             if (this->_ndim == +2 &&
                 this->_kind == 
                     jmsh_kind::euclidean_mesh)
@@ -205,6 +209,8 @@
             std::int32_t  _itag
             )
         {
+            __unreferenced(_ipos) ;
+
             if (this->_ndim == +2 &&
                 this->_kind == 
                     jmsh_kind::euclidean_mesh)
@@ -513,6 +519,8 @@
     {
         iptr_type _errv  = __no_error ;
 
+        __unreferenced(_jcfg) ;
+
         if (_geom._ndim == +2 &&
             _geom._kind ==
              jmsh_kind::euclidean_mesh)
@@ -677,6 +685,8 @@
 
         iptr_type _errv  = __no_error ;
         
+        __unreferenced(_jcfg) ;
+
         if (_geom._ndim == +2 &&
             _geom._kind ==
              jmsh_kind::euclidean_mesh)
