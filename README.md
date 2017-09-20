@@ -85,7 +85,7 @@ This program may be freely redistributed under the condition that the copyright 
 `DISCLAIMER`:  Neither I nor: Columbia University, the Massachusetts Institute of Technology, the University of Sydney, nor the National Aeronautics and Space Administration warrant this code in any way whatsoever.  This code is provided "as-is" to be 
 used at your own risk.
 
-## `Attribution!`
+## `Attribution`
 
 If you make use of `JIGSAW(GEO)` in your work, please include a reference to the following:
 ````
@@ -96,6 +96,8 @@ If you make use of `JIGSAW(GEO)` in your work, please include a reference to the
   year = {2017},
 }
 ````
+## `References!`
+
 Information and references regarding the formulation of the underlying `JIGSAW` mesh-generator can also be found <a href="https://github.com/dengwirda/jigsaw-matlab">here</a>. Additionally, a number of publications that describe the algorithms used in `JIGSAW(GEO)` in detail are listed below:
 
 `[1]` - Darren Engwirda: JIGSAW-GEO (1.0): locally orthogonal staggered unstructured grid generation for general circulation modelling on the sphere, Geosci. Model Dev., 10, 2117-2140, https://doi.org/10.5194/gmd-10-2117-2017, 2017.
