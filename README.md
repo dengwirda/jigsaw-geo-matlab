@@ -89,14 +89,14 @@ used at your own risk.
 
 If you make use of `JIGSAW(GEO)` in your work, please include a reference to the following:
 ````
-@misc{JIGSAW(GEO),
+@misc{JIGSAW-GEO,
   title = {{JIGSAW(GEO)}: Unstructured grid generation for geophysical modelling},
   author = {Darren Engwirda},
   note = {https://github.com/dengwirda/jigsaw-geo-matlab},
   year = {2017},
 }
 ````
-Additional information and references regarding the formulation of the underlying `JIGSAW` mesh-generator can also be found <a href="https://github.com/dengwirda/jigsaw-matlab">here</a>. A number of publications describe the `JIGSAW(GEO)` algorithm in detail:
+Information and references regarding the formulation of the underlying `JIGSAW` mesh-generator can also be found <a href="https://github.com/dengwirda/jigsaw-matlab">here</a>. Additionally, a number of publications that describe the algorithms used in `JIGSAW(GEO)` in detail are listed below:
 
 `[1]` - Darren Engwirda: JIGSAW-GEO (1.0): locally orthogonal staggered unstructured grid generation for general circulation modelling on the sphere, Geosci. Model Dev., 10, 2117-2140, https://doi.org/10.5194/gmd-10-2117-2017, 2017.
 
