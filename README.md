@@ -81,10 +81,23 @@ Additionally, the <a href="../master/jigsaw/example.jig">`../jigsaw/example.jig`
 ## `Gallery`
 
 <p align="center">
-  <img width="420" src = "../master/jigsaw/img/JIGSAW-Australia-HFUN.jpg"> &nbsp
-  <img width="420" src = "../master/jigsaw/img/JIGSAW-Australia-DUAL.jpg">
+  <img width="800" src = "../master/jigsaw/img/JIGSAW-GLOBAL-COAST-TRIA.jpg">
 
-  Figure 1. Multi-resolution coastal grid for the Australian shelf, showing the target spacing function `H(x)`.
+  Figure 1. Multi-resolution grid for the global ocean, refined in the coastal zone.
+	
+</p>
+
+<p align="center">
+  <img width="800" src = "../master/jigsaw/img/JIGSAW-ARCTIC-TRIA.jpg">
+
+  Figure 2. Multi-resolution grid for the Arctic basin, refined in the shelf region.
+	
+</p>
+
+<p align="center">
+  <img width="800" src = "../master/jigsaw/img/JIGSAW-AUSTRALIA-DUAL.png">
+
+  Figure 3. Multi-resolution coastal grid for the Australian shelf, showing the dual grid.
 	
 </p>
 
