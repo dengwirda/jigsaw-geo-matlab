@@ -97,7 +97,7 @@ Additionally, the <a href="../master/jigsaw/example.jig">`../jigsaw/example.jig`
 <p align="center">
   <img width="780" src = "../master/jigsaw/img/JIGSAW-AUSTRALIA-DUAL.png">
 
-  Figure 3. Multi-resolution coastal grid for the Australian shelf, showing the dual grid.
+  Figure 3. Multi-resolution coastal grid for the Australian shelf, showing the dual grid (with Herzfeld et al., CSIRO).
 	
 </p>
 
