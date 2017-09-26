@@ -81,21 +81,21 @@ Additionally, the <a href="../master/jigsaw/example.jig">`../jigsaw/example.jig`
 ## `Gallery`
 
 <p align="center">
-  <img width="725" src = "../master/jigsaw/img/JIGSAW-GLOBAL-COAST-TRIA.jpg">
+  <img width="720" src = "../master/jigsaw/img/JIGSAW-GLOBAL-COAST-TRIA.jpg">
 
   Figure 1. Multi-resolution grid for the global ocean, refined in the coastal zone.
 	
 </p>
 
 <p align="center">
-  <img width="725" src = "../master/jigsaw/img/JIGSAW-ARCTIC-TRIA.jpg">
+  <img width="720" src = "../master/jigsaw/img/JIGSAW-ARCTIC-TRIA.jpg">
 
   Figure 2. Multi-resolution grid of the Arctic basin, refined in the shelf region.
 	
 </p>
 
 <p align="center">
-  <img width="750" src = "../master/jigsaw/img/JIGSAW-AUSTRALIA-DUAL.png">
+  <img width="760" src = "../master/jigsaw/img/JIGSAW-AUSTRALIA-DUAL.png">
 
   Figure 3. Multi-resolution coastal grid for the Australian shelf, showing the dual grid.
 	
