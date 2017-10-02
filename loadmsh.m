@@ -78,7 +78,7 @@ function [mesh] = loadmsh(name)
 %-----------------------------------------------------------
 %   Darren Engwirda
 %   github.com/dengwirda/jigsaw-geo-matlab
-%   15-Sep-2017
+%   27-Sep-2017
 %   de2363@columbia.edu
 %-----------------------------------------------------------
 %
@@ -119,7 +119,8 @@ function [mesh] = loadmsh(name)
                 nver = str2double(stag{1}) ;
                 
                 if (length(stag) >= +2)
-                    kind = upper (stag{2}) ;
+                    kind = ...
+                    strtrim(upper(stag{2}));
                 end
 
             case 'ndims'
