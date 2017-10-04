@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 04 September, 2017
+     * Last updated: 04 October, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -305,8 +305,7 @@
     /*----------------------- attempt offcentre placement */
             _kind  = edge_offh(_geom , 
                 _size, _mesh , _enod , 
-                _pmax, _ppos , 
-                -1   , _args ) ;
+                _pmax, _ppos , _args ) ;
         }
         if (_kind == rdel_opts::null_kind ||
             _kind == rdel_opts::circ_kind )
@@ -530,16 +529,16 @@
             _kind  = tria_offh(_geom, 
                 _size, _mesh , _enod, 
                 _ebal, _tbal , _dvec, 
-                _ppos,    -1 , _args) ;
+                _ppos, _args ) ;
         }
         if (_kind == rdel_opts::null_kind ||
             _kind == rdel_opts::circ_kind )
         {
     /*----------------------- attempt sink-type placement */
             _kind  = tria_sink(_geom, 
-                _size, _mesh , _tpos, 
-                _tbal, _ppos ,    -1, 
-                _args) ;
+                _size, _mesh , 
+                _tpos, _tbal , 
+                _ppos, _args ) ;
         }
         if (_kind == rdel_opts::null_kind ||
             _kind == rdel_opts::circ_kind )

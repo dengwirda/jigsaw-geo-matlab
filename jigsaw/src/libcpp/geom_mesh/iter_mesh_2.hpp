@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 16 September, 2017
+     * Last updated: 04 October, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -370,27 +370,26 @@
     
         _okay = false ;
     
-        real_type _long ;
-        real_type _line [_dims] ;
-        real_type _save [_dims] ;
-        real_type _proj [_dims] ;
+        real_type _long = (real_type) +0. ;
+        real_type _line [_dims] = {
+       (real_type) +0.0 } ;
+        real_type _save [_dims] = {
+       (real_type) +0.0 } ;
+        real_type _proj [_dims] = {
+       (real_type) +0.0 } ;
  
-        if (_kind == +1)
+        if (_kind == +1 )
         {
-            ccvt_move( _geom, _mesh , 
-                _hfun, _pred, _hval ,
-                _tset, 
-                _node, _line, _long
-                ) ;
+            ccvt_move( _mesh, _hfun, 
+                _pred, _hval, _tset, 
+                _node, _line, _long) ;
         }
         else
-        if (_qmin<_good)
+        if (_qmin<=_good)
         { 
-            grad_move( _geom, _mesh ,
-                _hfun, _pred,
-                _tset, _node, 
-                _init, _line, _long
-                ) ;
+            grad_move( _mesh, _hfun, 
+                _pred, _tset, _node, 
+                _init, _line, _long) ;
         }
         else { return  ; }
       

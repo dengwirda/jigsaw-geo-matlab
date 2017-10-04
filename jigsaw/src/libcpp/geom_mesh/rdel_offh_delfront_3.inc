@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 04 September, 2017
+     * Last updated: 04 October, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -59,7 +59,6 @@
         iptr_type *_enod,
         real_type *_sbal,
         real_type *_ppos,
-        iptr_type  _part,
         rdel_opts &_args
         )
     {
@@ -74,6 +73,8 @@
             
         real_type static const _epsb = 
             (real_type)+9.E-01;
+     
+        __unreferenced(_args) ;
      
         if (_enod[1] < _enod[0])
         std::swap(_enod[0], _enod[1]);
@@ -198,7 +199,6 @@
         real_type *_dvec,
         real_type *_sbal,
         real_type *_ppos,
-        iptr_type  _part,
         rdel_opts &_args
         )
     {
@@ -216,6 +216,8 @@
             
         real_type static const _alth = 
             (real_type)std::sqrt(3.)/2. ;
+
+        __unreferenced(_args) ;
 
         real_type  _nsiz [ 3] ;
         _nsiz[ 0] = _hfun.eval (
@@ -350,7 +352,6 @@
         real_type *_tbal,
         real_type *_dvec,
         real_type *_ppos,
-        iptr_type  _part,
         rdel_opts &_args
         )
     {
@@ -370,6 +371,9 @@
             
         real_type static const _alth = 
             (real_type)std::sqrt(6.)/3. ;
+
+        __unreferenced(_geom) ;
+        __unreferenced(_args) ;
 
         real_type  _nsiz [ 4] ;
         _nsiz[ 0] = _hfun.eval (

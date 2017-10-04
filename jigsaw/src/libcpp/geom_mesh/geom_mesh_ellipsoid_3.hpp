@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 16 September, 2017
+     * Last updated: 04 October, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -477,6 +477,8 @@
         hits_func &_hfun
         )
     {
+        __unreferenced(_nvec) ;
+        
         bool_type _find = false ;
 
         real_type  _bvec[3] = {

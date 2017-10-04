@@ -31,7 +31,7 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 20 August, 2017
+ * Last updated: 04 October, 2017
  *
  * Copyright 2013-2017
  * Darren Engwirda
@@ -163,7 +163,7 @@
 		__inline_call bool_type operator()(
 			mesh_type &_mesh,
 			iptr_type  _tpos,
-			iptr_type  _fpos
+			iptr_type//_fpos
 			) const
 		{
 		    iptr_type _tnod[4] = {

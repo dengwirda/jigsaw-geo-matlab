@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 26 August, 2017
+     * Last updated: 04 October, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -139,6 +139,9 @@
           __write_ptr(real_type) _proj
             )
         {   // R^2: do nothing!
+            __unreferenced(_geom) ;
+            __unreferenced(_save) ;
+            __unreferenced(_proj) ;
         }
         
         } ;

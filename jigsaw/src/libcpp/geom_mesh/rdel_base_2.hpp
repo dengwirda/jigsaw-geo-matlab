@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 September, 2017
+     * Last updated: 04 October, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -93,6 +93,15 @@
          tria(_tadj)->node(_enod[ 0]);
         _enod[1] =_mesh._tria.
          tria(_tadj)->node(_enod[ 1]);
+        
+    /*--------------------------- init. output balls = 0. */
+        _ebal[0] = (real_type) +0. ;
+        _ebal[1] = (real_type) +0. ;
+        _ebal[2] = (real_type) +0. ;
+        
+        _sbal[0] = (real_type) +0. ;
+        _sbal[1] = (real_type) +0. ;
+        _sbal[2] = (real_type) +0. ;
         
     /*--------------------------- get local neighbourhood */
         iptr_type _topp = +0 ;
@@ -187,8 +196,7 @@
         _part=_pred._pmax.itag ();
    
     /*------------------------- eval. surface ball radius */
-	    _sbal[ 2] = (real_type)+0.; 
-        _sbal[ 2]+= 
+	    _sbal[ 2]+= 
         geometry::lensqr_2d (_sbal, 
        &_mesh._tria.
             node(_enod[0])->pval(0)) ;

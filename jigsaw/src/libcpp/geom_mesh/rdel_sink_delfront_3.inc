@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 15 September, 2017
+     * Last updated: 04 October, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -60,7 +60,6 @@
         iptr_type *_fnod,
         real_type *_fbal,
         real_type *_ppos,
-        iptr_type  _part,
         rdel_opts &_args
         )
     {
@@ -257,7 +256,6 @@
         iptr_type  _tpos,
         real_type *_tbal,
         real_type *_ppos,
-        iptr_type  _part,
         rdel_opts &_args
         )
     {

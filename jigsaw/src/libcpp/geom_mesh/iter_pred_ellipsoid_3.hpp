@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 15 September, 2017
+     * Last updated: 04 October, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -140,6 +140,8 @@
             real_type *_proj
             )
         {
+            __unreferenced(_save);
+            
             real_type _zero[3] ;
             _zero[0] = (real_type) +.0 ;
             _zero[1] = (real_type) +.0 ;

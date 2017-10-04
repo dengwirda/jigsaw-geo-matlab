@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 09 September, 2017
+     * Last updated 04 October, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -106,9 +106,8 @@
         public  :
         real_type           _ball[ +3] ;
         iptr_type           _node[ +1] ;
-        
+
         iptr_type           _pass;
-        iptr_type           _bpos;
         } ;
         
     typedef typename 

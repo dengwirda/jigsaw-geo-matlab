@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 07 September, 2017
+     * Last updated: 04 October, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -203,12 +203,18 @@
         rdel_opts &_opts
         )
     {
+        __unreferenced (_geom) ;
+        __unreferenced (_pass) ;
+        __unreferenced (_opts) ;
+    
         if (_mesh._tria.
              node(_npos)->feat()==hard_feat)
         {
     /*---------- push protecting ball for "hard" features */
             nbal_data _ball ;
             _ball._node[0] = _npos;
+            
+            _ball._pass = +0;
             
             _ball._ball[0] = _mesh.
                 _tria.node(_npos)->pval(0) ;
@@ -735,6 +741,8 @@
         _tset._lptr.set_count (
             _tnew.count() * +1 , 
         containers::loose_alloc, nullptr);
+
+        __unreferenced(_ebal);
 
     /*------------------------- no. "restricted" subfaces */
         iptr_type _nedg = +0 ;

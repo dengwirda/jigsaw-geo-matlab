@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 04 September, 2017
+     * Last updated: 04 October, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -63,7 +63,7 @@
         {
     /*----------------------- internal "co-ord." type */
         public  :
-            real_type          _ppos[2] ;
+            real_type          _ppos[2]={(real_type)0.} ;
             
             char_type          _hits ;
             
@@ -132,7 +132,7 @@
         {
     /*----------------------- internal "co-ord." type */
         public  :
-            real_type          _ppos[3] ;
+            real_type          _ppos[3]={(real_type)0.} ;
             
             char_type          _hits ;
             

@@ -55,7 +55,6 @@
              >
     __static_call
     __normal_call void_type ccvt_move (
-        geom_type &_geom ,
         mesh_type &_mesh ,
         size_type &_hfun ,
         pred_type &_pred ,
@@ -176,7 +175,6 @@
              >
     __static_call
     __normal_call void_type sprg_move (
-        geom_type &_geom ,
         mesh_type &_mesh ,
         size_type &_hfun ,
         pred_type &_pred ,
@@ -317,7 +315,6 @@
              >
     __static_call
     __normal_call void_type grad_move (
-        geom_type &_geom ,
         mesh_type &_mesh ,
         size_type &_hfun ,
         pred_type &_pred ,
@@ -347,6 +344,8 @@
         real_type _qmin =
             +std::numeric_limits
                 <real_type>::infinity() ;
+        
+        __unreferenced(_hfun);
         
         iptr_type _tnum = +0 ;
         

@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 16 September, 2017
+     * Last updated: 04 October, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -128,6 +128,10 @@
         _set3[_tria].node(_enod[1]) ;
       
         _flip = false ;
+      
+        __unreferenced( _hfun) ;
+        __unreferenced( _qold) ;
+        __unreferenced( _qnew) ;
       
         _told.set_count(0) ;      
         _tnew.set_count(0) ;
