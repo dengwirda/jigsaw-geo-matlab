@@ -37,7 +37,7 @@
  *
 --------------------------------------------------------
  *
- * Last updated: 03 May, 2017
+ * Last updated: 04 October, 2017
  *
  * Copyright 2013-2017
  * Darren Engwirda
@@ -391,25 +391,25 @@
     }
     
     __inline_call _const_it hend (
-        size_type _lpos
+        size_type //_lpos
         ) const
     {   return _const_it(nullptr , this);
     }
     
     __inline_call _write_it hend (
-        size_type _lpos
+        size_type //_lpos
         )
     {   return _write_it(nullptr , this);
     }
     
     __inline_call _const_it tend (
-        size_type _lpos
+        size_type //_lpos
         ) const
     {   return _const_it(nullptr , this);
     }
     
     __inline_call _write_it tend (
-        size_type _lpos
+        size_type //_lpos
         )
     {   return _write_it(nullptr , this);
     }
