@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 03 September, 2017
+     * Last updated: 30 September, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -103,8 +103,12 @@
         _eadj, _eopp, _tmrk) ;
 
     /*--------------------------- skip faces adj. to hull */
-        if (_topp == _mesh._tria.null_flag())
+        if (_topp == 
+            _mesh._tria.null_flag())
             return ( false ) ;
+
+        if (_topp < _tadj)
+            std::swap(_tadj, _topp);
 
 #       ifdef __testdual
     /*--------------------------- test dual-edge validity */

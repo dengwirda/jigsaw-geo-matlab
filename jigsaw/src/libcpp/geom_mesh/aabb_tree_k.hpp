@@ -31,7 +31,7 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 10 September, 2017
+ * Last updated: 03 October, 2017
  *
  * Copyright 2013-2017
  * Darren Engwirda
@@ -319,16 +319,17 @@
         real_type &_blen
         )
     {
-    /*------------------ helper: sort aabb's by dimension */
         class rect_data
             {
+    /*------------------ helper: sort aabb's by dimension */
             public  :
-            real_type           _alen ;
-            iptr_type           _axis ;
+                real_type       _alen ;
+                iptr_type       _axis ;
             } ;
             
         class rect_less
             {
+    /*------------------ helper: sort aabb's by dimension */
             public  :
             __inline_call 
                 bool_type operator () (
@@ -603,6 +604,38 @@
     
     }
     
+/*------- helper: calc. "distance" between point and AABB */
+    __normal_call real_type calc_rect_dist (
+        real_type *_ppos,
+        real_type *_bmin,
+        real_type *_bmax
+        )
+    {
+        real_type _dist = (real_type)0.;
+        for (auto _idim = _dims; _idim-- != +0; )
+        {
+        if (_ppos[_idim] < _bmin[_idim])
+        {
+            real_type _dloc = 
+            _bmin[_idim] - _ppos[_idim];
+        
+            _dist = 
+                std::max (_dist, _dloc);
+        }
+        else
+        if (_ppos[_idim] > _bmax[_idim])
+        {
+            real_type _dloc = 
+            _ppos[_idim] - _bmax[_idim];
+        
+            _dist = 
+                std::max (_dist, _dloc);
+        }
+        }
+        
+        return ( _dist ) ;
+    }
+    
 /*-------- search collection via recursive aabb traversal */
     template <
     typename      tree_pred ,// tree intersections
@@ -652,6 +685,128 @@
 		
         return ( _find ) ;
 	}
+    
+/*-------- check for nearsest in collection via traversal */
+    __normal_call bool_type near (
+        real_type *_ppos ,
+        item_data*&_near
+        )
+    {
+        class node_dist
+            {
+    /*----------------------------- node/dist type for PQ */
+            public  :
+                real_type       _dist ;
+                node_type      *_node ;
+            } ;
+            
+        class node_pred
+            {
+    /*----------------------------- node/dist less for PQ */
+            public  :
+            __inline_call 
+                bool_type operator () (
+                node_dist const&_adat ,
+                node_dist const&_bdat
+                ) const
+            {   return ( _adat. _dist <
+                         _bdat. _dist ) ;
+            }
+            } ;
+    
+        bool_type _find = false;
+    
+        if (this->_root 
+                == nullptr) return _find;
+  
+        real_type _dist = 
+            +std::numeric_limits
+                <real_type>::infinity() ;
+        
+        real_type _dloc = 
+            -std::numeric_limits
+                <real_type>::infinity() ;
+
+    /*----------------- maintain stack of unvisited nodes */
+        containers::priorityset<
+            node_dist ,
+            node_pred    > _nnpq ;
+    
+        node_dist _ndat ;
+        _ndat._node =  _root ;
+        _ndat._dist = 
+        calc_rect_dist(_ppos ,
+           &_root->_pmin[0],
+               &_root->_pmax[0]) ;
+        _nnpq.push    (_ndat);
+        
+    /*----------------- traverse tree while len. reducing */
+        for ( ; !_nnpq.empty()  ; )
+        {
+        /*------------------------ test next closest node */
+            _nnpq._pop_root (_ndat) ;
+
+            if (_ndat._dist<=_dist)
+            {
+        /*------------------------ descend if maybe close */
+            
+            if (_ndat.
+                _node->_hptr  != nullptr )
+		    {
+        /*------------------------ leaf: update item-dist */
+			    for (item_data  *_iptr = 
+	                _ndat._node->_hptr ; 
+                        _iptr != nullptr ; 
+                    _iptr = _iptr->_next )
+                {
+                    _dloc = 
+                    calc_rect_dist(_ppos ,
+                   &_iptr->_data.pmin(0) ,
+                   &_iptr->_data.pmax(0)
+                        ) ;
+                  
+                    if (_dloc < _dist)
+                    {
+                /*---------------- keep track of min-len. */
+                        _dist = _dloc;
+                        _near = _iptr;
+                    }
+			    }
+
+                _find =  true ;
+		    }
+
+		    if (_ndat.
+		        _node->lower(0) != nullptr)
+		    {
+        /*------------------------ traverse into children */
+		        node_type*_inod = 
+		            _ndat._node->lower(0) ;
+		            
+		        node_type*_jnod = 
+		            _ndat._node->lower(1) ;
+		        
+                _ndat._node =  _inod ;
+                _ndat._dist = 
+                calc_rect_dist(_ppos ,
+                   &_inod->_pmin[ 0],
+                       &_inod->_pmax[ 0]) ;
+                _nnpq.push(_ndat)  ;
+                
+                _ndat._node =  _jnod ;
+                _ndat._dist = 
+                calc_rect_dist(_ppos ,
+                   &_jnod->_pmin[ 0],
+                       &_jnod->_pmax[ 0]) ;
+                _nnpq.push(_ndat)  ;
+		    }
+		    
+		    }
+        }
+
+    /*---------------------------- must have found a node */
+        return ( _find )  ;        
+    }
     
     } ;
 

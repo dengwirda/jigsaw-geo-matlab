@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 20 August, 2017
+     * Last updated: 02 October, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -551,45 +551,11 @@
         }	
 
     /*--------------------------- grab enclosing indexing */
-        real_type _bsiz = 
-       -std::numeric_limits<real_type>::infinity() ;   
-                   
         iptr_type _tnod[ +1 + tria_pred::_dims];
-        real_type _ball[ +1 + tria_pred::_dims];
         for (auto _inod = tria_pred::_dims + 1 ; 
                   _inod-- != +0 ; )
         {
         _tnod[_inod] = tria(_elem)->node(_inod);
-        }
-
-    /*--------------------------- form a containment ball */
-        for (auto _idim = tria_pred::_dims + 0 ; 
-                  _idim-- != +0 ; )
-        {
-			_ball[_idim] = (real_type)+.0  ;
-        }
-
-        for (auto _inod = tria_pred::_dims + 1 ; 
-                  _inod-- != +0 ; )
-        for (auto _idim = tria_pred::_dims + 0 ; 
-                  _idim-- != +0 ; )
-        {
-			_ball[_idim]+= 
-				node(_tnod[_inod])->pval(_idim);
-        }
-        for (auto _idim = tria_pred::_dims + 0 ; 
-                  _idim-- != +0 ; )
-        {
-			_ball[_idim]/= (tria_pred::_dims+1);
-        }
-
-    /*--------------------------- form containment radius */
-        for (auto _inod = tria_pred::_dims + 1 ; 
-                  _inod-- != +0 ; )
-        {
-        _bsiz = std::max(_bsiz, 
-            tria_pred::lensqr_kd(_ball,
-                &node(_tnod[_inod])->pval(+0)));
         }
 
     /*--------------------------- test for node duplicate */
@@ -605,11 +571,7 @@
                 &node(_tnod[_inod])->pval(+0)));
         }
 
-        real_type static const _btol =
-            std::pow(std::numeric_limits
-                <real_type>::epsilon(), +.800) ;
-
-        if (_dist <= _btol * _bsiz )
+        if (_dist == (real_type)0.)
         {
             _put_node(_node) ;
         /*----------------------- bail-out on duplicates! */

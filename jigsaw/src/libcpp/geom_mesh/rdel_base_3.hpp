@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 03 September, 2017
+     * Last updated: 01 October, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -166,6 +166,9 @@
          tria(_tadj)->node(_enod[ 0]);
         _enod[1] =_mesh._tria.
          tria(_tadj)->node(_enod[ 1]);
+         
+        if (_enod[1] > _enod[0])
+            std::swap( _enod[0],_enod[1]);
         
     /*--------------------------- get local neighbourhood */        
         iptr_type _fadj;
@@ -322,9 +325,9 @@
     }
 
     /*
-    ------------------------------------------------------------
+    --------------------------------------------------------
      * FACE-BALL: calc. face-based circumballs.
-    ------------------------------------------------------------
+    --------------------------------------------------------
      */
      
     __static_call 
@@ -360,8 +363,12 @@
         _fadj, _fopp, _tmrk) ;
 
     /*--------------------------- skip faces adj. to hull */
-        if (_topp == _mesh._tria.null_flag())
+        if (_topp == 
+            _mesh._tria.null_flag())
             return ( false ) ;
+
+        if (_topp < _tadj)
+            std::swap(_tadj, _topp);
 
     #   ifdef __testdual
         real_type _nvec[ +3] ;
