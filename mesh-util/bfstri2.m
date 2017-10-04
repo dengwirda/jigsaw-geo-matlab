@@ -9,7 +9,7 @@ function [seen] = bfstri2(PSLG,tria,seed)
 %-----------------------------------------------------------
 %   Darren Engwirda : 2017 --
 %   Email           : de2363@columbia.edu
-%   Last updated    : 28/08/2017
+%   Last updated    : 01/10/2017
 %-----------------------------------------------------------
   
     seen = [];
@@ -26,17 +26,29 @@ function [seen] = bfstri2(PSLG,tria,seed)
         error('bfstri2:incorrectDimensions' , ...
             'Incorrect input dimensions.');
     end
-    
     if (size(tria,2)~= +3 )
         error('bfstri2:incorrectDimensions' , ...
             'Incorrect input dimensions.');
     end
     
-    %%!! more here
-    %%!! PSLG can be empty!!
+%---------------------------------------------- extra checks   
+    if ( ~isempty  (PSLG) )
+    if ( ~isnumeric(PSLG) )
+        error('bfstri2:incorrectInputClass' , ...
+            'Incorrect input class.') ;
+    end
     
+    if (ndims(PSLG) ~= +2 )
+        error('bfstri2:incorrectDimensions' , ...
+            'Incorrect input dimensions.');
+    end  
+    if (size(PSLG,2)~= +2 )
+        error('bfstri2:incorrectDimensions' , ...
+            'Incorrect input dimensions.');
+    end
+    end
     
-%------------------------------------------ form adj. indices
+%----------------------------------------- form adj. indices
     ntri = size (tria,1);
 
    [edge,tria] = tricon2 (tria,PSLG);
@@ -47,7 +59,7 @@ function [seen] = bfstri2(PSLG,tria,seed)
     nlst = length (seed);
     list(1:nlst) = seed ;
 
-%------------------------------------------ do BFS iterations
+%----------------------------------------- do BFS iterations
     seen = false(ntri,1);
 
     while (nlst >= +1)
