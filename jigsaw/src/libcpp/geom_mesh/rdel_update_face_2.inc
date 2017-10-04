@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 06 September, 2017
+     * Last updated: 04 October, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -123,12 +123,18 @@
         rdel_opts &_opts
         )
     {
+        __unreferenced (_geom) ;
+        __unreferenced (_pass) ;
+        __unreferenced (_opts) ;
+    
         if (_mesh._tria.
              node(_npos)->feat()==hard_feat)
         {
     /*---------- push protecting ball for "hard" features */
             nbal_data _ball ;
             _ball._node[0] = _npos;
+            
+            _ball._pass = +0;
             
             _ball._ball[0] = _mesh.
                 _tria.node(_npos)->pval(0) ;
@@ -182,7 +188,7 @@
         if (_fdim  < +2 ) return ;
 
     /*-------------------------------- check "restricted" */
-        for(iptr_type _fpos =+3; _fpos-- != +0; )
+        for(char_type _fpos =+3; _fpos-- != +0; )
         {
         /*---------------------------- extract face nodes */
             iptr_type _tnod[ +3] ;

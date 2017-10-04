@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 03 September, 2017
+     * Last updated: 04 October, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -94,6 +94,15 @@
         _enod[1] =_mesh._tria.
          tria(_tadj)->node(_enod[ 1]);
         
+    /*--------------------------- init. output balls = 0. */
+        _ebal[0] = (real_type) +0. ;
+        _ebal[1] = (real_type) +0. ;
+        _ebal[2] = (real_type) +0. ;
+        
+        _sbal[0] = (real_type) +0. ;
+        _sbal[1] = (real_type) +0. ;
+        _sbal[2] = (real_type) +0. ;
+        
     /*--------------------------- get local neighbourhood */
         iptr_type _topp = +0 ;
         iptr_type _eopp = +0 ;
@@ -103,8 +112,12 @@
         _eadj, _eopp, _tmrk) ;
 
     /*--------------------------- skip faces adj. to hull */
-        if (_topp == _mesh._tria.null_flag())
+        if (_topp == 
+            _mesh._tria.null_flag())
             return ( false ) ;
+
+        if (_topp < _tadj)
+            std::swap(_tadj, _topp);
 
 #       ifdef __testdual
     /*--------------------------- test dual-edge validity */
@@ -183,8 +196,7 @@
         _part=_pred._pmax.itag ();
    
     /*------------------------- eval. surface ball radius */
-	    _sbal[ 2] = (real_type)+0.; 
-        _sbal[ 2]+= 
+	    _sbal[ 2]+= 
         geometry::lensqr_2d (_sbal, 
        &_mesh._tria.
             node(_enod[0])->pval(0)) ;

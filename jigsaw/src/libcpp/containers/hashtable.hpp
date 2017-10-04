@@ -286,14 +286,14 @@
                         % this->_lptr.count();
                         
     /*------------------------------- scan list from head */
-        item_type*_sptr = this->_lptr[_hpos] ;
+        item_type*_spos = this->_lptr[_hpos] ;
     /*------------------------------- check exact matches */
-        for( ; _sptr != nullptr; 
-                    _sptr = _sptr->_next)
+        for( ; _spos != nullptr; 
+                    _spos = _spos->_next)
         {
-            if (this->_pred(_sptr->_data,_data))
+            if (this->_pred(_spos->_data,_data))
             {
-                _same = _write_it (_sptr, 
+                _same = _write_it (_spos, 
                         (base_type*)this) ; 
                 
                 return true ;

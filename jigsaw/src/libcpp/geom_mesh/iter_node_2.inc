@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 13 September, 2017
+     * Last updated: 04 October, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -55,7 +55,6 @@
              >
     __static_call
     __normal_call void_type ccvt_move (
-        geom_type &_geom ,
         mesh_type &_mesh ,
         size_type &_hfun ,
         pred_type &_pred ,
@@ -66,12 +65,14 @@
         real_type &_long
         )
     {
-        real_type _move[_dims] = {
+		real_type _move[_dims] = {
             (real_type) +0.0 } ;
 
         _long = 
             (real_type) +0.0 ;
     
+		__unreferenced (_pred) ; // for MSVC...
+
         real_type _wval = 
        +std::numeric_limits<real_type>::epsilon();
         real_type _wsum = 
@@ -176,7 +177,6 @@
              >
     __static_call
     __normal_call void_type sprg_move (
-        geom_type &_geom ,
         mesh_type &_mesh ,
         size_type &_hfun ,
         pred_type &_pred ,
@@ -317,7 +317,6 @@
              >
     __static_call
     __normal_call void_type grad_move (
-        geom_type &_geom ,
         mesh_type &_mesh ,
         size_type &_hfun ,
         pred_type &_pred ,
@@ -328,13 +327,29 @@
         real_type &_long
         )
     {
-        real_type static constexpr _ZERO = 
-            (real_type) +1.0E-12 ;
+        real_type static const _ZERO = 
+            std::pow(std::numeric_limits
+                <real_type>::epsilon(), +.80) ;
+            
+        real_type static const _HINC = 
+            std::pow(std::numeric_limits
+                <real_type>::epsilon(), +.50) ;
+                
+        real_type static const _RMIN = 
+            std::pow(std::numeric_limits
+                <real_type>::epsilon(), +.75) ;
+        
+        real_type static const _RMAX = 
+            std::pow(std::numeric_limits
+                <real_type>::epsilon(), +.25) ;
     
         real_type _qmin =
             +std::numeric_limits
                 <real_type>::infinity() ;
         
+        __unreferenced(_hfun);
+        __unreferenced(_pred); // for MSVC...
+
         iptr_type _tnum = +0 ;
         
         _long = (real_type)0.;
@@ -417,7 +432,7 @@
         real_type _gsum, _qbar, _qlev ;
         _gsum = (real_type) +0. ;
         _qbar = (real_type) +0. ;
-        _qlev = (real_type) +1. ;
+        _qlev = (real_type) +0. ;
 
         for (auto _tria  = _tset.head(),
                   _tend  = _tset.tend();
@@ -431,46 +446,90 @@
         
             real_type _DQDX[_dims];
             real_type _qlim = 
-           (real_type)1.E-2*_qmin ;
+           (real_type)1.E-3*_qmin ;
         
             _qlim = _qmin + _qlim ;
         
             if (_cost[_tnum] <= _qlim)
             {
-            
+   
             for(auto _idim = _dims; _idim-- != +0; )
-            {
-                real_type _hdel = 
-                    (real_type)+1.E-08 * 
-              (_bmax[_idim] - _bmin[_idim]) ;
+            {      
+                real_type _binc = _bmax[_idim] -
+                                  _bmin[_idim] ;
+           
+                real_type _hdel = _HINC*_binc;
                 
-                _node->pval(_idim) = 
-                    _save[_idim] + _hdel ;
-
-                real_type _scr1 = _pred.cost (
-               &_mesh._set1[
-                _tptr->node(0)].pval(0),
-               &_mesh._set1[
-                _tptr->node(1)].pval(0),
-               &_mesh._set1[
-                _tptr->node(2)].pval(0)) ;                
+                real_type _hsum = (real_type)0.;
                 
-                _node->pval(_idim) = 
-                    _save[_idim] - _hdel ;
+                real_type _sdel = (real_type)0.;
+                real_type _sabs = (real_type)0.;
+                real_type _sbar = (real_type)0.;
+                
+                for (auto _iter = +0; _iter++ != +8; )
+                {
+                    _node->pval(_idim) = 
+                       _save[_idim] + _hdel;
+                        
+                    _hsum  = (real_type)0. ;
+                    _hsum += _node->
+                        pval(_idim) - _save[_idim] ;
 
-                real_type _scr0 = _pred.cost (
-               &_mesh._set1[
-                _tptr->node(0)].pval(0),
-               &_mesh._set1[
-                _tptr->node(1)].pval(0),
-               &_mesh._set1[
-                _tptr->node(2)].pval(0)) ;                    
+                    real_type _scr1 = 
+                        _pred .cost (
+                   &_mesh._set1[
+                    _tptr->node(0)].pval(0),
+                   &_mesh._set1[
+                    _tptr->node(1)].pval(0),
+                   &_mesh._set1[
+                    _tptr->node(2)].pval(0)
+                        ) ;
+                    
+                    _node->pval(_idim) = 
+                       _save[_idim] - _hdel;
+
+                    _hsum -= _node->
+                        pval(_idim) - _save[_idim] ;
+
+                    real_type _scr0 = 
+                        _pred .cost (
+                   &_mesh._set1[
+                    _tptr->node(0)].pval(0),
+                   &_mesh._set1[
+                    _tptr->node(1)].pval(0),
+                   &_mesh._set1[
+                    _tptr->node(2)].pval(0)
+                        ) ;
+                
+                    _sdel = _scr1 - _scr0 ;
+                    _sabs = 
+                        std::abs(_sdel);
+                    
+                    _sbar = std::max(
+                        std::abs(_scr1),
+                            std::abs(_scr0)) ;
+                    
+                    _node->pval(_idim) 
+                        = _save[_idim] ;
+ 
+                    if (_sabs > (real_type)0.)
+                    {                   
+                    if (_sabs > _RMAX * _sbar)
+                    {
+                        _hdel *= 
+                            (real_type) +.10 ;
+                    }    
+                    if (_sabs < _RMIN * _sbar)
+                    {
+                        _hdel *= 
+                            (real_type) +10. ;
+                    }
+                    else { break ; }
+                    }
+                    else { break ; }
+                }
             
-                _DQDX[_idim] = 
-                    (_scr1 - _scr0) / 
-               ((real_type)+2. * _hdel) ;
-                
-                _node->pval(_idim) = _save[_idim] ;
+                _DQDX[_idim] = _sdel / _hsum ;
             }
             
             real_type _wval = 
@@ -486,13 +545,13 @@
                     _wval * _DQDX[_idim] ;
             }
         
-            _qbar  += _wval*_qtri ;
+            _qbar  += _wval * _qtri ;
             
             }
             else
             {
-                _qlev = 
-                    std::max(_qlev, _qtri) ;
+                _qlev = std::max (
+                      _qlev, _qtri) ;
             }
         }
  
@@ -504,7 +563,7 @@
             }
         
             _qbar /=  _gsum ;
-            _long /=  _tnum ;            
+            _long /=  _tnum ;  
         }
         
         real_type _scal = 

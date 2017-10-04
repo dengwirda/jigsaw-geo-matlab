@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 16 September, 2017
+     * Last updated: 04 October, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -53,6 +53,8 @@
     __const_ptr  (iptr_type) _jnod
         )
     {
+		__unreferenced(_pred) ; // for MSVC...
+
         real_type  _ibal[_dims+1];
         _pred.circ(_ibal ,
        &_mesh._set1[_inod[0]].pval(0),
@@ -128,6 +130,10 @@
         _set3[_tria].node(_enod[1]) ;
       
         _flip = false ;
+      
+        __unreferenced( _hfun) ;
+        __unreferenced( _qold) ;
+        __unreferenced( _qnew) ;
       
         _told.set_count(0) ;      
         _tnew.set_count(0) ;

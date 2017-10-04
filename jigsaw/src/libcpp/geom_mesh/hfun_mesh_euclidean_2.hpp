@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 13 September, 2017
+     * Last updated: 03 October, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -440,68 +440,66 @@
 	        _vsum += _tvol ;
         }
 
+
         _hval = _hsum / _vsum ;
         
         }
         else
         {
     /*------------------------- inv-dist. weighted extrap */
-        real_type _near = 
-            +std::numeric_limits
-                <real_type>::infinity() ;
-        
-        for (auto _node  = 
-             this->_mesh._set1.head() ;
-                  _node != 
-             this->_mesh._set1.tend() ;
-                ++_node  )
-        {
-            if (_node->mark() >= +0 )
-            {
-            real_type _dsqr  = 
-                geometry::lensqr_2d(_ppos, 
-                    &_node->pval(+0)) ;
+        typename tree_type::item_data 
+             *_nptr = nullptr ;    
+    
+        this->_tree.
+             near(_ppos, _nptr) ;   // find nearest tria.
+    
+        if (_nptr  != nullptr )
+        {      
+    /*------------------------- extrap. using tria. nodes */
+        iptr_type  _tpos = 
+            _nptr->_data.ipos() ;
+            
+        iptr_type  _inod = 
+          _mesh._set3[_tpos].node(0) ;
+        iptr_type  _jnod = 
+          _mesh._set3[_tpos].node(1) ;
+        iptr_type  _knod = 
+          _mesh._set3[_tpos].node(2) ;
+            
+        real_type _isqr  = 
+            geometry::lensqr_2d(_ppos, 
+       &_mesh._set1[_inod].pval( +0));
+        real_type _jsqr  = 
+            geometry::lensqr_2d(_ppos, 
+       &_mesh._set1[_jnod].pval( +0));
+        real_type _ksqr  = 
+            geometry::lensqr_2d(_ppos, 
+       &_mesh._set1[_knod].pval( +0));
+    
+    /*------------------------- extrap. as inv-dist. fun. */   
+        real_type _wsum = (real_type)0. ;
+        real_type _hsum = (real_type)0. ;
        
-            _near = 
-               std::min(_near, _dsqr) ;
-            }
+        real_type _iwsc = 
+            (real_type)+1. / _isqr ;
+        real_type _jwsc = 
+            (real_type)+1. / _jsqr ;
+        real_type _kwsc = 
+            (real_type)+1. / _ksqr ;
+       
+        _wsum +=  _iwsc + _jwsc + _kwsc ;
+ 
+        _hsum +=  _iwsc * 
+            _mesh._set1[_inod].hval();
+        _hsum +=  _jwsc * 
+            _mesh._set1[_jnod].hval();
+        _hsum +=  _kwsc * 
+            _mesh._set1[_knod].hval();
+      
+      
+        _hval = _hsum / _wsum ;
+        
         }
-        
-        real_type static
-        constexpr _DTOL = (real_type)9. ;
-        
-        real_type _hsum = 
-            +std::numeric_limits
-                <real_type>::epsilon () ;
-        real_type _dsum = 
-            +std::numeric_limits
-                <real_type>::epsilon () ;
-         
-        for (auto _node  = 
-             this->_mesh._set1.head() ;
-                  _node != 
-             this->_mesh._set1.tend() ;
-                ++_node  )
-        {
-            if (_node->mark() >= +0 )
-            {
-            real_type _dsqr  = 
-                geometry::lensqr_2d(_ppos, 
-                    &_node->pval(+0)) ;
-       
-            if (_dsqr < _DTOL * _near)
-            {
-            real_type _isqr =
-                (real_type)1. / _dsqr ; 
-       
-            _dsum += _isqr ;
-       
-            _hsum += _isqr*_node->hval() ;
-            }
-            }
-        }
-        
-        _hval = _hsum / _dsum ;
         
         }  
           

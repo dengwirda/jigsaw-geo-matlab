@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 03 September, 2017
+     * Last updated: 04 October, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -166,6 +166,20 @@
          tria(_tadj)->node(_enod[ 0]);
         _enod[1] =_mesh._tria.
          tria(_tadj)->node(_enod[ 1]);
+         
+        if (_enod[1] > _enod[0])
+            std::swap( _enod[0],_enod[1]);
+            
+    /*--------------------------- init. output balls = 0. */
+        _ebal[0] = (real_type) +0. ;
+        _ebal[1] = (real_type) +0. ;
+        _ebal[2] = (real_type) +0. ;
+        _ebal[3] = (real_type) +0. ;
+        
+        _pmax[0] = (real_type) +0. ;
+        _pmax[1] = (real_type) +0. ;
+        _pmax[2] = (real_type) +0. ;
+        _pmax[3] = (real_type) +0. ;
         
     /*--------------------------- get local neighbourhood */        
         iptr_type _fadj;
@@ -303,8 +317,7 @@
             = _pred._pmin.pval(2) ;
         
     /*------------------------- eval. surface ball radius */
-	    _pmax[ 3] = (real_type)+0.;
-        _pmax[ 3]+= 
+	    _pmax[ 3]+= 
         geometry::lensqr_3d(_pmax , 
        &_mesh._tria.
             node(_enod[0])->pval(0)) ;
@@ -322,9 +335,9 @@
     }
 
     /*
-    ------------------------------------------------------------
+    --------------------------------------------------------
      * FACE-BALL: calc. face-based circumballs.
-    ------------------------------------------------------------
+    --------------------------------------------------------
      */
      
     __static_call 
@@ -351,6 +364,17 @@
         _fnod[2] =_mesh._tria.
          tria(_tadj)->node(_fnod[ 2]);
 
+    /*--------------------------- init. output balls = 0. */
+        _fbal[0] = (real_type) +0. ;
+        _fbal[1] = (real_type) +0. ;
+        _fbal[2] = (real_type) +0. ;
+        _fbal[3] = (real_type) +0. ;
+        
+        _sbal[0] = (real_type) +0. ;
+        _sbal[1] = (real_type) +0. ;
+        _sbal[2] = (real_type) +0. ;
+        _sbal[3] = (real_type) +0. ;
+
     /*--------------------------- get local neighbourhood */
         iptr_type _topp = +0 ;
         iptr_type _fopp = +0 ;
@@ -360,8 +384,12 @@
         _fadj, _fopp, _tmrk) ;
 
     /*--------------------------- skip faces adj. to hull */
-        if (_topp == _mesh._tria.null_flag())
+        if (_topp == 
+            _mesh._tria.null_flag())
             return ( false ) ;
+
+        if (_topp < _tadj)
+            std::swap(_tadj, _topp);
 
     #   ifdef __testdual
         real_type _nvec[ +3] ;
@@ -448,8 +476,7 @@
         _part     = _pred._pmin.itag ();
    
     /*------------------------- eval. surface ball radius */
-	    _sbal[ 3] = (real_type)+0. ; 
-        _sbal[ 3]+= 
+	    _sbal[ 3]+= 
         geometry::lensqr_3d (_sbal, 
             &_mesh._tria.
               node(_fnod[0])->pval(0)) ;

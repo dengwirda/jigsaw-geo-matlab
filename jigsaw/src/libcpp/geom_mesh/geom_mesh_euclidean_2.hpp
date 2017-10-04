@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 16 September, 2017
+     * Last updated: 04 October, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -961,6 +961,7 @@
         ) 
     {
         __unreferenced( _ppos) ;
+        __unreferenced( _hits) ;
         __unreferenced( _feat) ;
         __unreferenced( _topo) ;
         __unreferenced( _itag) ;

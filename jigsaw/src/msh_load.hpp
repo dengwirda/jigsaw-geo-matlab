@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 16 September, 2017
+     * Last updated: 04 October, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -199,9 +199,15 @@
         dest_type     &_dest
         )
     {
+        __unreferenced (_ffid) ;
+    
         if (_stok.count() == +2)
         {
         this->_ftag = std::stol(_stok[1]) ;
+        
+        _dest.push_mshid(this->_ftag , 
+                         this->_kind
+                         ) ;
         }
         else
         if (_stok.count() == +3)
@@ -245,15 +251,16 @@
                 jmsh_kind::ellipsoid_dual ;
         }
         
+        _dest.push_mshid(this->_ftag , 
+                         this->_kind
+                         ) ;
+        
         }
         else
         {
             this->_errs.
             push_tail("Invalid MSHID!") ;
         }
-        
-        _dest.
-         push_mshid(this->_ftag, this->_kind) ;
     }
     
     /*
@@ -271,18 +278,21 @@
         dest_type     &_dest
         )
     {
+        __unreferenced (_ffid) ;
+    
         if (_stok.count() == +2)
         {
             this->
-           _ndim = std::stol(_stok[1]) ;
+           _ndim = std::stol( _stok[1]);
+           
+           _dest.
+            push_ndims (this->_ndim) ;
         }
         else
         {
             this->_errs.
             push_tail("Invalid NDIMS!");
         }
-        
-        _dest.push_ndims(this->_ndim);
     }
     
     /*
@@ -300,8 +310,9 @@
         dest_type     &_dest
         )
     {
+        __unreferenced (_ffid) ;
+        
         double _erad[ +3] ;
-    
         if (_stok.count() == +4)
         {
             _erad[ 0] = 
@@ -310,14 +321,14 @@
                 std::stod(_stok[ 2]) ;
             _erad[ 2] = 
                 std::stod(_stok[ 3]) ;
+                
+            _dest.push_radii(_erad);
         }
         else
         {
             this->_errs.
             push_tail("Invalid RADII!");
         }
-        
-        _dest.push_radii(_erad);
     }
 
     /*
