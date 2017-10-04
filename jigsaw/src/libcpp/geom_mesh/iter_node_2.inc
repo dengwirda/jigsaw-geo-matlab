@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 27 September, 2017
+     * Last updated: 04 October, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -100,7 +100,7 @@
             _mesh._set1.head()+_tnod[2] ;
             
             real_type _ball [_dims + 1] ;
-            _pred.orthoball(_ball, 
+            _pred.mini(_ball, 
                 &_inod->pval(0) ,
                     &_jnod->pval(0) ,
                         &_knod->pval(0) ) ;
@@ -474,7 +474,7 @@
                         pval(_idim) - _save[_idim] ;
 
                     real_type _scr1 = 
-                        _pred.tria_cost (
+                        _pred .cost (
                    &_mesh._set1[
                     _tptr->node(0)].pval(0),
                    &_mesh._set1[
@@ -490,7 +490,7 @@
                         pval(_idim) - _save[_idim] ;
 
                     real_type _scr0 = 
-                        _pred.tria_cost (
+                        _pred .cost (
                    &_mesh._set1[
                     _tptr->node(0)].pval(0),
                    &_mesh._set1[
