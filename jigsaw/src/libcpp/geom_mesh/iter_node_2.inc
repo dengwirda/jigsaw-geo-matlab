@@ -65,12 +65,14 @@
         real_type &_long
         )
     {
-        real_type _move[_dims] = {
+		real_type _move[_dims] = {
             (real_type) +0.0 } ;
 
         _long = 
             (real_type) +0.0 ;
     
+		__unreferenced (_pred) ; // for MSVC...
+
         real_type _wval = 
        +std::numeric_limits<real_type>::epsilon();
         real_type _wsum = 
@@ -346,7 +348,8 @@
                 <real_type>::infinity() ;
         
         __unreferenced(_hfun);
-        
+        __unreferenced(_pred); // for MSVC...
+
         iptr_type _tnum = +0 ;
         
         _long = (real_type)0.;

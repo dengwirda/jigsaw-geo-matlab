@@ -72,6 +72,8 @@
          auto _edge = 
         _mesh._set2.head() + _enum ;
         
+		__unreferenced(_pred) ; // for MSVC...
+
         _okay = false ;
         
         iptr_type _enod[2] ;

@@ -53,6 +53,8 @@
     __const_ptr  (iptr_type) _jnod
         )
     {
+		__unreferenced(_pred) ; // for MSVC...
+
         real_type  _ibal[_dims+1];
         _pred.circ(_ibal ,
        &_mesh._set1[_inod[0]].pval(0),

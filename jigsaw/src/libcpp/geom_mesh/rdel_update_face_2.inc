@@ -188,7 +188,7 @@
         if (_fdim  < +2 ) return ;
 
     /*-------------------------------- check "restricted" */
-        for(iptr_type _fpos =+3; _fpos-- != +0; )
+        for(char_type _fpos =+3; _fpos-- != +0; )
         {
         /*---------------------------- extract face nodes */
             iptr_type _tnod[ +3] ;

@@ -303,8 +303,8 @@
 	__inline_call void_type push_pair (
 	    iptr_type  _itri,
 	    iptr_type  _jtri,
-	    char_type  _ifac,
-	    char_type  _jfac,
+	    iptr_type  _ifac,
+	    iptr_type  _jfac,
 	    iptr_type  _flag
 	    )
     {
@@ -319,7 +319,7 @@
 		    next(_ifac)=__doflip(_jtri) ;
 		
 		tria(_itri)->
-		    fpos(_ifac) = _jfac ;
+	    fpos(_ifac) = (char_type)_jfac;
 		}
 		
 		if (_jtri != this->null_flag())
@@ -332,7 +332,7 @@
 		    next(_jfac)=__doflip(_itri) ;
 		
 		tria(_jtri)->
-		    fpos(_jfac) = _ifac ;
+		fpos(_jfac) = (char_type)_ifac;
 		}   
     } 
  

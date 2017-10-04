@@ -162,6 +162,8 @@
     {
         iptr_list _tset, _list, _seen ;
  
+        __unreferenced(_pred); // for MSVC...
+
         _seen.set_count( _mesh.
             _set3.count(), 
         containers::tight_alloc , +0) ;
@@ -312,6 +314,8 @@
             +std::numeric_limits
                 <real_type>::infinity();
     
+        __unreferenced(_pred) ; // for MSVC...
+
         for (auto _tria  = _tset.head();
                   _tria != _tset.tend();
                 ++_tria  )

@@ -432,10 +432,10 @@
             _pmid[2] + _ttbb * _pdel[2]
                 } ;
 
-            iptr_type _hits = 
+            char_type _hits = 
                 geometry::null_hits ;
-            iptr_type _feat = +2;
-            iptr_type _topo = +2;
+            char_type _feat = +2;
+            char_type _topo = +2;
             iptr_type _itag = +0;
 
             if (_ttaa >= (real_type)-1. &&
@@ -540,10 +540,10 @@
             _pmid[2] + _ttbb * _pdel[2]
                 } ;
 
-            iptr_type _hits = 
+            char_type _hits = 
                 geometry::null_hits ;
-            iptr_type _feat = +2;
-            iptr_type _topo = +2;
+            char_type _feat = +2;
+            char_type _topo = +2;
             iptr_type _itag = +0;
 
             if (_ttaa > (real_type)-1.)
