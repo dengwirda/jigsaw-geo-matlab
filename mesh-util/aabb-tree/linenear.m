@@ -1,11 +1,11 @@
-function [ok,pp,qq,tp,tq] = linenear(pa,pb,pc,pd)
+function [ok,tp,tq] = linenear(pa,pb,pc,pd)
 %LINENEAR calc. the nearest points on line segments embedded 
-%in d-dimensions.
+%in d-dimensions. Line paramters are bounded on [-1,+1].
 
 %-----------------------------------------------------------
 %   Darren Engwirda : 2017 --
 %   Email           : de2363@columbia.edu
-%   Last updated    : 02/08/2017
+%   Last updated    : 10/10/2017
 %-----------------------------------------------------------
 
     m1 = (pa+pb) * +.5 ;
@@ -29,9 +29,9 @@ function [ok,pp,qq,tp,tq] = linenear(pa,pb,pc,pd)
     tp = A4.*r1 - A2.*r2 ;
     tq =-A3.*r1 + A1.*r2 ;
 
-    rt = max(abs(tp),abs(tq)) ;
+    rt = max(abs([A1,A2,A3,A4]),[],2);
     rt = rt * eps ^ .8 ;
-    
+   
     ok = abs(dd) > +rt ;
     
     tp(~ok) = +0. ; 
@@ -40,17 +40,6 @@ function [ok,pp,qq,tp,tq] = linenear(pa,pb,pc,pd)
     tp(ok) = tp(ok) ./ dd(ok) ;
     tq(ok) = tq(ok) ./ dd(ok) ;
     
-    tp = max(min(tp,+1.),-1.) ;
-    tq = max(min(tq,+1.),-1.) ;
-    
-    nd = size(pa,2);
-    
-    pp = m1 + ...
-        repmat(tp,1,nd).*D1 ;
-    qq = m2 + ...
-        repmat(tq,1,nd).*D2 ;
-    
 end
-
 
 
