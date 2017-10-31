@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 04 October, 2017
+     * Last updated: 31 October, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -154,6 +154,8 @@
         }
     }
     
+    /*------------------------- main sign-flip driver fn. */ 
+    
     __static_call
     __normal_call void_type flip_sign (
         mesh_type &_mesh ,
@@ -167,7 +169,8 @@
         _seen.set_count( _mesh.
             _set3.count(), 
         containers::tight_alloc , +0) ;
-        
+    
+    /*----------- an incremental BFS to correct mesh sign */    
         iptr_type _tnum  = +0 ;
         iptr_type _epos  = +0 ; 
         
@@ -178,6 +181,7 @@
             if (_tria->mark() <  +0) continue ;
             if (_seen[_tnum ] >  +0) continue ;
             
+        /*--------------------- flip seed for +ve quality */
             real_type _cost = _pred.cost (
                &_mesh._set1[
                 _tria->node(0)].pval(0),
@@ -193,6 +197,7 @@
                         _tria->node(1));
             }
             
+        /*--------------------- a BFS from seed via topo. */
             _list.push_tail(_tnum) ;
             _seen [_tnum] =  +1;
             
@@ -244,6 +249,7 @@
         if (_cdst.empty()) return ;
         if (_csrc.empty()) return ;
     
+    /*--------------------- calc. min. + mean metrics */
         real_type _0src = 
             +std::numeric_limits
                 <real_type>::infinity(); 
@@ -281,7 +287,8 @@
         _mdst /= _cdst.count() ;
             
         if ( true )
-        {          
+        {  
+    /*--------------------- okay if min. is improving */        
             _okay  = _0dst > _0src+_qtol;
         
             if (_okay) return;
@@ -291,6 +298,7 @@
         
         if (_0dst >= _good)
         {
+    /*--------------------- okay if mean is improving */
             _okay  = _mdst > _msrc+_qtol;
         } 
              
@@ -374,14 +382,16 @@
     
         _okay = false ;
     
-        real_type _long = (real_type) +0. ;
         real_type _line [_dims] = {
        (real_type) +0.0 } ;
         real_type _save [_dims] = {
        (real_type) +0.0 } ;
         real_type _proj [_dims] = {
        (real_type) +0.0 } ;
+        real_type _long = 
+       (real_type) +0.0 ;
  
+    /*---------------- calc. line search direction vector */
         if (_kind == +1 )
         {
             ccvt_move( _mesh, _hfun, 
@@ -397,6 +407,7 @@
         }
         else { return  ; }
       
+    /*---------------- scale line search direction vector */
         real_type _llen = 
         std::sqrt(_pred.lsqr(_line)) ;
         
@@ -408,6 +419,8 @@
       
         real_type _scal = 
             _llen * (real_type) +2.0 ;
+      
+    /*---------------- do backtracking line search iter's */
       
         for (auto _idim = _dims; _idim-- != +0; )
         {
@@ -444,11 +457,9 @@
                       _tset, 
                       _cost) ;
             
-            real_type _qtol = 
-                _opts .qtol();
             move_okay(_cost, _init , 
                       _okay, _good , 
-                      _qtol) ;
+                _opts .qtol()) ;
                   
             if (_okay) break ;
             
@@ -491,8 +502,7 @@
             = (real_type)+0.95
         )
     {
-        iptr_list _aset, _eset, _tset,
-                  _amrk, _fail;
+        iptr_list _aset, _eset, _tset, _amrk ;
         real_list _qsrc, _qdst;
 
         __unreferenced(_emrk) ;
@@ -506,14 +516,16 @@
    
         if (_isub == (iptr_type) +0)
         {
-        
+    /*-------------------- 1ST SUB-ITER: build full init. */
         iptr_type _inum  = 0 ;
         for (auto _node  = _mesh._set1.head();
                   _node != _mesh._set1.tend();
                 ++_node , ++_inum)
         {
+        /*-------------------- push if - non-bnd + recent */
             if (_node->mark() >= +0 && 
-                    _nmrk[_inum] >= _iout - 2)
+                    _nmrk[_inum] >= +0 &&
+                        _nmrk[_inum] >= _iout - 2)
             {
                 _amrk[_inum]  = _isub;
                 _aset.push_tail(_inum) ;
@@ -526,6 +538,7 @@
         {
             if (_tria->mark() >= +0)
             {
+        /*-------------------- push if - in "low-Q" tria. */
                 iptr_type _inod, _jnod, _knod;
                 _inod = _tria->node(0);
                 _jnod = _tria->node(1);
@@ -577,7 +590,7 @@
         }
         else
         {
-        
+    /*-------------------- NTH sub-iter: init. from prev. */
         for (auto _iter  = _nset.head();
                   _iter != _nset.tend();
                 ++_iter  )
@@ -612,12 +625,12 @@
                     _aset.push_tail(_jnod) ;
                 }
             }      
-        }
-                 
+        }                 
         }
         
+    /*-------------------- weak, stochastic randomisation */
         for (auto _iter  = _aset.head(); 
-                  _iter != _aset.tend(); 
+                  _iter != _aset.tend();
                 ++_iter  )
         {
             size_t _long = +1024;
@@ -632,6 +645,7 @@
             std::swap(*_iter,*_next);          
         }
 
+    /*-------------------- a GAUSS-SEIDEL style iteration */
         for (auto _apos  = _aset.tail() ;
                   _apos != _aset.hend() ;
                 --_apos  )
@@ -643,17 +657,21 @@
             _qdst.set_count(0) ;
             _tset.set_count(0) ;
             
+        /*---------------- assemble a local tria. stencil */
             _mesh.node_tri3(
-           &_node->node(+0), _tset);
+                &_node->node(+0), _tset);
+
+            if (_tset.empty()) continue ;
 
             real_type _qmin = 
-            loop_cost(_mesh, _pred, _tset , 
-                      _qsrc) ;
+                loop_cost( _mesh, 
+                    _pred, _tset, _qsrc);
 
             bool_type _okay = false;
             
             if (!_okay)
             {
+        /*---------------- attempt a CCVT-style smoothing */
                 move_node( _geom, _mesh ,
                     _hfun, _pred, _hval , 
                     _opts, _node, +1    , 
@@ -663,16 +681,17 @@
             }
             if (!_okay)
             {
+        /*---------------- attempt a GRAD-based smoothing */
                 move_node( _geom, _mesh ,
                     _hfun, _pred, _hval , 
                     _opts, _node, +2    , 
                     _okay, _tset, 
                     _qsrc, _qdst, 
                     _qmin, _good ) ;
-            }
-            
-            if (_okay) 
+            }           
+            if ( _okay) 
             {
+        /*---------------- update when state is improving */
                 _hval[*_apos] = (real_type) -1. ;
             
                 if (_nmrk[*_apos] != _iout)
@@ -713,6 +732,7 @@
     
         if (std::rand() % 2 == 0 )
         {
+    /*--------------------------------- flip edges: 0,1,2 */
             flip_t2t2( _geom, _mesh , 
                 _hfun, _pred, 
                 _tria,   +0 ,
@@ -736,6 +756,7 @@
         }
         else
         {
+    /*--------------------------------- flip edges: 2,1,0 */
             flip_t2t2( _geom, _mesh , 
                 _hfun, _pred, 
                 _tria,   +2 ,
@@ -752,7 +773,7 @@
             
             flip_t2t2( _geom, _mesh , 
                 _hfun, _pred, 
-                _tria,   +1 ,
+                _tria,   +0 ,
                 _told, _tnew, _flip , 
                 _qold, _qnew) ;
             if (_flip) return ;
@@ -774,8 +795,10 @@
         iptr_type &_nflp
         )
     {
-        init_mark(_mesh, _nmrk, _emrk, _tmrk) ;
+        init_mark(_mesh, _nmrk, _emrk, _tmrk, 
+            std::max(+0, _imrk - 1)) ;
     
+    /*--------------------- init. flip stack as ADJ(NSET) */
         iptr_list _tset, _next;
         iptr_list _told, _tnew;
         real_list _qold, _qnew;
@@ -803,7 +826,8 @@
                 }
             }
         }
-        
+ 
+    /*--------------------- exhaustive, incremental flips */       
         _nflp = +0 ;
         
         for ( ; !_tset.empty() ; )
@@ -864,24 +888,62 @@
             constexpr _DEG_MIN = (iptr_type) +5 ;          
         iptr_type static
             constexpr _DEG_MAX = (iptr_type) +8 ;
+            
+    #   define __markedge                   \
+            init_mark( _mesh, _nmrk, _emrk, \
+                _tmrk, std::max(_imrk - 1, +0) ) ;  \
+            if (_nmrk[_enod[0]] != _imrk)   \
+            {                           \
+            if (_nmrk[_enod[0]] >= +0)  \
+            {                           \
+                _nmrk[_enod[0]] = +_imrk;   \
+            }                           \
+            else                        \
+            {                           \
+                _nmrk[_enod[0]] = -_imrk;   \
+            }                           \
+                _nset.push_tail(_enod[0]) ; \
+            }                           \
+            if (_nmrk[_enod[1]] != _imrk)   \
+            {                           \
+            if (_nmrk[_enod[1]] >= +0)  \
+            {                           \
+                _nmrk[_enod[1]] = +_imrk;   \
+            }                           \
+            else                        \
+            {                           \
+                _nmrk[_enod[1]] = -_imrk;   \
+            }                           \
+                _nset.push_tail(_enod[1]) ; \
+            }                           \
+    
+        _nzip = +0; _ndiv = +0 ;
     
         iptr_list _iset, _jset ;
-        iptr_list _aset, _bset ;
-        iptr_list _eset ;
+        iptr_list _aset, _bset , _eset ;
         real_list _qold, _qnew ;
-
-        _nzip = +0; _ndiv = +0 ;
-
-        for (auto _node  = _nset.head();
-                  _node != _nset.tend();
-                ++_node  )
-        {
-            init_mark(_mesh, _nmrk, _emrk, _tmrk, 
-                _imrk - 1) ;
+              
+    /*--------------------- scan nodes and zip//div edges */
+        typename mesh_type::
+            node_list::size_type _nbeg = +0;
+        typename mesh_type::
+            node_list::size_type _nend = 
+                _mesh._set1.count() ;
+        typename mesh_type::
+            node_list::size_type _ninc = +1;        
         
-            if (_mesh._set1[*_node].mark() >= 0 &&
-                _nmrk[*_node] >= 0)
-            {           
+        for (auto _node  = _nbeg ;
+                  _node != _nend ;
+                  _node += _ninc )
+        {
+            init_mark(_mesh, _nmrk, _emrk, _tmrk , 
+                std::max(+0, _imrk - 1)) ;
+        
+        /*----------------------- node valid and "recent" */
+            if (_mesh._set1[_node].mark() >= +0 && 
+                   std::abs (
+                _nmrk[_node]) >= _imrk - 2 )
+            {
                 typename 
                 iptr_list::_write_it _head ;
                 typename
@@ -889,10 +951,11 @@
                 typename
                 iptr_list::diff_type _einc ;
         
-                _eset.set_count(+0);
+                _eset.set_count(+0) ;
                 _mesh.node_edge(
-                    &*_node, _eset);
+                    (iptr_type)_node, _eset) ;
         
+            /*------------------- "weak" stochastic order */
                 if (std::rand() % +2 == +0 )
                 {
                     _head = _eset.head() ;
@@ -906,6 +969,7 @@
                     _einc = -1 ;
                 }
         
+            /*------------------- scan list of adj. edges */
                 for (auto _eadj  = _head ;
                           _eadj != _tend ;
                           _eadj += _einc )
@@ -917,16 +981,15 @@
    
                     _emrk[*_eadj]  = _imrk ;
                 
-                    iptr_type _enod[2];
+                    iptr_type _enod[2] ;
                     _enod[0] = _eptr->node(0);
                     _enod[1] = _eptr->node(1);
                     
                     bool_type _move = false;
-                    
-                    if (_nmrk[_enod[0]] >= 0 &&
-                        _nmrk[_enod[1]] >= 0 )
+                     
+                /*--------------- try to "div" local edge */
+                    if (_eptr->self() == +0) 
                     {
-                    
                     if (_eset.count() > _DEG_MAX)
                     {
                         real_type _good = 
@@ -943,8 +1006,10 @@
                             _qold, _qnew, _ltol, 
                             _good, _qinc) ;    
                         
-                        if (_move) _ndiv += +1 ;
-                        if (_move) break  ;
+                        if (_move )
+                        {
+                        __markedge; _ndiv += +1; break ;
+                        }
                     }
                     else
                     {
@@ -954,10 +1019,17 @@
                             _move, _iset, 
                             _qold, _qnew) ;
                             
-                        if (_move) _ndiv += +1 ;
-                        if (_move) break  ;
+                        if (_move )
+                        {
+                        __markedge; _ndiv += +1; break ;
+                        }
+                    }
                     }
                     
+                /*--------------- try to "zip" local edge */
+                    if (_nmrk[_enod[0]] >= 0 &&
+                        _nmrk[_enod[1]] >= 0 )
+                    {
                     if (_eset.count() < _DEG_MIN)
                     {
                         real_type _good = 
@@ -975,8 +1047,10 @@
                             _qold, _qnew, _ltol,
                             _good, _qinc) ;
                             
-                        if (_move) _nzip += +1 ; 
-                        if (_move) break  ;                  
+                        if (_move )
+                        {
+                        __markedge; _nzip += +1; break ;
+                        }                  
                     }
                     else
                     {
@@ -987,8 +1061,10 @@
                             _aset, _bset,
                             _qold, _qnew) ;
                             
-                        if (_move) _nzip += +1 ;
-                        if (_move) break  ;
+                        if (_move )
+                        {
+                        __markedge; _nzip += +1; break ;
+                        }
                     } 
                     }
                     
@@ -997,6 +1073,8 @@
             
             }
         }
+    
+    #   undef  __markedge
     
     }
     
@@ -1073,33 +1151,26 @@
 
         __unreferenced(_time) ; // why does MSVC need this??
     #   endif//__use_timers
-        
+    
+    /*------------------------------ push boundary marker */    
         iptr_list _nmrk, _emrk, _tmrk, 
                   _nset, _tset;
-                    
+    
         init_mark(_mesh, _nmrk, _emrk, _tmrk) ;
         
-        iptr_type _enum = +0 ;
-        for (auto _edge  = 
-                  _mesh._set2.head() ;
-                  _edge != 
-                  _mesh._set2.tend() ;
-                ++_edge, ++_enum)
+        iptr_type _enum  = +0 ;
+        for (auto _edge  = _mesh._set2.head() ;
+                  _edge != _mesh._set2.tend() ;
+                ++_edge, ++_enum )
         {
             if (_edge->mark() >= +0)
             {
             if (_edge->self() >= +1)
             {
-                _emrk[_enum] = 
-                    std::numeric_limits
-                        <iptr_type>::min() ;
+                _emrk[_enum]   = -1 ;
             
-                _nmrk[_edge->node(0)] = 
-                    std::numeric_limits
-                        <iptr_type>::min() ;
-                _nmrk[_edge->node(1)] = 
-                    std::numeric_limits
-                        <iptr_type>::min() ;
+                _nmrk[_edge->node(0)] = -1 ;
+                _nmrk[_edge->node(1)] = -1 ;
             }
             else
             {
@@ -1110,21 +1181,16 @@
                 
                 if (_tset.count() != +2)
                 {
-                _emrk[_enum] = 
-                    std::numeric_limits
-                        <iptr_type>::min() ;
+                _emrk[_enum]   = -1 ;
             
-                _nmrk[_edge->node(0)] = 
-                    std::numeric_limits
-                        <iptr_type>::min() ;
-                _nmrk[_edge->node(1)] = 
-                    std::numeric_limits
-                        <iptr_type>::min() ;
+                _nmrk[_edge->node(0)] = -1 ;
+                _nmrk[_edge->node(1)] = -1 ;
                 }
             }
             }
         }
         
+    /*------------------------------ do optimisation loop */
         iptr_type static constexpr
             ITER_MIN_ = +  2 ;
         iptr_type static constexpr
@@ -1144,8 +1210,9 @@
         for (auto _iter = +1 ; 
             _iter <= _opts.iter(); ++_iter)
         {
+        /*-------------------------- set-up current iter. */
             init_mark( _mesh, _nmrk , 
-                _emrk, _tmrk, _iter - 1 ) ;
+                _emrk, _tmrk, std::max(_iter-1, +0));
    
             real_list _hval;
             _hval.set_count(
@@ -1159,6 +1226,7 @@
             iptr_type _nzip = +0 ;
             iptr_type _ndiv = +0 ;
    
+    /*------------------------------ scale quality thresh */
             iptr_type _nsub = _iter + 0 ;
                 
             _nsub = std::min(
@@ -1171,13 +1239,18 @@
                     _Qmin + _iter * _Qinc
                         ) ;
     
+    /*------------------------------ update mesh geometry */
     #       ifdef  __use_timers
             _ttic = _time.now() ;
     #       endif//__use_timers
                 
             for (auto _isub = + 0 ; 
-                _isub != _nsub; ++_isub)
+                _isub != _nsub; ++_isub )
             {
+                if (_opts.verb() >= +3)
+                    _dump.push(
+                " CALL MOVE-NODE...\n") ;
+            
                 iptr_type  _nloc;
                 move_node( _geom, _mesh ,
                     _hfun, _pred, _hval , 
@@ -1197,7 +1270,7 @@
                 _tcpu.time_span(_ttic, _ttoc);
     #       endif//__use_timers
             
-
+    /*------------------------------ zip/div mesh subface */
     #       ifdef  __use_timers            
             _ttic = _time.now() ;
     #       endif//__use_timers
@@ -1205,6 +1278,10 @@
             if (_opts.zip_() || 
                 _opts.div_() )
             {
+                if (_opts.verb() >= +3)
+                    _dump.push(
+                " CALL _ZIP-MESH...\n") ;
+            
                 _zip_mesh( _geom, _mesh , 
                     _hfun, _pred, _nset , 
                     _nmrk, _emrk, _tmrk , 
@@ -1219,13 +1296,17 @@
                 _tcpu.time_span(_ttic, _ttoc);
     #       endif//__use_timers
  
-
+    /*------------------------------ update mesh topology */
     #       ifdef  __use_timers 
             _ttic = _time.now() ;
     #       endif//__use_timers
     
             if (ITER_FLIP)
-            {        
+            {
+                if (_opts.verb() >= +3)
+                    _dump.push(
+                " CALL FLIP-MESH...\n") ;
+                    
                 flip_mesh( _geom, _mesh , 
                     _hfun, _pred, _nset ,
                     _nmrk, _emrk, _tmrk , 
@@ -1239,6 +1320,7 @@
                 _tcpu.time_span(_ttic, _ttoc);
     #       endif//__use_timers
             
+    /*------------------------------ dump optim. progress */
             std::stringstream _sstr ;
             _sstr << std::setw(11) << _nmov
                   << std::setw(13) << _nflp
@@ -1247,6 +1329,7 @@
                   <<   "\n" ;
             _dump.push(_sstr.str()) ;
                   
+    /*------------------------------ has iter. converged? */
             if (_nset.count() == 0) break ; 
             if (_nmov == +0 &&
                 _nzip == +0 &&
@@ -1256,6 +1339,7 @@
    
         if (_opts.verb() >= +2)
         {
+    /*------------------------------ print method metrics */
             _dump.push("\n");
     
             _dump.push(" MOVE-FULL: ");

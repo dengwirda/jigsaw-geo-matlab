@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 04 October, 2017
+     * Last updated: 31 October, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -105,7 +105,7 @@
                 &_inod->pval(0) ,
                     &_jnod->pval(0) ,
                         &_knod->pval(0) ) ;
-     
+        
             if (_hval[_tnod[0]] < (real_type)+0.)
             {
                 _hval[_tnod[0]] = _hfun.eval (
@@ -133,7 +133,7 @@
                               _hval[_tnod[1]] +
                               _hval[_tnod[2]] ;
             _hbar /= (real_type) +3.0 ; 
-            
+         
             real_type static 
                 constexpr _tmul = (real_type) +0.67 ;
             real_type static 
