@@ -27,7 +27,7 @@ function meshdemo(demo)
 %-----------------------------------------------------------
 %   Darren Engwirda
 %   github.com/dengwirda/jigsaw-geo-matlab
-%   15-Sep-2017
+%   31-Oct-2017
 %   de2363@columbia.edu
 %-----------------------------------------------------------
 %
@@ -695,7 +695,7 @@ function demo5
     hnew(zlev > +0.) = inf;
     
     figure;
-    surf(XPOS*180/pi,YPOS*180/pi,hnew) ;
+    surf(XPOS,YPOS,hnew) ;
     view(2); axis image; hold on ;
     shading interp;
     title('JIGSAW HFUN data') ;

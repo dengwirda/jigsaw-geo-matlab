@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 04 October, 2017
+     * Last updated: 31 October, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -121,6 +121,15 @@
         real_list &_qnew
         )
     {
+        __unreferenced(  _hfun) ;
+        __unreferenced(  _qold) ;
+        __unreferenced(  _qnew) ;
+    
+        _flip = false ;
+    
+        _told.set_count(0) ;      
+        _tnew.set_count(0) ;
+    
         iptr_type _enod[3] ;
         mesh_type::tri3_type::
         face_node(_enod, _edge, 2, 1) ;
@@ -129,15 +138,16 @@
         _enod[ 1] = _mesh.
         _set3[_tria].node(_enod[1]) ;
       
-        _flip = false ;
-      
-        __unreferenced( _hfun) ;
-        __unreferenced( _qold) ;
-        __unreferenced( _qnew) ;
-      
-        _told.set_count(0) ;      
-        _tnew.set_count(0) ;
+        iptr_type _epos = -1 ;
+        _mesh.find_edge(_enod, _epos) ;
         
+        if (_epos==-1) return;
+        
+         auto _eptr = 
+        _mesh._set2.head() + _epos ;
+        
+        if (_eptr->self()>=+1) return ;
+      
         _mesh.edge_tri3(_enod, _told) ;
     
         if (_told.count()!=+2) return ;

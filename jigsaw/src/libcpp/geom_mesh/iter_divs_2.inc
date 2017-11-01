@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 15 September, 2017
+     * Last updated: 31 October, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -228,36 +228,36 @@
                   _bpos * _ibal[_idim] ;
             }
             
-            _pred.proj(_geom , _circ, 
-                       _ball ) ;
+            _pred.proj(_geom, _circ, 
+                       _ball) ;
             
-            _cdst[0] = _pred.cost(_ball,
+            _cdst[0] = _pred.cost(
+                _ball, &_mesh.
+            _set1[_inod[2]].pval(0),
                &_mesh.
-                _set1[_inod[2]].pval(0),
-               &_mesh.
-                _set1[_inod[0]].pval(0)
+            _set1[_inod[0]].pval(0)
                 ) ;
-            _cdst[1] = _pred.cost(_ball,
+            _cdst[1] = _pred.cost(
+                _ball, &_mesh.
+            _set1[_inod[1]].pval(0),
                &_mesh.
-                _set1[_inod[1]].pval(0),
-               &_mesh.
-                _set1[_inod[2]].pval(0)
-                ) ;
-               
-            _cdst[2] = _pred.cost(_ball,
-               &_mesh.
-                _set1[_jnod[1]].pval(0),
-               &_mesh.
-                _set1[_jnod[2]].pval(0)
-                ) ;
-            _cdst[3] = _pred.cost(_ball,
-               &_mesh.
-                _set1[_jnod[2]].pval(0),
-               &_mesh.
-                _set1[_jnod[0]].pval(0)
+            _set1[_inod[2]].pval(0)
                 ) ;
                
-            move_okay(_cdst, _csrc, 
+            _cdst[2] = _pred.cost(
+                _ball, &_mesh.
+            _set1[_jnod[1]].pval(0),
+               &_mesh.
+            _set1[_jnod[2]].pval(0)
+                ) ;
+            _cdst[3] = _pred.cost (
+                _ball, &_mesh.
+            _set1[_jnod[2]].pval(0),
+               &_mesh.
+            _set1[_jnod[0]].pval(0)
+                ) ;
+               
+            move_okay(_cdst, _csrc , 
                       _okay, 
                       _good, 
                       _qinc) ;
@@ -272,6 +272,9 @@
                ::node_type _ndat ;
         typename mesh_type
                ::tri3_type _tdat ;
+        
+        _ndat.hidx() = 
+            size_type::null_hint() ;
                
         for(_idim = _dims; _idim-- != 0; )
         {
