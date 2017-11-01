@@ -4,7 +4,9 @@
   <img src = "../master/jigsaw/img/JIGSAW-southern-ocean-voronoi.jpg">
 </p>
 
-`JIGSAW(GEO)` is a set of algorithms designed to generate complex, unstructured grids for geophysical modelling applications, including `locally-orthogonal` `staggered` `Delaunay` / `Voronoi` tessellations appropriate for unstructured `finite-volume` / `element` type general circulation models. Grids can be generated in local two-dimensional domains, and over general spheroidal surfaces. Typical applications include: large-scale atmospheric simulation, ocean-modelling and numerical weather predicition, as well as coastal ocean modelling and ice-sheet dynamics.
+`JIGSAW(GEO)` is a set of algorithms designed to generate complex, unstructured grids for geophysical modelling applications, including: large-scale atmospheric simulation, ocean-modelling and numerical weather prediction, as well as coastal ocean modelling and ice-sheet dynamics. 
+
+`JIGSAW(GEO)` is typically able to produce very high-quality staggered Delaunay / Voronoi tessellations appropriate for unstructured finite-volume / element type models of planetary climate. Grids can be generated in local two-dimensional domains, and over general spheroidal surfaces.
 
 `JIGSAW(GEO)` is a stand-alone mesh generator written in `c++`, based on the general-purpose meshing package <a href="https://github.com/dengwirda/jigsaw-matlab">`JIGSAW`</a>. This toolbox provides a <a href="http://www.mathworks.com">`MATLAB`</a> / <a href="https://www.gnu.org/software/octave">`OCTAVE`</a> based scripting interface, including `file I/O`, `mesh visualisation` and `post-processing` facilities. The underlying `JIGSAW` library is a collection of unstructured triangle- and tetrahedron-based meshing algorithms, designed to produce very high quality Delaunay-based grids for computational simulation. `JIGSAW` includes both Delaunay-refinement based algorithms for the 
 construction of new meshes, as well as optimisation driven methods for the improvement of existing grids. `JIGSAW` supports both two- and three-dimensional operations, catering to a variety of planar, surface and volumetric configurations.
@@ -125,5 +127,5 @@ Information and references regarding the formulation of the underlying `JIGSAW` 
 
 `[1]` - Darren Engwirda: JIGSAW-GEO (1.0): locally orthogonal staggered unstructured grid generation for general circulation modelling on the sphere, Geosci. Model Dev., 10, 2117-2140, https://doi.org/10.5194/gmd-10-2117-2017, 2017.
 
-`[2]` - Darren Engwirda, Multi-resolution unstructured grid-generation for geophysical applications on the sphere, Research note, Proceedings of the 24th International Meshing Roundtable, (https://arxiv.org/abs/1512.00307), 2015.
+`[2]` - Darren Engwirda: Multi-resolution unstructured grid-generation for geophysical applications on the sphere, Research note, Proceedings of the 24th International Meshing Roundtable, https://arxiv.org/abs/1512.00307, 2015.
 
