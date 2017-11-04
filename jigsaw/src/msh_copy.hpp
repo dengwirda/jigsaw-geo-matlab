@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 14 September, 2017
+     * Last updated: 01 November, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -110,7 +110,10 @@
                 euclidean_mesh_2d::
             mesh_type::node_type _node ;
             _node.pval(0) = _iter->pval(0) ;
-            _node.pval(1) = _iter->pval(1) ;         
+            _node.pval(1) = _iter->pval(1) ;   
+            
+            _node.pval(2) = (real_type)+0. ;
+                  
             _node.hidx () = _iter->idxh () ;
             
             _mesh._euclidean_mesh_2d.
@@ -226,7 +229,10 @@
             mesh_type::node_type _node ;
             _node.pval(0) = _iter->pval(0) ;
             _node.pval(1) = _iter->pval(1) ;
-            _node.pval(2) = _iter->pval(2) ;         
+            _node.pval(2) = _iter->pval(2) ;
+            
+            _node.pval(3) = (real_type)+0. ;
+                     
             _node.hidx () = _iter->idxh () ;
             
             _mesh._euclidean_mesh_3d.
