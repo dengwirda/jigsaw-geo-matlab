@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 31 October, 2017
+     * Last updated: 01 November, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -93,7 +93,7 @@
         real_type _ipos[_dims] ;
         real_type _jpos[_dims] ;
         iptr_type _idim = +0;
-        for (_idim = _dims; _idim-- != 0; )
+        for (_idim = _dims+0; _idim-- != 0; )
         {
             _ipos[_idim] =
                 _iptr->pval(_idim) ;
@@ -107,7 +107,7 @@
         _hfun.eval(_jpos, _jptr->hidx ()) ;
         
         real_type  _elen = std::
-            sqrt(_pred.lsqr(_ipos,_jpos)) ;
+        sqrt(_pred.length_sq(_ipos,_jpos) ) ;
 
         real_type  _hbar = 
        (real_type) (1./2.) * _isiz + 
@@ -124,7 +124,7 @@
         _csrc.set_count(+2) ;
         _cdst.set_count(+4) ;
     
-        _csrc[0] = _pred.cost (
+        _csrc[0] = _pred.cost_tria (
            &_mesh._set1[
             _itri->node(0)].pval(0),
            &_mesh._set1[
@@ -133,7 +133,7 @@
             _itri->node(2)].pval(0)
             ) ;
      
-        _csrc[1] = _pred.cost (
+        _csrc[1] = _pred.cost_tria (
            &_mesh._set1[
             _jtri->node(0)].pval(0),
            &_mesh._set1[
@@ -151,7 +151,7 @@
         if (_cmin > _good) return;
         
         real_type _ibal[_dims+1] ;
-        _pred.mini( _ibal ,
+        _pred.mini_ball(_ibal ,
            &_mesh._set1[
             _itri->node(0)].pval(0),
            &_mesh._set1[
@@ -161,7 +161,7 @@
             ) ;
 
         real_type _jbal[_dims+1] ;
-        _pred.mini( _jbal ,
+        _pred.mini_ball(_jbal ,
            &_mesh._set1[
             _jtri->node(0)].pval(0),
            &_mesh._set1[
@@ -203,9 +203,9 @@
                 break ;
         }
         
-        real_type _ball[_dims] ;
-        real_type _circ[_dims] = 
-        {   (real_type) +0.0 } ;
+        real_type _ball[_dims+1] ;
+        real_type _circ[_dims+1] = 
+        {   (real_type) +0.000 } ;
         
         iptr_type static 
             constexpr _INUM = (iptr_type)+16 ;
@@ -221,36 +221,36 @@
             real_type _bpos = 
                 (real_type)+1. - _bias ;
         
-            for(_idim = _dims; _idim-- != 0; )
+            for(_idim = _dims+0; _idim-- != 0; )
             {
                 _ball[_idim] = 
                   _apos * _jbal[_idim] +
                   _bpos * _ibal[_idim] ;
             }
             
-            _pred.proj(_geom, _circ, 
-                       _ball) ;
+            _pred. proj_node(
+                _geom, _circ, _ball) ;
             
-            _cdst[0] = _pred.cost(
+            _cdst[0] = _pred.cost_tria (
                 _ball, &_mesh.
             _set1[_inod[2]].pval(0),
                &_mesh.
             _set1[_inod[0]].pval(0)
                 ) ;
-            _cdst[1] = _pred.cost(
+            _cdst[1] = _pred.cost_tria (
                 _ball, &_mesh.
             _set1[_inod[1]].pval(0),
                &_mesh.
             _set1[_inod[2]].pval(0)
                 ) ;
                
-            _cdst[2] = _pred.cost(
+            _cdst[2] = _pred.cost_tria (
                 _ball, &_mesh.
             _set1[_jnod[1]].pval(0),
                &_mesh.
             _set1[_jnod[2]].pval(0)
                 ) ;
-            _cdst[3] = _pred.cost (
+            _cdst[3] = _pred.cost_tria (
                 _ball, &_mesh.
             _set1[_jnod[2]].pval(0),
                &_mesh.
@@ -258,8 +258,7 @@
                 ) ;
                
             move_okay(_cdst, _csrc , 
-                      _okay, 
-                      _good, 
+                      _okay, _good , 
                       _qinc) ;
              
             if (_okay) break ;         
@@ -276,7 +275,7 @@
         _ndat.hidx() = 
             size_type::null_hint() ;
                
-        for(_idim = _dims; _idim-- != 0; )
+        for(_idim = _dims+1; _idim-- != 0; )
         {
             _ndat.pval(_idim) = 
                     _ball[_idim] ;
