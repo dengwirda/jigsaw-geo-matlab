@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 15 September, 2017
+     * Last updated: 01 November, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -96,7 +96,7 @@
         real_type _ipos[_dims] ;
         real_type _jpos[_dims] ;
         iptr_type _idim = +0;
-        for (_idim = _dims; _idim-- != 0; )
+        for (_idim = _dims+0; _idim-- != 0; )
         {
             _ipos[_idim] =
                 _iptr->pval(_idim) ;
@@ -110,7 +110,7 @@
         _hfun.eval(_jpos, _jptr->hidx ()) ;
         
         real_type  _elen = std::
-            sqrt(_pred.lsqr(_ipos,_jpos)) ;
+        sqrt(_pred.length_sq(_ipos, _jpos)) ;
 
         real_type  _hbar = 
        (real_type) (1./2.) * _isiz + 
@@ -197,12 +197,12 @@
         }
    
         real_type _imin = 
-        loop_cost(_mesh, _pred , 
+        loop_tscr(_mesh, _pred , 
                   _iset, 
                   _csrc) ;
                   
         real_type _jmin = 
-        loop_cost(_mesh, _pred , 
+        loop_tscr(_mesh, _pred , 
                   _bset, 
                   _csrc) ;
                   
@@ -210,15 +210,15 @@
             _jmin >= _good ) return ;
         
    
-        real_type _pbal[_dims] = {   
-            (real_type) +0.0 } ;
+        real_type _pbal[_dims+1] = {   
+            (real_type) +0.000 } ;
         
         for (auto _tria  = _iset.head();
                   _tria != _iset.tend();
                 ++_tria  )
         {
             real_type _ball[_dims+1] ;
-                _pred.mini (_ball,
+                _pred. mini_ball(_ball ,
                &_mesh._set1[
                 _mesh._set3[
                *_tria].node(0)].pval(0),
@@ -243,7 +243,7 @@
                 ++_tria  )
         {
             real_type _ball[_dims+1] ;
-                _pred. mini(_ball,
+                _pred. mini_ball(_ball ,
                &_mesh._set1[
                 _mesh._set3[
                *_tria].node(0)].pval(0),
@@ -263,15 +263,15 @@
             }
         }
  
-        for(_idim = _dims; _idim-- != +0; )
+        for(_idim = _dims+0; _idim-- != +0; )
         {
         _pbal[_idim] /= (_iset.count() + 
                          _jset.count() )  ;
         }
         
-        real_type _isav[_dims] ;
-        real_type _jsav[_dims] ;        
-        for(_idim = _dims; _idim-- != +0; )
+        real_type _isav[_dims+1] ;
+        real_type _jsav[_dims+1] ;        
+        for(_idim = _dims+1; _idim-- != +0; )
         {
             _isav[_idim] = 
                 _iptr->pval(_idim) ;
@@ -280,8 +280,10 @@
                 _jptr->pval(_idim) ;
         }
         
-        real_type _pmid[_dims] ;
-        for(_idim = _dims; _idim-- != +0; )
+        real_type _pmid[_dims+1] = {   
+            (real_type) +0.000 } ;
+            
+        for(_idim = _dims+0; _idim-- != +0; )
         {
             _pmid[_idim] = 
         (real_type)+.5*_iptr->pval(_idim) +
@@ -291,10 +293,10 @@
         iptr_type static 
             constexpr _INUM = (iptr_type)+16 ;
         
-        real_type _pnew[_dims] = {   
-            (real_type) +0.0 } ;
-        real_type _circ[_dims] = {   
-            (real_type) +0.0 } ;
+        real_type _pnew[_dims+1] = {   
+            (real_type) +0.000 } ;
+        real_type _circ[_dims+1] = {   
+            (real_type) +0.000 } ;
         
         for (auto _iloc = +0; _iloc != _INUM ; 
                 ++_iloc )
@@ -307,17 +309,17 @@
             real_type _bpos = 
                 (real_type)+1.0-_bias;
         
-            for(_idim = _dims; _idim-- != 0; )
+            for(_idim = _dims+0; _idim-- != 0; )
             {
                 _pnew[_idim] = 
                 _apos*_pmid[_idim] +
                 _bpos*_pbal[_idim] ;
             }
         
-            _pred.proj(_geom, _circ, 
-                       _pnew) ;
+            _pred. proj_node(
+                _geom, _circ, _pnew) ;
        
-            for(_idim = _dims; _idim-- != 0; )
+            for(_idim = _dims+1; _idim-- != 0; )
             {
                 _iptr->pval(_idim) 
                     = _pnew[_idim] ;
@@ -328,11 +330,11 @@
             
             _cdst.set_count(0) ;
          
-            loop_cost(_mesh, _pred , 
+            loop_tscr(_mesh, _pred , 
                       _aset, 
                       _cdst) ;
                       
-            loop_cost(_mesh, _pred , 
+            loop_tscr(_mesh, _pred , 
                       _bset, 
                       _cdst) ;
        
@@ -345,7 +347,7 @@
                   
         if(!_okay) 
         {
-            for(_idim = _dims; _idim-- != 0; )
+            for(_idim = _dims+1; _idim-- != 0; )
             {
                 _iptr->pval(_idim) 
                     = _isav[_idim] ;
@@ -355,116 +357,7 @@
             }
             return  ;
         }
-     
-     
-        /*
-        for (auto _tria  = _aset.head();
-                  _tria != _aset.tend();
-                ++_tria  )
-        {              
-            _iptr->pval(0) = _isav[0];
-            _iptr->pval(1) = _isav[1];
-            _iptr->pval(2) = _isav[2];
             
-            real_type _nold[3];
-            geometry::tria_norm_3d (
-           &_mesh._nset[
-            _mesh._tset[
-           *_tria].node(0)].pval(0),
-           &_mesh._nset[
-            _mesh._tset[
-           *_tria].node(1)].pval(0),
-           &_mesh._nset[
-            _mesh._tset[
-           *_tria].node(2)].pval(0),
-            _nold) ;
-            
-            _iptr->pval(0) = _pnew[0];
-            _iptr->pval(1) = _pnew[1];
-            _iptr->pval(2) = _pnew[2];
-            
-            real_type _nnew[3];
-            geometry::tria_norm_3d (
-           &_mesh._nset[
-            _mesh._tset[
-           *_tria].node(0)].pval(0),
-           &_mesh._nset[
-            _mesh._tset[
-           *_tria].node(1)].pval(0),
-           &_mesh._nset[
-            _mesh._tset[
-           *_tria].node(2)].pval(0),
-            _nnew) ;
-                
-            if (geometry::cosine_3d(
-                    _nold, _nnew) 
-                < (real_type) +0.50)
-            {
-                _okay = false ;
-            }
-        }
-     
-        for (auto _tria  = _bset.head();
-                  _tria != _bset.tend();
-                ++_tria  )
-        {              
-            _jptr->pval(0) = _jsav[0];
-            _jptr->pval(1) = _jsav[1];
-            _jptr->pval(2) = _jsav[2];
-            
-            real_type _nold[3];
-            geometry::tria_norm_3d (
-           &_mesh._nset[
-            _mesh._tset[
-           *_tria].node(0)].pval(0),
-           &_mesh._nset[
-            _mesh._tset[
-           *_tria].node(1)].pval(0),
-           &_mesh._nset[
-            _mesh._tset[
-           *_tria].node(2)].pval(0),
-            _nold) ;
-            
-            _jptr->pval(0) = _pnew[0];
-            _jptr->pval(1) = _pnew[1];
-            _jptr->pval(2) = _pnew[2];
-            
-            real_type _nnew[3];
-            geometry::tria_norm_3d (
-           &_mesh._nset[
-            _mesh._tset[
-           *_tria].node(0)].pval(0),
-           &_mesh._nset[
-            _mesh._tset[
-           *_tria].node(1)].pval(0),
-           &_mesh._nset[
-            _mesh._tset[
-           *_tria].node(2)].pval(0),
-            _nnew) ;
-                
-            if (geometry::cosine_3d(
-                    _nold, _nnew) 
-                < (real_type) +0.50)
-            {
-                _okay = false ;
-            }
-        }
-         
-        if(!_okay) 
-        {
-            _iptr->pval(0) = _isav[0];
-            _iptr->pval(1) = _isav[1];
-            _iptr->pval(2) = _isav[2];
-            
-            _jptr->pval(0) = _jsav[0];
-            _jptr->pval(1) = _jsav[1];
-            _jptr->pval(2) = _jsav[2];
-        
-            return ;
-        }
-         */
-         
-     
         for (auto _tria  = _bset.head();
                   _tria != _bset.tend();
                 ++_tria  )

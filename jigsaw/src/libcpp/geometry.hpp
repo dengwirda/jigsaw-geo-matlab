@@ -31,7 +31,7 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 09 September, 2017
+ * Last updated: 01 November, 2017
  *
  * Copyright 2013-2017
  * Darren Engwirda
@@ -53,8 +53,8 @@
 
 #   include "geom_base/geom_pred_k.hpp"
 
-#   include "geom_base/tria_elem_k.hpp"
 #   include "geom_base/tria_ball_k.hpp"
+#   include "geom_base/tria_elem_k.hpp"
 
 
 //!! argh

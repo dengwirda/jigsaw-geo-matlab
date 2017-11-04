@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 31 October, 2017
+     * Last updated: 04 November, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -44,8 +44,18 @@
     // from iter_mesh_2.hpp
     
  
+    /*
     __static_call
-    __normal_call bool_type need_flip (
+    __normal_call bool_type need_flip_costfunc (
+    
+    __static_call
+    __normal_call bool_type need_flip_weighted (
+    
+     */
+    
+ 
+    __static_call
+    __normal_call bool_type need_flip_delaunay (
         geom_type &_geom ,
         mesh_type &_mesh ,
         pred_type &_pred ,
@@ -56,14 +66,14 @@
 		__unreferenced(_pred) ; // for MSVC...
 
         real_type  _ibal[_dims+1];
-        _pred.circ(_ibal ,
+        _pred.circ_ball(_ibal ,
        &_mesh._set1[_inod[0]].pval(0),
        &_mesh._set1[_inod[1]].pval(0),
        &_mesh._set1[_inod[2]].pval(0)
             ) ;
             
         real_type  _jbal[_dims+1];
-        _pred.circ(_jbal ,
+        _pred.circ_ball(_jbal ,
        &_mesh._set1[_jnod[0]].pval(0),
        &_mesh._set1[_jnod[1]].pval(0),
        &_mesh._set1[_jnod[2]].pval(0)
@@ -72,18 +82,18 @@
         real_type _null[_dims] = {
             (real_type) +0.  } ;
 
-        _pred.proj (    //!! only if surf. convex though??
+        _pred. proj_node (
             _geom, _null, _ibal) ;
             
-        _pred.proj (
+        _pred. proj_node (
             _geom, _null, _jbal) ;
 
         real_type  _ilen = 
-            _pred.lsqr(_jbal, 
+            _pred.length_sq(_jbal, 
       &_mesh._set1[_inod[2]].pval(0));
       
         real_type  _jlen = 
-            _pred.lsqr(_ibal, 
+            _pred.length_sq(_ibal, 
       &_mesh._set1[_jnod[2]].pval(0));
       
         real_type static const _LTOL = 
@@ -195,13 +205,12 @@
 
         __assert(_inod[0]==_jnod[1] &&
                  _inod[1]==_jnod[0] &&
-        "FLIP-T2T2: invalid orientation") ;
+        "FLIP-T2T2: bad orientation!");
 
-        if (!need_flip(_geom, _mesh, 
-                       _pred, 
-                       _inod, _jnod)
-                      )
-            return ;
+        if(!need_flip_delaunay (
+                _geom, _mesh , 
+                _pred, 
+                _inod, _jnod)) return ;
         
         _mesh._pop_tri3(_itri) ;
         _mesh._pop_tri3(_jtri) ;

@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 09 September, 2017
+     * Last updated: 04 November, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -246,6 +246,108 @@
 		return _scal * _tvol / _lrms ;
 	}
 
+    /*
+    --------------------------------------------------------
+     * voro. "quality" scores. 
+    --------------------------------------------------------
+     */
+	
+	template <
+    typename      data_type
+             > 
+	__normal_call 
+	    data_type dual_quality_2d (
+	__const_ptr  (data_type) _p1,
+	__const_ptr  (data_type) _p2,
+	__const_ptr  (data_type) _p3
+		)
+	{
+	  //data_type _tb[ +3] ;
+      //geometry::tria_ball_2d(_tb, 
+      //    _p1, _p2, _p3) ;
+	    
+	    data_type _ob[ +3] ;
+        geometry::orthoball_2d(_ob, 
+            _p1, _p2, _p3) ;
+
+        data_type _mb[ +3] ;
+        geometry::mass_ball_2d(_mb, 
+            _p1, _p2, _p3) ;
+
+        data_type _ll = 
+            geometry::
+                lensqr_2d(_ob, _mb) ;
+                
+        data_type _qq = 
+            (data_type)1. - _ll / 
+                ((data_type)2. * _ob[2]) ;
+
+		return    _qq ;
+	}
+	
+	template <
+    typename      data_type
+             > 
+	__normal_call 
+	    data_type dual_quality_3d (
+	__const_ptr  (data_type) _p1,
+	__const_ptr  (data_type) _p2,
+	__const_ptr  (data_type) _p3
+		)
+	{
+	  //data_type _tb[ +4] ;
+      //geometry::tria_ball_3d(_tb, 
+      //    _p1, _p2, _p3) ;
+	    
+	    data_type _ob[ +4] ;
+        geometry::orthoball_3d(_ob, 
+            _p1, _p2, _p3) ;
+
+        data_type _mb[ +4] ;
+        geometry::mass_ball_3d(_mb, 
+            _p1, _p2, _p3) ;
+
+        data_type _ll = 
+            geometry::
+                lensqr_3d(_ob, _mb) ;
+                
+        data_type _qq = 
+            (data_type)1. - _ll / 
+                ((data_type)2. * _ob[3]) ;
+
+		return    _qq ;
+	}
+	
+	/*
+	template <
+    typename      data_type
+             > 
+	__normal_call 
+	    data_type dual_quality_3d (
+	__const_ptr  (data_type) _p1,
+	__const_ptr  (data_type) _p2,
+	__const_ptr  (data_type) _p3,
+	__const_ptr  (data_type) _p4
+		)
+	{
+	    data_type _tb[ +4] ;
+        geometry::orthoball_3d(_tb, 
+            _p1, _p2, _p3, _p4) ;
+
+        data_type _mb[ +4] ;
+        geometry::mass_ball_3d(_mb, 
+            _p1, _p2, _p3, _p4) ;
+
+        data_type _ll = 
+            geometry::
+                lensqr_3d(_tb, _mb) ;
+                
+        data_type _qq = 
+       (data_type)1. - _ll / _tb[3] ;
+
+		return    _qq ;
+	}
+	*/
 
     }
 

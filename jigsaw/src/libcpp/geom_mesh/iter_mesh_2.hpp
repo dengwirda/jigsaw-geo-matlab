@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 31 October, 2017
+     * Last updated: 04 November, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -182,7 +182,8 @@
             if (_seen[_tnum ] >  +0) continue ;
             
         /*--------------------- flip seed for +ve quality */
-            real_type _cost = _pred.cost (
+            real_type _cost = 
+                    _pred.cost_tria (
                &_mesh._set1[
                 _tria->node(0)].pval(0),
                &_mesh._set1[
@@ -311,7 +312,7 @@
      */
     
     __static_call
-    __normal_call real_type loop_cost (
+    __normal_call real_type loop_tscr (
         mesh_type &_mesh ,
         pred_type &_pred ,
         iptr_list &_tset ,
@@ -328,7 +329,47 @@
                   _tria != _tset.tend();
                 ++_tria  )
         {
-            real_type _tscr = _pred.cost (
+            real_type _tscr = 
+                    _pred.cost_tria (
+               &_mesh._set1[
+                _mesh._set3[
+               *_tria].node(0)].pval(0),
+               &_mesh._set1[
+                _mesh._set3[
+               *_tria].node(1)].pval(0),
+               &_mesh._set1[
+                _mesh._set3[
+               *_tria].node(2)].pval(0)) ;
+            
+            _qmin = 
+            std::min (_qmin, _tscr) ;
+              
+            _cost.push_tail (_tscr) ;
+        }
+        
+        return ( _qmin )  ;       
+    }
+    
+    __static_call
+    __normal_call real_type loop_dscr (
+        mesh_type &_mesh ,
+        pred_type &_pred ,
+        iptr_list &_tset ,
+        real_list &_cost       
+        )
+    {
+        real_type _qmin = 
+            +std::numeric_limits
+                <real_type>::infinity();
+    
+        __unreferenced(_pred) ; // for MSVC...
+
+        for (auto _tria  = _tset.head();
+                  _tria != _tset.tend();
+                ++_tria  )
+        {
+            real_type _tscr = 
+                    _pred.cost_dual (
                &_mesh._set1[
                 _mesh._set3[
                *_tria].node(0)].pval(0),
@@ -350,10 +391,10 @@
     
     /*
     --------------------------------------------------------
-     * MOVE-NODE: do "smart" smooth for single node.
+     * MOVE-NODE: "smart" coord. update for single node.
     --------------------------------------------------------
      */
-    
+       
     #include "iter_node_2.inc"
     
     template <
@@ -388,7 +429,7 @@
        (real_type) +0.0 } ;
         real_type _proj [_dims] = {
        (real_type) +0.0 } ;
-        real_type _long = 
+        real_type _ladj = 
        (real_type) +0.0 ;
  
     /*---------------- calc. line search direction vector */
@@ -396,26 +437,26 @@
         {
             ccvt_move( _mesh, _hfun, 
                 _pred, _hval, _tset, 
-                _node, _line, _long) ;
+                _node, _line, _ladj) ;
         }
         else
         if (_qmin<=_good)
         { 
             grad_move( _mesh, _hfun, 
                 _pred, _tset, _node, 
-                _init, _line, _long) ;
+                _init, _line, _ladj) ;
         }
         else { return  ; }
       
     /*---------------- scale line search direction vector */
-        real_type _llen = 
-        std::sqrt(_pred.lsqr(_line)) ;
+        real_type _llen = std::
+        sqrt(_pred.length_sq(_line)) ;
         
         real_type _xtol = 
        (real_type)+.1 * _opts.qtol() ;
         
         if (_llen<= 
-            _long * _xtol) return;
+            _ladj * _xtol) return;
       
         real_type _scal = 
             _llen * (real_type) +2.0 ;
@@ -429,7 +470,7 @@
         
             _line[_idim] /= _llen  ;
         }
-        
+
         for (auto _iter = +0 ; 
                 _iter != _ITER; ++_iter)
         {
@@ -440,7 +481,7 @@
                         _scal * _line[_idim] ;
             }
             
-            _pred.proj (
+            _pred.proj_node (
                 _geom, _save, _proj) ;
        
             for (auto _idim = _dims; _idim-- != +0; )
@@ -453,7 +494,7 @@
        
             _cost.set_count(0) ;
         
-            loop_cost(_mesh, _pred , 
+            loop_tscr(_mesh, _pred , 
                       _tset, 
                       _cost) ;
             
@@ -479,6 +520,109 @@
     
     /*
     --------------------------------------------------------
+     * MOVE-DUAL: "smart" weight update for single node.
+    --------------------------------------------------------
+     */
+    
+    #include "iter_dual_2.inc"
+    
+    template <
+        typename  node_iter
+             >
+    __static_call
+    __normal_call void_type move_dual (
+        geom_type &_geom ,
+        mesh_type &_mesh ,
+        size_type &_hfun ,
+        pred_type &_pred ,
+        real_list &_hval ,
+        iter_opts &_opts ,
+        node_iter  _node ,
+        bool_type &_okay ,
+        iptr_list &_tset ,
+        real_list &_init ,
+        real_list &_cost ,
+        real_type  _qmin , 
+        real_type  _good = 0.95
+        )
+    {
+        iptr_type static 
+            constexpr _ITER = (iptr_type)+6 ;
+    
+        _okay = false ;
+    
+        real_type  _ladj, _line ;
+        real_type  _save;
+ 
+      //if (_qmin<=_good)
+        if (true)
+        { 
+            grad_dual( _geom, _mesh ,
+                _hfun, _pred,
+                _tset, _node, 
+                _init, _line, _ladj
+                ) ;
+        }
+        else { return  ; }
+         
+        real_type 
+            _llen = std::abs(_line ) ;
+        
+        real_type _xtol = 
+       (real_type)+.1 * _opts.qtol() ;
+        
+        if (_llen<= 
+            _ladj * _xtol) return;
+      
+        real_type _scal = 
+            _llen * (real_type) +2. ;
+      
+        _line /= _llen  ;
+      
+        _save  = _node->pval(_dims) ;
+    
+        for (auto _iter = +0 ; 
+                _iter != _ITER; ++_iter )
+        {
+            _node->pval(_dims) =  
+                    _save + _scal*_line ;
+            
+            
+            /*
+            _node->pval(_dims) =
+                std::max((real_type)0.,
+                    _node->pval(_dims)) ;
+                    
+            _node->pval(_dims) =
+                std::min(+_ladj,
+                    _node->pval(_dims)) ;
+             */
+                    
+            
+            _cost.set_count(0) ;
+        
+            loop_dscr(_mesh, _pred , 
+                      _tset, 
+                      _cost) ;
+            
+            move_okay(_cost, _init , 
+                      _okay, _good , 
+                _opts .qtol()) ;
+                  
+            if (_okay) break ;
+            
+            _scal *= (real_type).5 ;
+        }
+ 
+        if (!_okay)
+        {
+            _node->pval(_dims) = _save ;
+        }
+        
+    }
+    
+    /*
+    --------------------------------------------------------
      * MOVE-NODE: do a single node smoothing pass.
     --------------------------------------------------------
      */
@@ -491,6 +635,7 @@
         pred_type &_pred ,
         real_list &_hval ,
         iptr_list &_nset ,
+        iptr_list &_amrk ,
         iptr_list &_nmrk ,
         iptr_list &_emrk ,
         iptr_list &_tmrk ,
@@ -502,16 +647,12 @@
             = (real_type)+0.95
         )
     {
-        iptr_list _aset, _eset, _tset, _amrk ;
+        iptr_list _aset, _eset, _tset ;
         real_list _qsrc, _qdst;
 
         __unreferenced(_emrk) ;
         __unreferenced(_tmrk) ;
 
-        _amrk.set_count(
-            _mesh._set1.count(), 
-                containers::tight_alloc, -1) ;
-        
         _nmov = +0 ;
    
         if (_isub == (iptr_type) +0)
@@ -524,69 +665,14 @@
         {
         /*-------------------- push if - non-bnd + recent */
             if (_node->mark() >= +0 && 
-                    _nmrk[_inum] >= +0 &&
-                        _nmrk[_inum] >= _iout - 2)
+                    std::abs(
+                _nmrk[_inum]) >= _iout - 2)
             {
                 _amrk[_inum]  = _isub;
                 _aset.push_tail(_inum) ;
             }
         }
-
-        for (auto _tria  = _mesh._set3.head();
-                  _tria != _mesh._set3.tend();
-                ++_tria  )
-        {
-            if (_tria->mark() >= +0)
-            {
-        /*-------------------- push if - in "low-Q" tria. */
-                iptr_type _inod, _jnod, _knod;
-                _inod = _tria->node(0);
-                _jnod = _tria->node(1);
-                _knod = _tria->node(2);
-            
-                if (_amrk[_inod] == _isub &&
-                    _amrk[_jnod] == _isub &&
-                    _amrk[_knod] == _isub )
-                continue ;
-            
-                real_type _cost = _pred.cost (
-               &_mesh._set1[_inod].pval(0),
-               &_mesh._set1[_jnod].pval(0),
-               &_mesh._set1[_knod].pval(0));
-                
-                if (_cost <= _good)
-                {
-                if (_amrk[_inod] != _isub &&
-                    _nmrk[_inod] >= +0)
-                {
-                    _amrk[_inod]  = _isub;
-                    _aset.push_tail(_inod) ;
-                    
-                    _nmrk[_inod]  = _iout;
-                    _nset.push_tail(_inod) ;
-                }
-                if (_amrk[_jnod] != _isub &&
-                    _nmrk[_jnod] >= +0)
-                {
-                    _amrk[_jnod]  = _isub;
-                    _aset.push_tail(_jnod) ;
-                    
-                    _nmrk[_jnod]  = _iout;
-                    _nset.push_tail(_jnod) ;
-                }
-                if (_amrk[_knod] != _isub &&
-                    _nmrk[_knod] >= +0)
-                {
-                    _amrk[_knod]  = _isub;
-                    _aset.push_tail(_knod) ;
- 
-                    _nmrk[_knod]  = _iout;
-                    _nset.push_tail(_knod) ;
-                }    
-                }
-            }
-        }           
-            
+   
         }
         else
         {
@@ -625,7 +711,8 @@
                     _aset.push_tail(_jnod) ;
                 }
             }      
-        }                 
+        }  
+                       
         }
         
     /*-------------------- weak, stochastic randomisation */
@@ -650,8 +737,10 @@
                   _apos != _aset.hend() ;
                 --_apos  )
         {
-             auto _node = 
+             auto _node  = 
             _mesh._set1.head() + *_apos ;
+            
+            if (_nmrk[*_apos] < +0) continue ;
 
             _qsrc.set_count(0) ;
             _qdst.set_count(0) ;
@@ -661,10 +750,10 @@
             _mesh.node_tri3(
                 &_node->node(+0), _tset);
 
-            if (_tset.empty()) continue ;
+            if (_tset.count() < +1) continue ;
 
             real_type _qmin = 
-                loop_cost( _mesh, 
+                loop_tscr( _mesh, 
                     _pred, _tset, _qsrc);
 
             bool_type _okay = false;
@@ -692,15 +781,73 @@
             if ( _okay) 
             {
         /*---------------- update when state is improving */
-                _hval[*_apos] = (real_type) -1. ;
-            
-                if (_nmrk[*_apos] != _iout)
-                {
-                    _nmrk[*_apos]  = _iout;
-                    _nset.push_tail(*_apos) ;
-                }
+            _hval[*_apos] = (real_type) -1. ;
+        
+            if (_nmrk[*_apos] != _iout)
+            {
+                if (_nmrk[*_apos] >= 0)
+                _nmrk[*_apos] = +_iout;
+                else
+                _nmrk[*_apos] = -_iout;
                 
-                _nmov += +1 ;
+                _nset.push_tail(*_apos) ;
+            }
+            
+            _nmov += +1 ;
+            }
+        }
+        
+        
+        return;
+        
+        
+        for (auto _apos  = _aset.tail() ;
+                  _apos != _aset.hend() ;
+                --_apos  )
+        {
+             auto _node  = 
+            _mesh._set1.head() + *_apos ;
+
+            _qsrc.set_count(0) ;
+            _qdst.set_count(0) ;
+            _tset.set_count(0) ;
+            
+        /*---------------- assemble a local tria. stencil */
+            _mesh.node_tri3(
+                &_node->node(+0), _tset);
+
+            if (_tset.count() < +1) continue ;
+
+            real_type _qmin = 
+                loop_dscr( _mesh, 
+                    _pred, _tset, _qsrc);
+
+            bool_type _okay = false;
+            
+            if (true)
+            {
+        /*---------------- attempt a GRAD-based smoothing */
+                move_dual( _geom, _mesh ,
+                    _hfun, _pred, _hval , 
+                    _opts, _node, 
+                    _okay, _tset, 
+                    _qsrc, _qdst, 
+                    _qmin, _good ) ;
+            }           
+            if (_okay) 
+            {
+        /*---------------- update when state is improving */
+            if (_nmrk[*_apos] != _iout)
+            {
+                if (_nmrk[*_apos] >= 0)
+                _nmrk[*_apos] = +_iout;
+                else
+                _nmrk[*_apos] = -_iout;
+                
+                _nset.push_tail(*_apos) ;
+            }
+            
+            _nmov += +1 ;
             }
         }
         
@@ -1218,7 +1365,12 @@
             _hval.set_count(
                 _mesh._set1.count(), 
             containers::tight_alloc, (real_type)-1.);
-   
+            
+            iptr_list _amrk;
+            _amrk.set_count(
+                _mesh._set1.count(), 
+            containers::tight_alloc, (iptr_type)-1 );
+         
             _nset.set_count(  +0);
    
             iptr_type _nmov = +0 ;
@@ -1254,15 +1406,15 @@
                 iptr_type  _nloc;
                 move_node( _geom, _mesh ,
                     _hfun, _pred, _hval , 
-                    _nset, 
+                    _nset, _amrk,
                     _nmrk, _emrk, _tmrk , 
                     _iter, _isub, _opts , 
                     _nloc, _good) ;
-                          
+                
                 _nmov = std::max (_nmov , 
-                                  _nloc ) ;
+                                  _nloc ) ;    
             }
-            
+                
     #       ifdef  __use_timers
             _ttoc = _time.now() ;
             

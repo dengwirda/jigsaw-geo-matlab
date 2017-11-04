@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 31 October, 2017
+     * Last updated: 04 November, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -62,13 +62,13 @@
         iptr_list &_tset ,
         node_iter  _node ,
         real_type *_line ,
-        real_type &_long
+        real_type &_lsqr
         )
     {
 		real_type _move[_dims] = {
             (real_type) +0.0 } ;
 
-        _long = 
+        _lsqr = 
             (real_type) +0.0 ;
     
 		__unreferenced (_pred) ; // for MSVC...
@@ -99,11 +99,11 @@
             _mesh._set1.head()+_tnod[1] ;
              auto _knod = 
             _mesh._set1.head()+_tnod[2] ;
-            
+                 
             real_type _ball [_dims + 1] ;
-            _pred.mini(_ball, 
-                &_inod->pval(0) ,
-                    &_jnod->pval(0) ,
+            _pred.mini_ball (_ball , 
+                &_inod->pval(0),
+                    &_jnod->pval(0),
                         &_knod->pval(0) ) ;
         
             if (_hval[_tnod[0]] < (real_type)+0.)
@@ -127,7 +127,10 @@
                     _knod->hidx()) ;
             }
             
-            real_type _trad = std::sqrt(_ball[_dims]) ;
+            real_type _tsqr = std::max(
+                (real_type) +0., _ball[_dims]);
+            
+            real_type _trad = std::sqrt(_tsqr);
             
             real_type _hbar = _hval[_tnod[0]] +
                               _hval[_tnod[1]] +
@@ -135,9 +138,9 @@
             _hbar /= (real_type) +3.0 ; 
          
             real_type static 
-                constexpr _tmul = (real_type) +0.67 ;
+                constexpr _tmul = (real_type) +0.60 ;
             real_type static 
-                constexpr _hmul = (real_type) +0.33 ;
+                constexpr _hmul = (real_type) +0.40 ;
             
             _wval  = (real_type) +1.0 / 
                 (_hmul*_hbar + _tmul*_trad) ;
@@ -149,7 +152,7 @@
             }
             
             _wsum   += _wval ;
-            _long   += _trad ;
+            _lsqr   += _trad ;
         }
         
         if (_tnum > +0)
@@ -161,7 +164,7 @@
                         - _node->pval(_idim) ;
             }
             
-            _long /= _tnum ;
+            _lsqr /= _tnum ;
         }
         
     }
@@ -185,13 +188,13 @@
         iptr_list &_tset ,
         node_iter  _node ,
         real_type *_line ,
-        real_type &_long
+        real_type &_lsqr
         )
     {
         real_type _move[_dims] = {
             (real_type) +0.0 } ;
 
-        _long = 
+        _lsqr = 
             (real_type) +0.0 ;
     
         real_type _wval = 
@@ -244,7 +247,7 @@
             }
   
             real_type _elen = 
-                std::sqrt(_pred.lsqr(_evec)) ;
+            std::sqrt(_pred.length_sq(_evec));
   
             if (_hval[_enod[0]] 
                     < (real_type)+0.)
@@ -260,7 +263,7 @@
             _hfun.eval(_jpos, _jnod->hidx()) ;
             }
             
-            _long +=   _elen ;
+            _lsqr +=   _elen ;
 
             real_type  _hbar = 
            (real_type) +.5 * _hval[_enod[0]] +
@@ -301,7 +304,7 @@
                         - _node->pval(_idim) ;   
             }
             
-            _long /= _enum ;
+            _lsqr /= _enum ;
         }
 
     }
@@ -324,7 +327,7 @@
         node_iter  _node ,
         real_list &_cost ,
         real_type *_line ,
-        real_type &_long
+        real_type &_lsqr
         )
     {
         real_type static const _ZERO = 
@@ -352,7 +355,7 @@
 
         iptr_type _tnum = +0 ;
         
-        _long = (real_type)0.;
+        _lsqr = (real_type)0.;
         
         real_type _bmin[_dims] = {
            +std::numeric_limits
@@ -420,19 +423,25 @@
                     _pmid[_idim])  ;
             }
             
-            real_type _llen = 
-                std::sqrt(_pred.lsqr(
-                    _pmid, &_node->pval(0)))  ;
+            real_type _llen =
+                _pred.length_sq (
+                    _pmid, &_node->pval(0))  ;
             
-            _long +=  _llen ;
+            _lsqr +=  _llen ;
         }
 
-        _tnum = +0 ;
+        _lsqr = std::sqrt(_lsqr / 
+                          _tnum ) ;
 
         real_type _gsum, _qbar, _qlev ;
         _gsum = (real_type) +0. ;
+        _qlev =   _qmin ;
         _qbar = (real_type) +0. ;
-        _qlev = (real_type) +0. ;
+        
+        real_type _qlim = _qmin + 
+            (real_type) +1.0E-003 ;
+
+        _tnum = +0 ;
 
         for (auto _tria  = _tset.head(),
                   _tend  = _tset.tend();
@@ -442,15 +451,11 @@
              auto _tptr  = 
             _mesh._set3.head()+*_tria ;
         
-            real_type _qtri = _cost[_tnum] ;
-        
             real_type _DQDX[_dims];
-            real_type _qlim = 
-           (real_type)1.E-3*_qmin ;
-        
-            _qlim = _qmin + _qlim ;
-        
-            if (_cost[_tnum] <= _qlim)
+            real_type _qtri 
+                    = _cost[_tnum];
+            
+            if (_qtri <=  _qlim)
             {
    
             for(auto _idim = _dims; _idim-- != +0; )
@@ -476,7 +481,7 @@
                         pval(_idim) - _save[_idim] ;
 
                     real_type _scr1 = 
-                        _pred .cost (
+                        _pred .cost_tria (
                    &_mesh._set1[
                     _tptr->node(0)].pval(0),
                    &_mesh._set1[
@@ -492,7 +497,7 @@
                         pval(_idim) - _save[_idim] ;
 
                     real_type _scr0 = 
-                        _pred .cost (
+                        _pred .cost_tria (
                    &_mesh._set1[
                     _tptr->node(0)].pval(0),
                    &_mesh._set1[
@@ -550,8 +555,7 @@
             }
             else
             {
-                _qlev = std::max (
-                      _qlev, _qtri) ;
+                _qlev = std::max(_qlev, _qtri);
             }
         }
  
@@ -561,15 +565,14 @@
             {
                 _dqdx[_idim] /= _gsum ;
             }
-        
+            
             _qbar /=  _gsum ;
-            _long /=  _tnum ;  
         }
         
         real_type _scal = 
-            std::sqrt( _pred.lsqr (_dqdx)) ;
+            std::sqrt(_pred.length_sq(_dqdx)) ;
         
-        if (_scal < _ZERO * _long)
+        if (_scal <= _ZERO * _lsqr)
         {
             for (auto _idim = _dims; _idim-- != +0; )
             {
@@ -585,10 +588,10 @@
                     _dqdx[_idim] / _scal ;
             }
         
-            _scal = (_qlev - _qbar) 
-                / _pred.lsqr(_line, _dqdx) ;
+            _scal = (_qlev - _qbar) /
+            _pred .length_sq(_line, _dqdx) ;
             
-            _scal = std::min(_scal, _long) ;
+            _scal = std::min(_scal, _lsqr) ;
             
             for (auto _idim = _dims; _idim-- != +0; )
             {
