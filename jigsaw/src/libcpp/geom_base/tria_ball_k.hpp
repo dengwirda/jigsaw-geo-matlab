@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 09 September, 2017
+     * Last updated: 01 November, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -198,6 +198,16 @@
      * TRIA-BALL: circumscribing balls. 
     --------------------------------------------------------
      */
+     
+    template <
+    typename      data_type
+             >
+	__inline_call void_type tria_norm_3d (  // forward dec.
+	__const_ptr  (data_type) _p1,
+	__const_ptr  (data_type) _p2,
+	__const_ptr  (data_type) _p3,
+	__write_ptr  (data_type) _nv
+		 ) ;
      
     template <
     typename      real_type
@@ -707,6 +717,10 @@
         _xi[__ij(2,0,3)] * _ee[0] +
 	    _xi[__ij(2,1,3)] * _ee[1] +
         _xi[__ij(2,2,3)] * _ee[2] )  ;
+        
+        _bb[0]+= _db[0] / _dd ;
+        _bb[1]+= _db[1] / _dd ;
+        _bb[2]+= _db[2] / _dd ;
         }
 
         _bb[ 0] += _p1[0]  ;
@@ -1029,8 +1043,115 @@
     #undef  __miniface12
     #undef  __miniface13
     #undef  __miniface23
-     
-     
+    
+    /*
+    --------------------------------------------------------
+     * MASS-BALL: centre-of-mass balls. 
+    --------------------------------------------------------
+     */
+    
+    template <
+    typename      data_type
+             >
+    __normal_call void_type mass_ball_2d (
+    __write_ptr  (data_type) _bb,
+	__const_ptr  (data_type) _p1,
+	__const_ptr  (data_type) _p2
+        )
+    {
+        _bb[0] = 
+        (data_type).5*(_p1[0]+_p2[0]);
+        _bb[1] = 
+        (data_type).5*(_p1[1]+_p2[1]);
+
+        data_type _r1 = 
+        geometry::lensqr_2d(_bb, _p1);
+        data_type _r2 = 
+        geometry::lensqr_2d(_bb, _p2);
+
+        _bb[2] = (_r1+_r2)/(real_type)2. ;
+    }
+    
+    template <
+    typename      data_type
+             >
+    __normal_call void_type mass_ball_3d (
+    __write_ptr  (data_type) _bb,
+	__const_ptr  (data_type) _p1,
+	__const_ptr  (data_type) _p2
+        )
+    {
+        _bb[0] = 
+        (data_type).5*(_p1[0]+_p2[0]);
+        _bb[1] = 
+        (data_type).5*(_p1[1]+_p2[1]);
+        _bb[2] = 
+        (data_type).5*(_p1[2]+_p2[2]);
+
+        data_type _r1 = 
+        geometry::lensqr_3d(_bb, _p1);
+        data_type _r2 = 
+        geometry::lensqr_3d(_bb, _p2);
+
+        _bb[3] = (_r1+_r2)/(real_type)2. ;
+    }
+    
+    template <
+    typename      data_type
+             >
+    __normal_call void_type mass_ball_2d (
+    __write_ptr  (data_type) _bb,
+	__const_ptr  (data_type) _p1,
+	__const_ptr  (data_type) _p2,
+	__const_ptr  (data_type) _p3
+        )
+    {
+        _bb[0] = 
+       (_p1[0]+_p2[0]+_p3[0])/(real_type)+3.;
+        _bb[1] = 
+       (_p1[1]+_p2[1]+_p3[1])/(real_type)+3.;
+
+        data_type _r1 = 
+        geometry::lensqr_2d(_bb, _p1);
+        data_type _r2 = 
+        geometry::lensqr_2d(_bb, _p2);
+        data_type _r3 = 
+        geometry::lensqr_2d(_bb, _p3);
+
+        _bb[2] = std::max ( _r3, 
+                 std::max ( _r1, _r2)
+                          ) ;
+    }
+    
+    template <
+    typename      data_type
+             >
+    __normal_call void_type mass_ball_3d (
+    __write_ptr  (data_type) _bb,
+	__const_ptr  (data_type) _p1,
+	__const_ptr  (data_type) _p2,
+	__const_ptr  (data_type) _p3
+        )
+    {
+        _bb[0] = 
+       (_p1[0]+_p2[0]+_p3[0])/(real_type)+3.;
+        _bb[1] = 
+       (_p1[1]+_p2[1]+_p3[1])/(real_type)+3.;
+        _bb[2] = 
+       (_p1[2]+_p2[2]+_p3[2])/(real_type)+3.;
+
+        data_type _r1 = 
+        geometry::lensqr_3d(_bb, _p1);
+        data_type _r2 = 
+        geometry::lensqr_3d(_bb, _p2);
+        data_type _r3 = 
+        geometry::lensqr_3d(_bb, _p3);
+
+        _bb[3] = std::max ( _r3, 
+                 std::max ( _r1, _r2)
+                          ) ;
+    }
+          
     }
     
 #   endif //__TRIA_BALL_K__
