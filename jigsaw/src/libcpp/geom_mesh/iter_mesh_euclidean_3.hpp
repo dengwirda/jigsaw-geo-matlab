@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 24 August, 2017
+     * Last updated: 01 November, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -70,7 +70,7 @@ template <
     typedef mesh::tria_complex_tria_4 <
             iptr_type >             tria_type ;
     
-    typedef mesh::tria_complex_node_3 <
+    typedef mesh::tria_complex_node_4 <
             iptr_type , 
             real_type >             node_base ;
     

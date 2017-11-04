@@ -31,7 +31,7 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 10 September, 2017
+ * Last updated: 01 November, 2017
  *
  * Copyright 2013-2017
  * Darren Engwirda
@@ -150,6 +150,83 @@
 
     containers::
     fixed_array<real_type, +3>    _pval ;  // node coord.'s
+    
+    containers::
+    fixed_array<iptr_type, +1>    _ndat ;  // node indexing
+    
+    char                          _mark ;
+    char                          _self ;
+    
+    public  :
+/*---------------------------------------- "write" access */
+	__inline_call real_type      & pval (
+		iptr_type  _ipos
+		)
+	{   return this->_pval [_ipos];
+	}
+	__inline_call iptr_type      & node (
+		iptr_type  _ipos
+		)
+	{   return this->_ndat [_ipos];
+	}
+
+    __inline_call char           & mark (
+	    )   
+    {   return this->_mark ;
+    }
+    __inline_call char           & self (
+	    )   
+    {   return this->_self ;
+    }
+	
+/*---------------------------------------- "const" access */
+	__inline_call real_type const& pval (
+		iptr_type _ipos
+		) const
+	{   return this->_pval [_ipos];
+	}
+	__inline_call iptr_type const& node (
+		iptr_type  _ipos
+		) const
+	{   return this->_ndat[_ipos];
+	}
+
+    __inline_call char      const& mark (
+	    ) const
+    {   return this->_mark ;
+    }
+    __inline_call char      const& self (
+	    ) const
+    {   return this->_self ;
+    }
+
+	} ;
+
+/*
+------------------------------------------------------------
+ * BASE-NODE-4: node-type for simplicial complexes in R^4.
+------------------------------------------------------------
+ * IPTR-TYPE - signed-integer typedef.
+ * REAL-TYPE - floating-point typedef.
+------------------------------------------------------------
+ */
+ 
+    template <
+    typename I,
+    typename R
+		     >
+    class tria_complex_node_4
+	{
+/*---------------------------------------- basic-node R^4 */
+	public  :
+	
+	typedef R                 real_type ;
+	typedef I                 iptr_type ;
+
+    iptr_type static constexpr _dims = +4 ;
+
+    containers::
+    fixed_array<real_type, +4>    _pval ;  // node coord.'s
     
     containers::
     fixed_array<iptr_type, +1>    _ndat ;  // node indexing

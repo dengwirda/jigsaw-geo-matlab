@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 04 October, 2017
+     * Last updated: 01 November, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -67,18 +67,7 @@
         public  :
         
         __static_call
-        __inline_call real_type area (
-          __const_ptr(real_type) _ipos ,
-          __const_ptr(real_type) _jpos ,
-          __const_ptr(real_type) _kpos
-            )
-        {   return geometry
-                ::tria_area_2d (
-                   _ipos, _jpos, _kpos) ;
-        }
-        
-        __static_call
-        __inline_call void_type mini (
+        __inline_call void_type mini_ball (
           __write_ptr(real_type) _ball ,
           __const_ptr(real_type) _ipos ,
           __const_ptr(real_type) _jpos ,
@@ -90,7 +79,7 @@
         }
         
         __static_call
-        __inline_call void_type circ (
+        __inline_call void_type circ_ball (
           __write_ptr(real_type) _ball ,
           __const_ptr(real_type) _ipos ,
           __const_ptr(real_type) _jpos ,
@@ -102,7 +91,19 @@
         }
         
         __static_call
-        __inline_call real_type cost (
+        __inline_call void_type orthoball (
+          __write_ptr(real_type) _ball ,
+          __const_ptr(real_type) _ipos ,
+          __const_ptr(real_type) _jpos ,
+          __const_ptr(real_type) _kpos
+            )
+        {   return geometry
+                ::orthoball_2d (
+            _ball, _ipos, _jpos, _kpos) ;
+        }
+        
+        __static_call
+        __inline_call real_type cost_tria (
           __const_ptr(real_type) _ipos ,
           __const_ptr(real_type) _jpos ,
           __const_ptr(real_type) _kpos
@@ -113,7 +114,18 @@
         }
         
         __static_call
-        __inline_call real_type lsqr (
+        __inline_call real_type cost_dual (
+          __const_ptr(real_type) _ipos ,
+          __const_ptr(real_type) _jpos ,
+          __const_ptr(real_type) _kpos
+            )
+        {   return geometry
+                ::dual_quality_2d (
+                   _ipos, _jpos, _kpos) ;
+        }
+        
+        __static_call
+        __inline_call real_type length_sq (
           __const_ptr(real_type) _ipos ,
           __const_ptr(real_type) _jpos
             )
@@ -122,7 +134,7 @@
         }
         
         __static_call
-        __inline_call real_type lsqr (
+        __inline_call real_type length_sq (
           __const_ptr(real_type) _vvec
             )
         {   return 
@@ -133,7 +145,7 @@
         typename      geom_type
                  >
         __static_call
-        __inline_call void_type proj (
+        __inline_call void_type proj_node (
             geom_type &_geom ,
           __const_ptr(real_type) _save ,
           __write_ptr(real_type) _proj
