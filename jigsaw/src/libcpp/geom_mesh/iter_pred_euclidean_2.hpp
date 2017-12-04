@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 01 November, 2017
+     * Last updated: 09 November, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -65,6 +65,17 @@
         iptr_type static constexpr _dims = +2 ; 
          
         public  :
+        
+        __static_call
+        __inline_call real_type mass_tria (
+          __const_ptr(real_type) _ipos ,
+          __const_ptr(real_type) _jpos ,
+          __const_ptr(real_type) _kpos
+            )
+        {   return geometry
+                ::tria_area_2d (
+                   _ipos, _jpos, _kpos) ;
+        }
         
         __static_call
         __inline_call void_type mini_ball (
