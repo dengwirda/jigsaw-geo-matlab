@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 16 September, 2017
+     * Last updated: 30 November, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -237,17 +237,34 @@
              node(_nadj)->topo() ;
              
     /*--------------------- find intersections with geom. */       
-        mesh::keep_all_3d <
+        mesh::keep_all_2d <
             real_type ,
             iptr_type > _pred ;
+        mesh::keep_all_2d <
+            real_type ,
+            iptr_type > _halo ;
         
         for (auto _iter = 32; _iter-- != 0 ; )
         {         
             _pred.clear() ;
-                                    
-            if(!_geom.intersect (
+            _halo.clear() ;
+                
+            real_type _prad = 
+           (real_type)+1.0 * _ball._ball[3] ;
+           
+            real_type _hrad = 
+           (real_type)+1.5 * _ball._ball[3] ;
+                
+            bool_type _okay = true;         
+            _okay = _okay & _geom.intersect (
                &_ball._ball[0], 
-                _ball._ball[3], _pred))
+                    _prad, _pred) ; // actual!
+                    
+            _okay = _okay & _geom.intersect (
+               &_ball._ball[0], 
+                    _hrad, _halo) ; // bracket
+                                    
+            if(!_okay)
             {
                 _ball._ball[3] *=   // reduce rad. for geom.
                     (real_type) +.67 ;
