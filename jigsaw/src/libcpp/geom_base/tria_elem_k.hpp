@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 04 November, 2017
+     * Last updated: 28 November, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -262,25 +262,91 @@
 	__const_ptr  (data_type) _p3
 		)
 	{
-	  //data_type _tb[ +3] ;
-      //geometry::tria_ball_2d(_tb, 
-      //    _p1, _p2, _p3) ;
-	    
 	    data_type _ob[ +3] ;
         geometry::orthoball_2d(_ob, 
-            _p1, _p2, _p3) ;
+            _p1 , _p2, _p3);
+            
+        data_type _o1[ +3] ;
+        geometry::orthoball_2d(_o1, 
+            _p1 , _p2) ;
+            
+        data_type _o2[ +3] ;
+        geometry::orthoball_2d(_o2, 
+            _p2 , _p3) ;
+            
+        data_type _o3[ +3] ;
+        geometry::orthoball_2d(_o3, 
+            _p3 , _p1) ;
+            
 
         data_type _mb[ +3] ;
         geometry::mass_ball_2d(_mb, 
-            _p1, _p2, _p3) ;
+            _p1 , _p2, _p3);
+            
+        data_type _m1[ +3] ;
+        geometry::mass_ball_2d(_m1, 
+            _p1 , _p2) ;
+            
+        data_type _m2[ +3] ;
+        geometry::mass_ball_2d(_m2, 
+            _p2 , _p3) ;
+            
+        data_type _m3[ +3] ;
+        geometry::mass_ball_2d(_m3, 
+            _p3 , _p1) ;
 
-        data_type _ll = 
-            geometry::
-                lensqr_2d(_ob, _mb) ;
-                
+
+        data_type _lb = 
+        geometry::lensqr_2d(_ob, _mb) ;
+        
+        data_type _l1 = 
+        geometry::lensqr_2d(_o1, _m1) ;
+        
+        data_type _l2 = 
+        geometry::lensqr_2d(_o2, _m2) ;
+        
+        data_type _l3 = 
+        geometry::lensqr_2d(_o3, _m3) ;
+        
+        
+        data_type _rb = 
+        geometry::lensqr_2d(_ob, _p1) +
+        geometry::lensqr_2d(_ob, _p2) +
+        geometry::lensqr_2d(_ob, _p3) ;
+        
+        _rb /= (real_type) +3. ;
+        
+        
+        data_type _qb = 
+       (data_type)+1. - _lb / _rb ;
+       
+        data_type _q1 = 
+       (data_type)+1. - _l1 / _rb ;
+       
+        data_type _q2 = 
+       (data_type)+1. - _l2 / _rb ;
+       
+        data_type _q3 = 
+       (data_type)+1. - _l3 / _rb ;
+       
+        
+        /*
+        data_type _qe =             // straight mean
+       (_q1+_q2+_q3) / (real_type)+3. ;
+        */
+         
+        data_type _qe =             // harmonic mean
+            (data_type) +1. / _q1 + 
+            (data_type) +1. / _q2 + 
+            (data_type) +1. / _q3 ;
+        _qe = 
+            (data_type) +3. / _qe ;
+        
+
         data_type _qq = 
-            (data_type)1. - _ll / 
-                ((data_type)2. * _ob[2]) ;
+            (data_type)+.67 * _qb + 
+                (data_type)+.33 * _qe ;
+
 
 		return    _qq ;
 	}
@@ -295,25 +361,91 @@
 	__const_ptr  (data_type) _p3
 		)
 	{
-	  //data_type _tb[ +4] ;
-      //geometry::tria_ball_3d(_tb, 
-      //    _p1, _p2, _p3) ;
-	    
 	    data_type _ob[ +4] ;
         geometry::orthoball_3d(_ob, 
-            _p1, _p2, _p3) ;
+            _p1 , _p2, _p3);
+            
+        data_type _o1[ +4] ;
+        geometry::orthoball_3d(_o1, 
+            _p1 , _p2) ;
+            
+        data_type _o2[ +4] ;
+        geometry::orthoball_3d(_o2, 
+            _p2 , _p3) ;
+            
+        data_type _o3[ +4] ;
+        geometry::orthoball_3d(_o3, 
+            _p3 , _p1) ;
+            
 
         data_type _mb[ +4] ;
         geometry::mass_ball_3d(_mb, 
-            _p1, _p2, _p3) ;
+            _p1 , _p2, _p3);
+            
+        data_type _m1[ +4] ;
+        geometry::mass_ball_3d(_m1, 
+            _p1 , _p2) ;
+            
+        data_type _m2[ +4] ;
+        geometry::mass_ball_3d(_m2, 
+            _p2 , _p3) ;
+            
+        data_type _m3[ +4] ;
+        geometry::mass_ball_3d(_m3, 
+            _p3 , _p1) ;
 
-        data_type _ll = 
-            geometry::
-                lensqr_3d(_ob, _mb) ;
-                
+
+        data_type _lb = 
+        geometry::lensqr_3d(_ob, _mb) ;
+        
+        data_type _l1 = 
+        geometry::lensqr_3d(_o1, _m1) ;
+        
+        data_type _l2 = 
+        geometry::lensqr_3d(_o2, _m2) ;
+        
+        data_type _l3 = 
+        geometry::lensqr_3d(_o3, _m3) ;
+        
+        
+        data_type _rb = 
+        geometry::lensqr_3d(_ob, _p1) +
+        geometry::lensqr_3d(_ob, _p2) +
+        geometry::lensqr_3d(_ob, _p3) ;
+        
+        _rb /= (real_type) +3. ;
+        
+        
+        data_type _qb = 
+       (data_type)+1. - _lb / _rb ;
+       
+        data_type _q1 = 
+       (data_type)+1. - _l1 / _rb ;
+       
+        data_type _q2 = 
+       (data_type)+1. - _l2 / _rb ;
+       
+        data_type _q3 = 
+       (data_type)+1. - _l3 / _rb ;
+       
+    
+        /*
+        data_type _qe =             // straight mean
+       (_q1+_q2+_q3) / (real_type)+3. ;
+        */
+         
+        data_type _qe =             // harmonic mean
+            (data_type) +1. / _q1 + 
+            (data_type) +1. / _q2 + 
+            (data_type) +1. / _q3 ;
+        _qe = 
+            (data_type) +3. / _qe ;
+        
+
         data_type _qq = 
-            (data_type)1. - _ll / 
-                ((data_type)2. * _ob[3]) ;
+            (data_type)+.67 * _qb + 
+                (data_type)+.33 * _qe ;
+
 
 		return    _qq ;
 	}
@@ -330,20 +462,7 @@
 	__const_ptr  (data_type) _p4
 		)
 	{
-	    data_type _tb[ +4] ;
-        geometry::orthoball_3d(_tb, 
-            _p1, _p2, _p3, _p4) ;
-
-        data_type _mb[ +4] ;
-        geometry::mass_ball_3d(_mb, 
-            _p1, _p2, _p3, _p4) ;
-
-        data_type _ll = 
-            geometry::
-                lensqr_3d(_tb, _mb) ;
-                
-        data_type _qq = 
-       (data_type)1. - _ll / _tb[3] ;
+	    //!! to-do...
 
 		return    _qq ;
 	}
