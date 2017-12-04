@@ -303,18 +303,32 @@
 #   OPTM_QLIM = 0.90
 
 
-#   ---> OPTM_ZIP_ - {default=true} allow for "merge" opera-
-#       tions on sub-faces.
+#   ---> OPTM_ZIP_ - {default= true} allow for "merge" oper-
+#       ations on sub-faces.
 #
 
 #   OPTM_ZIP_ = FALSE
 
 
-#   ---> OPTM_DIV_ - {default=true} allow for "split" opera-
-#       tions on sub-faces.
+#   ---> OPTM_DIV_ - {default= true} allow for "split" oper-
+#       ations on sub-faces.
 #
 
 #   OPTM_DIV_ = FALSE
+
+
+#   ---> OPTM_TRIA - {default= true} allow for optimisation
+#       of TRIA grid geometry.
+#
+
+#   OPTM_TRIA = FALSE
+
+
+#   ---> OPTM_DUAL - {default=false} allow for optimisation
+#       of DUAL grid geometry.
+#
+
+#   OPTM_DUAL = TRUE
 
 
 #

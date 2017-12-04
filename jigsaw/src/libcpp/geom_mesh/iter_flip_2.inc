@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 04 November, 2017
+     * Last updated: 22 November, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -47,13 +47,9 @@
     /*
     __static_call
     __normal_call bool_type need_flip_costfunc (
-    
-    __static_call
-    __normal_call bool_type need_flip_weighted (
-    
      */
     
- 
+    
     __static_call
     __normal_call bool_type need_flip_delaunay (
         geom_type &_geom ,
@@ -63,20 +59,42 @@
     __const_ptr  (iptr_type) _jnod
         )
     {
-		__unreferenced(_pred) ; // for MSVC...
+		real_type static const _LTOL = 
+        std::pow(std::numeric_limits
+       <real_type>::epsilon(), +.80) ;
 
-        real_type  _ibal[_dims+1];
+        __unreferenced(_pred) ; // for MSVC...
+
+        iptr_type  _iloc[3] ;
+        _iloc[0] = _inod[0] ;
+        _iloc[1] = _inod[1] ;
+        _iloc[2] = _inod[2] ;
+        
+        algorithms::isort(
+            &_iloc[0], &_iloc[3] , 
+                std::less<iptr_type>());
+        
+        iptr_type  _jloc[3] ;
+        _jloc[0] = _jnod[0] ;
+        _jloc[1] = _jnod[1] ;
+        _jloc[2] = _jnod[2] ;
+        
+        algorithms::isort(
+            &_jloc[0], &_jloc[3] , 
+                std::less<iptr_type>());
+        
+        real_type _ibal[_dims+1] ;
         _pred.circ_ball(_ibal ,
-       &_mesh._set1[_inod[0]].pval(0),
-       &_mesh._set1[_inod[1]].pval(0),
-       &_mesh._set1[_inod[2]].pval(0)
+       &_mesh._set1[_iloc[0]].pval(0),
+       &_mesh._set1[_iloc[1]].pval(0),
+       &_mesh._set1[_iloc[2]].pval(0)
             ) ;
             
-        real_type  _jbal[_dims+1];
+        real_type _jbal[_dims+1] ;
         _pred.circ_ball(_jbal ,
-       &_mesh._set1[_jnod[0]].pval(0),
-       &_mesh._set1[_jnod[1]].pval(0),
-       &_mesh._set1[_jnod[2]].pval(0)
+       &_mesh._set1[_jloc[0]].pval(0),
+       &_mesh._set1[_jloc[1]].pval(0),
+       &_mesh._set1[_jloc[2]].pval(0)
             ) ;
 
         real_type _null[_dims] = {
@@ -96,20 +114,118 @@
             _pred.length_sq(_ibal, 
       &_mesh._set1[_jnod[2]].pval(0));
       
-        real_type static const _LTOL = 
-        std::pow(std::numeric_limits
-        <real_type>::epsilon(), +.8) ;
-      
         real_type _btol = _LTOL * 
-       (real_type).5*(_ilen + _jlen) ;
+            std::max(_ilen, _jlen) ;
         
-        if (_ilen-_jbal[_dims] > -_btol &&
-            _jlen-_ibal[_dims] > -_btol )
+        real_type _idel = 
+            _ilen - _jbal[_dims] ;
+        real_type _jdel = 
+            _jlen - _ibal[_dims] ;
+        
+        if (_idel >= - _btol ||
+                _jdel >= - _btol )
+        {
             return false ;
+        }
         else
-            return  true ;      
+        {
+            return  true ;
+        }          
     }
- 
+    
+    __static_call
+    __normal_call bool_type need_flip_weighted (
+        geom_type &_geom ,
+        mesh_type &_mesh ,
+        pred_type &_pred ,
+    __const_ptr  (iptr_type) _inod ,
+    __const_ptr  (iptr_type) _jnod
+        )
+    {
+		real_type static const _LTOL = 
+        std::pow(std::numeric_limits
+       <real_type>::epsilon(), +.80) ;
+
+        __unreferenced(_pred) ; // for MSVC...
+
+        iptr_type  _iloc[3] ;
+        _iloc[0] = _inod[0] ;
+        _iloc[1] = _inod[1] ;
+        _iloc[2] = _inod[2] ;
+        
+        algorithms::isort(
+            &_iloc[0], &_iloc[3] , 
+                std::less<iptr_type>());
+        
+        iptr_type  _jloc[3] ;
+        _jloc[0] = _jnod[0] ;
+        _jloc[1] = _jnod[1] ;
+        _jloc[2] = _jnod[2] ;
+        
+        algorithms::isort(
+            &_jloc[0], &_jloc[3] , 
+                std::less<iptr_type>());
+        
+        real_type _ibal[_dims+1] ;
+        _pred.orthoball(_ibal ,
+       &_mesh._set1[_iloc[0]].pval(0),
+       &_mesh._set1[_iloc[1]].pval(0),
+       &_mesh._set1[_iloc[2]].pval(0)
+            ) ;
+            
+        real_type _jbal[_dims+1] ;
+        _pred.orthoball(_jbal ,
+       &_mesh._set1[_jloc[0]].pval(0),
+       &_mesh._set1[_jloc[1]].pval(0),
+       &_mesh._set1[_jloc[2]].pval(0)
+            ) ;
+
+        real_type _null[_dims] = {
+            (real_type) +0.  } ;
+
+        _pred. proj_node (
+            _geom, _null, _ibal) ;
+            
+        _pred. proj_node (
+            _geom, _null, _jbal) ;
+
+        real_type  _ilen = 
+            _pred.length_sq(_jbal, 
+      &_mesh._set1[_inod[2]].pval(   +0));
+      
+        real_type  _ipwr = 
+       _mesh._set1[_inod[2]].pval(_dims) ;
+      
+        real_type  _jlen = 
+            _pred.length_sq(_ibal, 
+      &_mesh._set1[_jnod[2]].pval(   +0));
+    
+        real_type  _jpwr = 
+       _mesh._set1[_jnod[2]].pval(_dims) ;
+    
+        _ilen -=   _ipwr ;
+        _jlen -=   _jpwr ;
+        
+        real_type _btol = _LTOL * 
+            std::max(_ilen, _jlen) ;
+        
+        real_type _idel = 
+            _ilen - _jbal[_dims] ;
+        real_type _jdel = 
+            _jlen - _ibal[_dims] ;
+        
+        if (_idel >= - _btol ||
+                _jdel >= - _btol )
+        {
+            return false ;
+        }
+        else
+        {
+            return  true ;
+        }       
+    } 
+    
+     
     /*
     --------------------------------------------------------
      * FLIP-T2T2: 2-simplex topological flip. 
@@ -207,7 +323,7 @@
                  _inod[1]==_jnod[0] &&
         "FLIP-T2T2: bad orientation!");
 
-        if(!need_flip_delaunay (
+        if(!need_flip_weighted (
                 _geom, _mesh , 
                 _pred, 
                 _inod, _jnod)) return ;

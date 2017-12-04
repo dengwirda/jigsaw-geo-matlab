@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 07 August, 2017
+     * Last updated: 04 December, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -76,6 +76,8 @@
         
         bool_type        _zip_ ;
         bool_type        _div_ ;
+        bool_type        _tria ;
+        bool_type        _dual ;
      
         public  : 
         
@@ -90,7 +92,9 @@
             _qlim ((real_type) +0.9250) , 
             
             _zip_ ((bool_type)  true  ) ,
-            _div_ ((bool_type)  true  )
+            _div_ ((bool_type)  true  ) ,
+            _tria ((bool_type)  true  ) ,
+            _dual ((bool_type)  false )
         {   // load default values
         }
         
@@ -122,6 +126,14 @@
             )
         {   return  this->_div_ ;
         }
+        __inline_call bool_type      & tria (
+            )
+        {   return  this->_tria ;
+        }
+        __inline_call bool_type      & dual (
+            )
+        {   return  this->_dual ;
+        }
         
     /*------------------------------------ "const" access */
         __inline_call iptr_type const& verb (
@@ -151,8 +163,17 @@
             ) const
         {   return  this->_div_ ;
         }
+        __inline_call bool_type const& tria (
+            ) const
+        {   return  this->_tria ;
+        }
+        __inline_call bool_type const& dual (
+            ) const
+        {   return  this->_dual ;
+        }
         
         } ;
+    
     
     /*
     --------------------------------------------------------

@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 15 September, 2017
+     * Last updated: 22 November, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -373,6 +373,16 @@
             if (_stok[0] == "OPTM_DIV_")
                 {
             __putBOOL(_iter_opts.div_ (), _stok) ;
+                }
+            else
+            if (_stok[0] == "OPTM_TRIA")
+                {
+            __putBOOL(_iter_opts.tria (), _stok) ;
+                }
+            else
+            if (_stok[0] == "OPTM_DUAL")
+                {
+            __putBOOL(_iter_opts.dual (), _stok) ;
                 }
   
             }
@@ -935,6 +945,10 @@
             _jcfg._iter_opts.zip_())
         __dumpBOOL("OPTM_DIV_", 
             _jcfg._iter_opts.div_())
+        __dumpBOOL("OPTM_TRIA", 
+            _jcfg._iter_opts.tria())
+        __dumpBOOL("OPTM_DUAL", 
+            _jcfg._iter_opts.dual())
 
         _jlog.push("\n") ;
         

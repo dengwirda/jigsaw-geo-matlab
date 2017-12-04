@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 04 November, 2017
+     * Last updated: 18 November, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -98,7 +98,7 @@
         for (auto _tria  = _tset.head(),
                   _tend  = _tset.tend();
                   _tria != _tend;
-                ++_tria  )
+                ++_tria, ++_tnum)
         {     
              auto _tptr  = 
             _mesh._set3.head()+*_tria ;
@@ -122,16 +122,19 @@
             _ladj += _ball[_dims];  // ball-rad.^2
         }
     
-        real_type _gsum, _qbar, _qlev ;
-        _gsum = (real_type) +0. ;
-        _qlev =   _qmin ;
-        _qbar = (real_type) +0. ;
+        real_type _qbar , _qlow ;
+        _qbar = (real_type) +1. ;
+        _qlow = (real_type) +0. ;
+        
+        iptr_type _lnum   = +0  ;
+        iptr_type _hnum   = +1  ;
         
         real_type _qlim = _qmin + 
-            (real_type)+1.E-003 ;
+            (real_type) +1.0E-004 ;
         
         _ladj /= _tset.count () ;
     
+        _tnum = (iptr_type) +0  ;
         for (auto _tria  = _tset.head(),
                   _tend  = _tset.tend();
                   _tria != _tend;
@@ -145,7 +148,7 @@
         
             if (_qtri <=  _qlim)
             {
-                real_type _wsum = (real_type)0.;
+                real_type _hsum = (real_type)0.;
             
                 real_type _wdel = _WINC*_ladj;
                 
@@ -158,8 +161,8 @@
                     _node->pval(_dims) = 
                         _save + _wdel;
                         
-                    _wsum  = (real_type)+0.;
-                    _wsum += _node->
+                    _hsum  = (real_type)+0.;
+                    _hsum += _node->
                         pval(_dims) - _save;
             
                     real_type _scr1 = 
@@ -174,7 +177,7 @@
                     _node->pval(_dims) = 
                         _save - _wdel;
 
-                    _wsum -= _node->
+                    _hsum -= _node->
                         pval(_dims) - _save;
 
                     real_type _scr0 = 
@@ -213,34 +216,28 @@
                     else { break ; }
                 }
    
-   
-                _DQDW = _sdel / _wsum ;
+                _DQDW = _sdel / _hsum ;
    
                 _node->pval(_dims) = _save ;
-   
-                
-                real_type _wval =
-               (real_type)+1./_cost[ _tnum];
-        
-                _wval  = std::pow(_wval,+2);
-        
-                _gsum += _wval ;
-        
-                _dqdw += _wval * _DQDW ;
-            
-                _qbar += _wval * _qtri ;
+                              
+                _dqdw += _DQDW;
+                              
+                _qlow += _qtri; _lnum += +1;
             }
             else
             {
-                _qlev = 
-                    std::max(_qlev, _qtri) ;
+                _qbar += _qtri; _hnum += +1;
             }
         }
     
         if (_tnum > +0)  
         {       
-            _dqdw /=  _gsum ;
-            _qbar /=  _gsum ;  
+            _dqdw /=  _lnum ;
+            _qlow /=  _lnum ;  
+        }
+        if (_hnum > +0)
+        {
+            _qbar /=  _hnum ;
         }
     
         real_type _scal = std::abs (_dqdw) ;
@@ -253,10 +250,10 @@
         {    
             _line =  _dqdw / _scal;
             
-            _scal = (_qlev - _qbar) 
+            _scal = (_qbar - _qlow) 
                   / (_line * _dqdw) ;
             
-          //_scal = std::min(_scal, _ladj) ;
+            _scal = std::min(_scal, _ladj) ;
             
             _line *= _scal ;
         }

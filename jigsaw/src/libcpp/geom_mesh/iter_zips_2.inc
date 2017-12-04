@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 01 November, 2017
+     * Last updated: 17 November, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -65,9 +65,10 @@
         real_list &_csrc ,
         real_list &_cdst ,
         real_type  _lmax 
-            = (real_type) +8.50E-01 ,
+            = (real_type) +0.50E+00 
+            *  std::sqrt( +3.00E+00),
         real_type  _good 
-            = (real_type) +9.50E-01 ,
+            = (real_type) +9.00E-01 ,
         real_type  _qinc 
             = (real_type) +1.00E-08
         )
@@ -195,21 +196,15 @@
             
             _bset.push_tail(*_tria) ;
         }
-   
-        real_type _imin = 
+    
         loop_tscr(_mesh, _pred , 
                   _iset, 
                   _csrc) ;
-                  
-        real_type _jmin = 
+                   
         loop_tscr(_mesh, _pred , 
                   _bset, 
                   _csrc) ;
-                  
-        if (_imin >= _good &&
-            _jmin >= _good ) return ;
         
-   
         real_type _pbal[_dims+1] = {   
             (real_type) +0.000 } ;
         
@@ -298,11 +293,15 @@
         real_type _circ[_dims+1] = {   
             (real_type) +0.000 } ;
         
+        _pnew[_dims+0]  = 
+        (real_type) +.5 * _iptr->pval (_dims)+
+        (real_type) +.5 * _jptr->pval (_dims);
+               
         for (auto _iloc = +0; _iloc != _INUM ; 
                 ++_iloc )
         {   
             real_type _bias = 
-                (real_type)_iloc / (_INUM-1) ;
+           (real_type)_iloc / (_INUM - 1) ;
             
             real_type _apos = 
                 (real_type)+0.0+_bias;    

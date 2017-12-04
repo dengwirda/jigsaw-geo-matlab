@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 04 November, 2017
+     * Last updated: 18 November, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -46,15 +46,20 @@
 
     /*
     --------------------------------------------------------
-     * CCVT-MOVE: a "ccvt"-style node movement vector.
+     * _WVT-MOVE: weighted voronoi tessellation update.
     --------------------------------------------------------
      */
+   
+    // Shift node to weighted mean of adj. dual vertex
+    // positions... Like ODT, but sans |t_i| terms?
+    
+    // xnew = xold + SUM(1.0/h_i * c_i) / SUM(1.0/h_i)
    
     template <
         typename  node_iter
              >
     __static_call
-    __normal_call void_type ccvt_move (
+    __normal_call void_type _wvt_move (
         mesh_type &_mesh ,
         size_type &_hfun ,
         pred_type &_pred ,
@@ -62,21 +67,21 @@
         iptr_list &_tset ,
         node_iter  _node ,
         real_type *_line ,
-        real_type &_lsqr
+        real_type &_ladj
         )
     {
 		real_type _move[_dims] = {
             (real_type) +0.0 } ;
 
-        _lsqr = 
+        _ladj = 
             (real_type) +0.0 ;
     
 		__unreferenced (_pred) ; // for MSVC...
 
         real_type _wval = 
-       +std::numeric_limits<real_type>::epsilon();
+       +std::numeric_limits<real_type>::epsilon() ;
         real_type _wsum = 
-       +std::numeric_limits<real_type>::epsilon();
+       +std::numeric_limits<real_type>::epsilon() ;
     
         iptr_type _tnum = +0 ;
     
@@ -101,7 +106,7 @@
             _mesh._set1.head()+_tnod[2] ;
                  
             real_type _ball [_dims + 1] ;
-            _pred.mini_ball (_ball , 
+            _pred.orthoball (_ball , 
                 &_inod->pval(0),
                     &_jnod->pval(0),
                         &_knod->pval(0) ) ;
@@ -137,22 +142,16 @@
                               _hval[_tnod[2]] ;
             _hbar /= (real_type) +3.0 ; 
          
-            real_type static 
-                constexpr _tmul = (real_type) +0.60 ;
-            real_type static 
-                constexpr _hmul = (real_type) +0.40 ;
-            
-            _wval  = (real_type) +1.0 / 
-                (_hmul*_hbar + _tmul*_trad) ;
+            _wval  = (real_type) +1.0 / _hbar ;
             
             for (auto _idim = _dims; _idim-- != +0; )
             {
                 _move[_idim] 
-                    += _wval * _ball[_idim] ;
+                   += _wval * _ball [_idim] ;
             }
             
-            _wsum   += _wval ;
-            _lsqr   += _trad ;
+            _wsum  += _wval ;
+            _ladj  += _trad ;
         }
         
         if (_tnum > +0)
@@ -164,7 +163,140 @@
                         - _node->pval(_idim) ;
             }
             
-            _lsqr /= _tnum ;
+            _ladj  /= _tnum ;
+        }
+        
+    }
+    
+    /*
+    --------------------------------------------------------
+     * _ODT-MOVE: optimal delaunay tessellation update.
+    --------------------------------------------------------
+     */
+   
+    // Shift node to weighted mean of adj. dual vertex
+    // positions...
+    
+    // xnew = xold + SUM(|t_i|_r * c_i) / SUM(|t_i|_r)
+    //
+    // where |t_i|_r = INT|i rho(x) dA
+    //
+    //               ~ |t_i| / (h_i)^2
+   
+    template <
+        typename  node_iter
+             >
+    __static_call
+    __normal_call void_type _odt_move (
+        mesh_type &_mesh ,
+        size_type &_hfun ,
+        pred_type &_pred ,
+        real_list &_hval ,
+        iptr_list &_tset ,
+        node_iter  _node ,
+        real_type *_line ,
+        real_type &_ladj
+        )
+    {
+		real_type _move[_dims] = {
+            (real_type) +0.0 } ;
+
+        _ladj = 
+            (real_type) +0.0 ;
+    
+		__unreferenced (_pred) ; // for MSVC...
+
+        real_type _wsum = 
+       +std::numeric_limits<real_type>::epsilon() ;
+    
+        iptr_type _tnum = +0 ;
+    
+        for (auto _tria  = _tset.head() ,
+                  _tend  = _tset.tend() ;
+                  _tria != _tend ; 
+                ++_tria, ++_tnum )
+        {     
+             auto _tptr = 
+            _mesh._set3.head()+*_tria ;
+            
+            iptr_type _tnod[3] ;
+            _tnod[ 0] = _tptr->node( 0) ;
+            _tnod[ 1] = _tptr->node( 1) ;
+            _tnod[ 2] = _tptr->node( 2) ;
+            
+             auto _inod = 
+            _mesh._set1.head()+_tnod[0] ;
+             auto _jnod = 
+            _mesh._set1.head()+_tnod[1] ;
+             auto _knod = 
+            _mesh._set1.head()+_tnod[2] ;
+            
+            real_type _ball [_dims + 1] ;
+            _pred.orthoball (_ball , 
+                &_inod->pval(0),
+                    &_jnod->pval(0),
+                        &_knod->pval(0) ) ;
+                 
+            real_type _tmag = 
+            _pred.mass_tria (
+                &_inod->pval(0),
+                    &_jnod->pval(0),
+                        &_knod->pval(0) ) ;
+            
+            if (_hval[_tnod[0]] < (real_type)+0.)
+            {
+                _hval[_tnod[0]] = _hfun.eval (
+                   &_inod->pval(0) , 
+                    _inod->hidx()) ;
+            }            
+            
+            if (_hval[_tnod[1]] < (real_type)+0.)
+            {
+                _hval[_tnod[1]] = _hfun.eval (
+                   &_jnod->pval(0) , 
+                    _jnod->hidx()) ;
+            }
+            
+            if (_hval[_tnod[2]] < (real_type)+0.)
+            {
+                _hval[_tnod[2]] = _hfun.eval (
+                   &_knod->pval(0) , 
+                    _knod->hidx()) ;
+            }
+            
+            real_type _tsqr = std::max(
+                (real_type) +0., _ball[_dims]);
+            
+            real_type _trad = std::sqrt(_tsqr);
+            
+            real_type _hbar = _hval[_tnod[0]] +
+                              _hval[_tnod[1]] +
+                              _hval[_tnod[2]] ;
+            _hbar /= (real_type) +3.0 ; 
+         
+            real_type _irho = _hbar * _hbar ;
+            real_type _wval = _tmag / _irho ;
+            
+            for (auto _idim = _dims; _idim-- != +0; )
+            {
+                _move[_idim] 
+                   += _wval * _ball [_idim] ;
+            }
+            
+            _wsum  += _wval ;
+            _ladj  += _trad ;
+        }
+        
+        if (_tnum > +0)
+        {
+            for (auto _idim = _dims; _idim-- != +0; )
+            {
+                _line[_idim] = 
+                    _move[_idim] / _wsum
+                        - _node->pval(_idim) ;
+            }
+            
+            _ladj  /= _tnum ;
         }
         
     }
@@ -185,16 +317,15 @@
         pred_type &_pred ,
         real_list &_hval , 
         iptr_list &_eset ,
-        iptr_list &_tset ,
         node_iter  _node ,
         real_type *_line ,
-        real_type &_lsqr
+        real_type &_ladj
         )
     {
         real_type _move[_dims] = {
             (real_type) +0.0 } ;
 
-        _lsqr = 
+        _ladj = 
             (real_type) +0.0 ;
     
         real_type _wval = 
@@ -263,7 +394,7 @@
             _hfun.eval(_jpos, _jnod->hidx()) ;
             }
             
-            _lsqr +=   _elen ;
+            _ladj +=   _elen ;
 
             real_type  _hbar = 
            (real_type) +.5 * _hval[_enod[0]] +
@@ -304,7 +435,7 @@
                         - _node->pval(_idim) ;   
             }
             
-            _lsqr /= _enum ;
+            _ladj /= _enum ;
         }
 
     }
@@ -327,7 +458,7 @@
         node_iter  _node ,
         real_list &_cost ,
         real_type *_line ,
-        real_type &_lsqr
+        real_type &_ladj
         )
     {
         real_type static const _ZERO = 
@@ -355,7 +486,7 @@
 
         iptr_type _tnum = +0 ;
         
-        _lsqr = (real_type)0.;
+        _ladj = (real_type)0.;
         
         real_type _bmin[_dims] = {
            +std::numeric_limits
@@ -423,28 +554,26 @@
                     _pmid[_idim])  ;
             }
             
-            real_type _llen =
-                _pred.length_sq (
-                    _pmid, &_node->pval(0))  ;
+            real_type _llen = 
+                std::sqrt(_pred.length_sq (
+                    _pmid, &_node->pval(0))) ;
             
-            _lsqr +=  _llen ;
+            _ladj +=  _llen ;
         }
 
-        _lsqr = std::sqrt(_lsqr / 
-                          _tnum ) ;
-
-        real_type _gsum, _qbar, _qlev ;
-        _gsum = (real_type) +0. ;
-        _qlev =   _qmin ;
-        _qbar = (real_type) +0. ;
+        real_type _qbar , _qlow ;
+        _qbar = (real_type) +1. ;
+        _qlow = (real_type) +0. ;
+        
+        iptr_type _lnum   = +0  ;
+        iptr_type _hnum   = +1  ;
         
         real_type _qlim = _qmin + 
-            (real_type) +1.0E-003 ;
+            (real_type) +1.0E-004 ;
 
-        _tnum = +0 ;
-
-        for (auto _tria  = _tset.head(),
-                  _tend  = _tset.tend();
+        _tnum = (iptr_type) +0  ;
+        for (auto _tria  = _tset.head() ,
+                  _tend  = _tset.tend() ;
                   _tria != _tend;
                 ++_tria, ++_tnum)
         {     
@@ -537,25 +666,17 @@
                 _DQDX[_idim] = _sdel / _hsum ;
             }
             
-            real_type _wval = 
-           (real_type)+1./_cost[_tnum] ;
-        
-            _wval = std::pow(_wval,+2) ;
-        
-            _gsum  += _wval ;
-        
             for (auto _idim = _dims; _idim-- != +0; )
             {
-                _dqdx[_idim] += 
-                    _wval * _DQDX[_idim] ;
+                _dqdx[_idim] += _DQDX [_idim];
             }
         
-            _qbar  += _wval * _qtri ;
+                _qlow += _qtri ; _lnum += +1 ;
             
             }
             else
             {
-                _qlev = std::max(_qlev, _qtri);
+                _qbar += _qtri ; _hnum += +1 ; 
             }
         }
  
@@ -563,16 +684,22 @@
         {
             for (auto _idim = _dims; _idim-- != +0; )
             {
-                _dqdx[_idim] /= _gsum ;
+                _dqdx[_idim] /= _lnum ;
             }
             
-            _qbar /=  _gsum ;
+            _qlow /=  _lnum ;
+            _ladj /=  _tnum ;
+        }
+
+        if (_hnum > +0)
+        {
+            _qbar /=  _hnum ;
         }
         
         real_type _scal = 
             std::sqrt(_pred.length_sq(_dqdx)) ;
         
-        if (_scal <= _ZERO * _lsqr)
+        if (_scal <= _ZERO * _ladj)
         {
             for (auto _idim = _dims; _idim-- != +0; )
             {
@@ -588,10 +715,10 @@
                     _dqdx[_idim] / _scal ;
             }
         
-            _scal = (_qlev - _qbar) /
+            _scal = (_qbar - _qlow) /
             _pred .length_sq(_line, _dqdx) ;
             
-            _scal = std::min(_scal, _lsqr) ;
+            _scal = std::min(_scal, _ladj) ;
             
             for (auto _idim = _dims; _idim-- != +0; )
             {

@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 01 November, 2017
+     * Last updated: 13 November, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -516,9 +516,88 @@
 	
 	/*
     --------------------------------------------------------
-     * ORTH-BALL: (scalar) weighted orthogonal balls. 
+     * ORTHOBALL: (scalar) weighted orthogonal balls. 
     --------------------------------------------------------
      */
+    
+    template <
+    typename      real_type
+             >
+	__normal_call void_type orthoball_2d (
+	__write_ptr  (real_type) _bb,
+	__const_ptr  (real_type) _p1,
+	__const_ptr  (real_type) _p2
+		)
+	{
+	    real_type _dd[3*1] ;
+	    _dd[0] = _p1[0] - _p2[0] ;
+	    _dd[1] = _p1[1] - _p2[1] ;
+	    _dd[2] = _p1[2] - _p2[2] ;
+	    
+	    real_type _dp = 
+	        geometry::lensqr_2d(_dd) ;
+
+        real_type _tt = 
+            (real_type).5 * 
+                (_dd[2] + _dp) / _dp ;
+	    
+	    _bb[0] = 
+	    _p1[0] -  _tt * _dd[0] ;
+	    _bb[1] = 
+	    _p1[1] -  _tt * _dd[1] ;
+	    
+	    real_type _r1 = 
+	    geometry::lensqr_2d(_p1, _bb);
+	    real_type _r2 = 
+	    geometry::lensqr_2d(_p2, _bb);
+	    
+	    _r1 -= _p1[2] ;
+	    _r2 -= _p2[2] ;
+	    
+	    _bb[2] = 
+	    (_r1 + _r2) / (real_type)+2. ;
+	}
+	
+	template <
+    typename      real_type
+             >
+	__normal_call void_type orthoball_3d (
+	__write_ptr  (real_type) _bb,
+	__const_ptr  (real_type) _p1,
+	__const_ptr  (real_type) _p2
+		)
+	{
+	    real_type _dd[4*1] ;
+	    _dd[0] = _p1[0] - _p2[0] ;
+	    _dd[1] = _p1[1] - _p2[1] ;
+	    _dd[2] = _p1[2] - _p2[2] ;
+	    _dd[3] = _p1[3] - _p2[3] ;
+	    
+	    real_type _dp = 
+	        geometry::lensqr_3d(_dd) ;
+
+        real_type _tt = 
+            (real_type).5 * 
+                (_dd[3] + _dp) / _dp ;
+	    
+	    _bb[0] = 
+	    _p1[0] -  _tt * _dd[0] ;
+	    _bb[1] = 
+	    _p1[1] -  _tt * _dd[1] ;
+	    _bb[2] = 
+	    _p1[2] -  _tt * _dd[2] ;
+	    
+	    real_type _r1 = 
+	    geometry::lensqr_3d(_p1, _bb);
+	    real_type _r2 = 
+	    geometry::lensqr_3d(_p2, _bb);
+	    
+	    _r1 -= _p1[3] ;
+	    _r2 -= _p2[3] ;
+	    
+	    _bb[3] = 
+	    (_r1 + _r2) / (real_type)+2. ;
+	}
      
     template <
     typename      real_type
@@ -1059,17 +1138,21 @@
 	__const_ptr  (data_type) _p2
         )
     {
-        _bb[0] = 
-        (data_type).5*(_p1[0]+_p2[0]);
-        _bb[1] = 
-        (data_type).5*(_p1[1]+_p2[1]);
-
+        _bb[0] = _p1[0] ;
+        _bb[0]+= _p2[0] ;
+        _bb[0]/= (data_type) +2. ;
+        
+        _bb[1] = _p1[1] ;
+        _bb[1]+= _p2[1] ;
+        _bb[1]/= (data_type) +2. ;
+        
         data_type _r1 = 
         geometry::lensqr_2d(_bb, _p1);
         data_type _r2 = 
         geometry::lensqr_2d(_bb, _p2);
 
-        _bb[2] = (_r1+_r2)/(real_type)2. ;
+        _bb[2] = 
+        (_r1+_r2)/(data_type)+2. ;
     }
     
     template <
@@ -1081,19 +1164,25 @@
 	__const_ptr  (data_type) _p2
         )
     {
-        _bb[0] = 
-        (data_type).5*(_p1[0]+_p2[0]);
-        _bb[1] = 
-        (data_type).5*(_p1[1]+_p2[1]);
-        _bb[2] = 
-        (data_type).5*(_p1[2]+_p2[2]);
+        _bb[0] = _p1[0] ;
+        _bb[0]+= _p2[0] ;
+        _bb[0]/= (data_type) +2. ;
+        
+        _bb[1] = _p1[1] ;
+        _bb[1]+= _p2[1] ;
+        _bb[1]/= (data_type) +2. ;
+        
+        _bb[2] = _p1[2] ;
+        _bb[2]+= _p2[2] ;
+        _bb[2]/= (data_type) +2. ;
 
         data_type _r1 = 
         geometry::lensqr_3d(_bb, _p1);
         data_type _r2 = 
         geometry::lensqr_3d(_bb, _p2);
 
-        _bb[3] = (_r1+_r2)/(real_type)2. ;
+        _bb[3] = 
+        (_r1+_r2)/(data_type)+2. ;
     }
     
     template <
@@ -1106,11 +1195,16 @@
 	__const_ptr  (data_type) _p3
         )
     {
-        _bb[0] = 
-       (_p1[0]+_p2[0]+_p3[0])/(real_type)+3.;
-        _bb[1] = 
-       (_p1[1]+_p2[1]+_p3[1])/(real_type)+3.;
-
+        _bb[0] = _p1[0] ;
+        _bb[0]+= _p2[0] ;
+        _bb[0]+= _p3[0] ;
+        _bb[0]/= (data_type) +3. ;
+        
+        _bb[1] = _p1[1] ;
+        _bb[1]+= _p2[1] ;
+        _bb[1]+= _p3[1] ;
+        _bb[1]/= (data_type) +3. ;
+        
         data_type _r1 = 
         geometry::lensqr_2d(_bb, _p1);
         data_type _r2 = 
@@ -1133,12 +1227,20 @@
 	__const_ptr  (data_type) _p3
         )
     {
-        _bb[0] = 
-       (_p1[0]+_p2[0]+_p3[0])/(real_type)+3.;
-        _bb[1] = 
-       (_p1[1]+_p2[1]+_p3[1])/(real_type)+3.;
-        _bb[2] = 
-       (_p1[2]+_p2[2]+_p3[2])/(real_type)+3.;
+        _bb[0] = _p1[0] ;
+        _bb[0]+= _p2[0] ;
+        _bb[0]+= _p3[0] ;
+        _bb[0]/= (data_type) +3. ;
+        
+        _bb[1] = _p1[1] ;
+        _bb[1]+= _p2[1] ;
+        _bb[1]+= _p3[1] ;
+        _bb[1]/= (data_type) +3. ;
+        
+        _bb[2] = _p1[2] ;
+        _bb[2]+= _p2[2] ;
+        _bb[2]+= _p3[2] ;
+        _bb[2]/= (data_type) +3. ;
 
         data_type _r1 = 
         geometry::lensqr_3d(_bb, _p1);
@@ -1150,6 +1252,50 @@
         _bb[3] = std::max ( _r3, 
                  std::max ( _r1, _r2)
                           ) ;
+    }
+    
+    template <
+    typename      data_type
+             >
+    __normal_call void_type mass_ball_3d (
+    __write_ptr  (data_type) _bb,
+	__const_ptr  (data_type) _p1,
+	__const_ptr  (data_type) _p2,
+	__const_ptr  (data_type) _p3,
+	__const_ptr  (data_type) _p4
+        )
+    {
+        _bb[0] = _p1[0] ;
+        _bb[0]+= _p2[0] ;
+        _bb[0]+= _p3[0] ;
+        _bb[0]+= _p4[0] ;
+        _bb[0]/= (data_type) +4. ;
+        
+        _bb[1] = _p1[1] ;
+        _bb[1]+= _p2[1] ;
+        _bb[1]+= _p3[1] ;
+        _bb[1]+= _p4[1] ;
+        _bb[1]/= (data_type) +4. ;
+        
+        _bb[2] = _p1[2] ;
+        _bb[2]+= _p2[2] ;
+        _bb[2]+= _p3[2] ;
+        _bb[2]+= _p4[2] ;
+        _bb[2]/= (data_type) +4. ;
+    
+        data_type _r1 = 
+        geometry::lensqr_3d(_bb, _p1);
+        data_type _r2 = 
+        geometry::lensqr_3d(_bb, _p2);
+        data_type _r3 = 
+        geometry::lensqr_3d(_bb, _p3);
+        data_type _r4 = 
+        geometry::lensqr_3d(_bb, _p4);
+
+        _bb[3] = std::max ( _r4,
+                 std::max ( _r3,
+                 std::max ( _r1, _r2)
+                         )) ;
     }
           
     }

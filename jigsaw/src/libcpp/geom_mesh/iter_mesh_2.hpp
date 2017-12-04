@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 04 November, 2017
+     * Last updated: 28 November, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -282,7 +282,7 @@
             _mdst += *_iter ;
         }
    
-        _qtol *= _0src ;
+        _qtol *= std::abs(_0src) ;
         
         _msrc /= _csrc.count() ;
         _mdst /= _cdst.count() ;
@@ -415,11 +415,11 @@
         real_list &_init ,
         real_list &_cost ,
         real_type  _qmin , 
-        real_type  _good = 0.95
+        real_type  _good
         )
     {
         iptr_type static 
-            constexpr _ITER = (iptr_type)+6 ;
+            constexpr _ITER = (iptr_type)+5 ;
     
         _okay = false ;
     
@@ -429,13 +429,13 @@
        (real_type) +0.0 } ;
         real_type _proj [_dims] = {
        (real_type) +0.0 } ;
-        real_type _ladj = 
-       (real_type) +0.0 ;
- 
+       
+        real_type _ladj = (real_type) + 0.0 ;
+        
     /*---------------- calc. line search direction vector */
         if (_kind == +1 )
         {
-            ccvt_move( _mesh, _hfun, 
+            _odt_move( _mesh, _hfun, 
                 _pred, _hval, _tset, 
                 _node, _line, _ladj) ;
         }
@@ -459,8 +459,8 @@
             _ladj * _xtol) return;
       
         real_type _scal = 
-            _llen * (real_type) +2.0 ;
-      
+            _llen * (real_type) +1.0 ;
+        
     /*---------------- do backtracking line search iter's */
       
         for (auto _idim = _dims; _idim-- != +0; )
@@ -543,28 +543,31 @@
         real_list &_init ,
         real_list &_cost ,
         real_type  _qmin , 
-        real_type  _good = 0.95
+        real_type  _good = +1.
         )
     {
         iptr_type static 
-            constexpr _ITER = (iptr_type)+6 ;
+            constexpr _ITER = (iptr_type)+5 ;
     
         _okay = false ;
     
-        real_type  _ladj, _line ;
-        real_type  _save;
+        real_type  _radj, _line, _save ;
  
-      //if (_qmin<=_good)
-        if (true)
+    /*---------------- calc. line search direction vector */
+        
+        _good = (real_type)+1. ;
+        
+        if(_qmin < _good )
         { 
-            grad_dual( _geom, _mesh ,
+            grad_dual( _geom, _mesh,
                 _hfun, _pred,
                 _tset, _node, 
-                _init, _line, _ladj
+                _init, _line, _radj
                 ) ;
         }
         else { return  ; }
          
+    /*---------------- scale line search direction vector */
         real_type 
             _llen = std::abs(_line ) ;
         
@@ -572,14 +575,19 @@
        (real_type)+.1 * _opts.qtol() ;
         
         if (_llen<= 
-            _ladj * _xtol) return;
+            _radj * _xtol) return;
       
         real_type _scal = 
-            _llen * (real_type) +2. ;
+            _llen * (real_type) +1. ;
+            
+        real_type _wmax = 
+            _radj * (real_type) +4. ;
       
         _line /= _llen  ;
-      
+        
         _save  = _node->pval(_dims) ;
+    
+    /*---------------- do backtracking line search iter's */
     
         for (auto _iter = +0 ; 
                 _iter != _ITER; ++_iter )
@@ -587,17 +595,19 @@
             _node->pval(_dims) =  
                     _save + _scal*_line ;
             
-            
             /*
-            _node->pval(_dims) =
+            _node->pval(_dims) =    // non-negative weights 
                 std::max((real_type)0.,
                     _node->pval(_dims)) ;
-                    
-            _node->pval(_dims) =
-                std::min(+_ladj,
-                    _node->pval(_dims)) ;
              */
-                    
+            
+            _node->pval(_dims) =    // finite-sized weights
+                std::max(-_wmax,
+                    _node->pval(_dims)) ;
+              
+            _node->pval(_dims) =    // finite-sized weights
+                std::min(+_wmax,
+                    _node->pval(_dims)) ;
             
             _cost.set_count(0) ;
         
@@ -644,7 +654,6 @@
         iter_opts &_opts ,
         iptr_type &_nmov , 
         real_type  _good
-            = (real_type)+0.95
         )
     {
         iptr_list _aset, _eset, _tset ;
@@ -666,10 +675,90 @@
         /*-------------------- push if - non-bnd + recent */
             if (_node->mark() >= +0 && 
                     std::abs(
-                _nmrk[_inum]) >= _iout - 2)
+                _nmrk[_inum]) >= _iout - 2 )
             {
-                _amrk[_inum]  = _isub;
-                _aset.push_tail(_inum) ;
+                if (_amrk[_inum] != _isub)
+                {
+                    _amrk[_inum]  = _isub;
+                    _aset.push_tail(_inum) ;
+                }
+            }
+        }
+        
+        for (auto _tria  = _mesh._set3.head();
+                  _tria != _mesh._set3.tend();
+                ++_tria  )
+        {
+            if (_tria->mark() >= +0)
+            {
+        /*-------------------- push if - in "low-Q" tria. */
+                iptr_type _inod, _jnod, _knod;
+                _inod = _tria->node(0);
+                _jnod = _tria->node(1);
+                _knod = _tria->node(2);
+            
+                if (_amrk[_inod] == _isub &&
+                    _amrk[_jnod] == _isub &&
+                    _amrk[_knod] == _isub )
+                continue ;
+            
+                real_type _cost = 
+                    _pred.cost_tria (
+               &_mesh._set1[_inod].pval(0),
+               &_mesh._set1[_jnod].pval(0),
+               &_mesh._set1[_knod].pval(0));
+                
+                if (_cost <= _good)
+                {
+                if (_amrk[_inod] != _isub)
+                {
+                    _amrk[_inod]  = _isub;
+                    _aset.push_tail(_inod) ;
+                }
+                if (std::abs(
+                   _nmrk[_inod]) != _iout)
+                {
+                    if (_nmrk[_inod] >= 0)
+                    _nmrk[_inod] = +_iout;
+                    else
+                    _nmrk[_inod] = -_iout;
+                    
+                    _nset.push_tail(_inod) ;
+                }
+                
+                if (_amrk[_jnod] != _isub)
+                {
+                    _amrk[_jnod]  = _isub;
+                    _aset.push_tail(_jnod) ;
+                }
+                if (std::abs(
+                   _nmrk[_jnod]) != _iout)
+                {
+                    if (_nmrk[_jnod] >= 0)
+                    _nmrk[_jnod] = +_iout;
+                    else
+                    _nmrk[_jnod] = -_iout;
+                    
+                    _nset.push_tail(_jnod) ;
+                }
+                
+                if (_amrk[_knod] != _isub)
+                {
+                    _amrk[_knod]  = _isub;
+                    _aset.push_tail(_knod) ;
+                }
+                if (std::abs(
+                   _nmrk[_knod]) != _iout)
+                {
+                    if (_nmrk[_knod] >= 0)
+                    _nmrk[_knod] = +_iout;
+                    else
+                    _nmrk[_knod] = -_iout;
+                    
+                    _nset.push_tail(_knod) ;
+                }  
+                  
+                }
             }
         }
    
@@ -697,15 +786,13 @@
                 _inod = _eptr->node(0);
                 _jnod = _eptr->node(1);
                 
-                if (_amrk[_inod] != _isub &&
-                    _nmrk[_inod] >= +0)
+                if (_amrk[_inod] != _isub)
                 {
                     _amrk[_inod]  = _isub;
                     _aset.push_tail(_inod) ;
                 }
                 
-                if (_amrk[_jnod] != _isub &&
-                    _nmrk[_jnod] >= +0)
+                if (_amrk[_jnod] != _isub)
                 {
                     _amrk[_jnod]  = _isub;
                     _aset.push_tail(_jnod) ;
@@ -720,7 +807,9 @@
                   _iter != _aset.tend();
                 ++_iter  )
         {
-            size_t _long = +1024;
+            size_t _long = std::max (
+               (size_t)+1024, 
+               (size_t)_aset.count()/4 ) ;
         
             auto _sift = std::min (
                  _long , 
@@ -732,7 +821,9 @@
             std::swap(*_iter,*_next);          
         }
 
-    /*-------------------- a GAUSS-SEIDEL style iteration */
+    /*-------------------- GAUSS-SEIDEL iteration on TRIA */
+        if (_opts .tria())
+        {
         for (auto _apos  = _aset.tail() ;
                   _apos != _aset.hend() ;
                 --_apos  )
@@ -740,25 +831,27 @@
              auto _node  = 
             _mesh._set1.head() + *_apos ;
             
-            if (_nmrk[*_apos] < +0) continue ;
-
-            _qsrc.set_count(0) ;
-            _qdst.set_count(0) ;
-            _tset.set_count(0) ;
+            _tset.set_count( +0);
             
         /*---------------- assemble a local tria. stencil */
             _mesh.node_tri3(
                 &_node->node(+0), _tset);
 
-            if (_tset.count() < +1) continue ;
+            if (_tset.empty()) continue ;
 
-            real_type _qmin = 
+            if (_nmrk[*_apos] >= +0)
+            {  
+        /*---------------- attempt to optimise TRIA geom. */    
+            _qsrc.set_count( +0);
+            _qdst.set_count( +0);
+               
+            real_type _tmin = 
                 loop_tscr( _mesh, 
                     _pred, _tset, _qsrc);
 
             bool_type _okay = false;
             
-            if (!_okay)
+            if(!_okay)
             {
         /*---------------- attempt a CCVT-style smoothing */
                 move_node( _geom, _mesh ,
@@ -766,9 +859,9 @@
                     _opts, _node, +1    , 
                     _okay, _tset, 
                     _qsrc, _qdst, 
-                    _qmin, _good ) ;
+                    _tmin, _good ) ;
             }
-            if (!_okay)
+            if(!_okay)
             {
         /*---------------- attempt a GRAD-based smoothing */
                 move_node( _geom, _mesh ,
@@ -776,14 +869,15 @@
                     _opts, _node, +2    , 
                     _okay, _tset, 
                     _qsrc, _qdst, 
-                    _qmin, _good ) ;
+                    _tmin, _good ) ;
             }           
-            if ( _okay) 
+            if (_okay) 
             {
         /*---------------- update when state is improving */
             _hval[*_apos] = (real_type) -1. ;
         
-            if (_nmrk[*_apos] != _iout)
+            if (std::abs(
+               _nmrk[*_apos]) != _iout)
             {
                 if (_nmrk[*_apos] >= 0)
                 _nmrk[*_apos] = +_iout;
@@ -795,36 +889,40 @@
             
             _nmov += +1 ;
             }
+            }
+            
+        }
         }
         
-        
-        return;
-        
-        
+    /*-------------------- GAUSS-SEIDEL iteration on DUAL */
+        if (_opts .dual())
+        {
         for (auto _apos  = _aset.tail() ;
                   _apos != _aset.hend() ;
                 --_apos  )
         {
              auto _node  = 
             _mesh._set1.head() + *_apos ;
-
-            _qsrc.set_count(0) ;
-            _qdst.set_count(0) ;
-            _tset.set_count(0) ;
+            
+            _tset.set_count( +0);
             
         /*---------------- assemble a local tria. stencil */
             _mesh.node_tri3(
                 &_node->node(+0), _tset);
 
-            if (_tset.count() < +1) continue ;
-
-            real_type _qmin = 
+            if (_tset.empty()) continue ;
+        
+        /*---------------- attempt to optimise DUAL geom. */    
+            _qsrc.set_count( +0);
+            _qdst.set_count( +0);
+            
+            real_type _dmin = 
                 loop_dscr( _mesh, 
                     _pred, _tset, _qsrc);
-
+            
             bool_type _okay = false;
             
-            if (true)
+            if(!_okay)
             {
         /*---------------- attempt a GRAD-based smoothing */
                 move_dual( _geom, _mesh ,
@@ -832,12 +930,13 @@
                     _opts, _node, 
                     _okay, _tset, 
                     _qsrc, _qdst, 
-                    _qmin, _good ) ;
+                    _dmin, _good ) ;
             }           
             if (_okay) 
             {
         /*---------------- update when state is improving */
-            if (_nmrk[*_apos] != _iout)
+            if (std::abs(
+               _nmrk[*_apos]) != _iout)
             {
                 if (_nmrk[*_apos] >= 0)
                 _nmrk[*_apos] = +_iout;
@@ -849,8 +948,10 @@
             
             _nmov += +1 ;
             }
+                  
         }
-        
+        }
+   
     }
     
     /*
@@ -1039,7 +1140,8 @@
     #   define __markedge                   \
             init_mark( _mesh, _nmrk, _emrk, \
                 _tmrk, std::max(_imrk - 1, +0) ) ;  \
-            if (_nmrk[_enod[0]] != _imrk)   \
+            if (std::abs(               \
+                _nmrk[_enod[0]])!= _imrk)   \
             {                           \
             if (_nmrk[_enod[0]] >= +0)  \
             {                           \
@@ -1051,7 +1153,8 @@
             }                           \
                 _nset.push_tail(_enod[0]) ; \
             }                           \
-            if (_nmrk[_enod[1]] != _imrk)   \
+            if (std::abs(               \
+                _nmrk[_enod[1]])!= _imrk)   \
             {                           \
             if (_nmrk[_enod[1]] >= +0)  \
             {                           \
@@ -1121,16 +1224,17 @@
                           _eadj != _tend ;
                           _eadj += _einc )
                 {      
-                if (_emrk[*_eadj] != _imrk )
-                {
                      auto _eptr = 
                     _mesh._set2.head() + *_eadj;
    
-                    _emrk[*_eadj]  = _imrk ;
-                
                     iptr_type _enod[2] ;
                     _enod[0] = _eptr->node(0);
                     _enod[1] = _eptr->node(1);
+                    
+                    bool_type _seen = 
+                    _emrk [*_eadj] != _imrk;
+                    
+                    _emrk [*_eadj]  = _imrk;
                     
                     bool_type _move = false;
                      
@@ -1153,12 +1257,13 @@
                             _qold, _qnew, _ltol, 
                             _good, _qinc) ;    
                         
-                        if (_move )
+                        if (_move)
                         {
                         __markedge; _ndiv += +1; break ;
                         }
                     }
                     else
+                    if (!_seen)
                     {
                         if (_opts.div_())
                         _div_edge( _geom, _mesh, 
@@ -1166,7 +1271,7 @@
                             _move, _iset, 
                             _qold, _qnew) ;
                             
-                        if (_move )
+                        if (_move)
                         {
                         __markedge; _ndiv += +1; break ;
                         }
@@ -1194,13 +1299,14 @@
                             _qold, _qnew, _ltol,
                             _good, _qinc) ;
                             
-                        if (_move )
-                        {
+                        if (_move)
+                        {                       
                         __markedge; _nzip += +1; break ;
                         }                  
                     }
                     else
-                    {
+                    if (!_seen)
+                    {  
                         if (_opts.zip_())
                         _zip_edge( _geom, _mesh, 
                             _hfun, _pred,*_eadj,
@@ -1208,14 +1314,13 @@
                             _aset, _bset,
                             _qold, _qnew) ;
                             
-                        if (_move )
-                        {
+                        if (_move)
+                        {   
                         __markedge; _nzip += +1; break ;
                         }
                     } 
                     }
-                    
-                }
+                 
                 }
             
             }
@@ -1314,8 +1419,6 @@
             {
             if (_edge->self() >= +1)
             {
-                _emrk[_enum]   = -1 ;
-            
                 _nmrk[_edge->node(0)] = -1 ;
                 _nmrk[_edge->node(1)] = -1 ;
             }
@@ -1328,8 +1431,6 @@
                 
                 if (_tset.count() != +2)
                 {
-                _emrk[_enum]   = -1 ;
-            
                 _nmrk[_edge->node(0)] = -1 ;
                 _nmrk[_edge->node(1)] = -1 ;
                 }
@@ -1421,33 +1522,7 @@
             _tcpu._move_full += 
                 _tcpu.time_span(_ttic, _ttoc);
     #       endif//__use_timers
-            
-    /*------------------------------ zip/div mesh subface */
-    #       ifdef  __use_timers            
-            _ttic = _time.now() ;
-    #       endif//__use_timers
-            
-            if (_opts.zip_() || 
-                _opts.div_() )
-            {
-                if (_opts.verb() >= +3)
-                    _dump.push(
-                " CALL _ZIP-MESH...\n") ;
-            
-                _zip_mesh( _geom, _mesh , 
-                    _hfun, _pred, _nset , 
-                    _nmrk, _emrk, _tmrk , 
-                    _iter, _opts,
-                    _nzip, _ndiv) ;
-            }
-
-    #       ifdef  __use_timers 
-            _ttoc = _time.now() ;
- 
-            _tcpu._zips_full += 
-                _tcpu.time_span(_ttic, _ttoc);
-    #       endif//__use_timers
- 
+    
     /*------------------------------ update mesh topology */
     #       ifdef  __use_timers 
             _ttic = _time.now() ;
@@ -1471,7 +1546,34 @@
             _tcpu._topo_full += 
                 _tcpu.time_span(_ttic, _ttoc);
     #       endif//__use_timers
+    
+    /*------------------------------ zip/div mesh subface */
+    #       ifdef  __use_timers            
+            _ttic = _time.now() ;
+    #       endif//__use_timers
             
+            if (_iter  < _opts.iter() )
+            if (_opts.zip_() || 
+                _opts.div_() )
+            {
+                if (_opts.verb() >= +3)
+                    _dump.push(
+                " CALL _ZIP-MESH...\n") ;
+            
+                _zip_mesh( _geom, _mesh , 
+                    _hfun, _pred, _nset , 
+                    _nmrk, _emrk, _tmrk , 
+                    _iter, _opts,
+                    _nzip, _ndiv) ;
+            }
+
+    #       ifdef  __use_timers 
+            _ttoc = _time.now() ;
+ 
+            _tcpu._zips_full += 
+                _tcpu.time_span(_ttic, _ttoc);
+    #       endif//__use_timers
+         
     /*------------------------------ dump optim. progress */
             std::stringstream _sstr ;
             _sstr << std::setw(11) << _nmov
@@ -1514,8 +1616,7 @@
         else
         {
             _dump.push("\n");
-        }
-           
+        }   
     }
    
     } ;
