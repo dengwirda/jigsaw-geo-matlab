@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 01 November, 2017
+     * Last updated: 17 November, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -64,7 +64,7 @@
         real_type  _lmin
             = (real_type) +7.50E-01,
         real_type  _good 
-            = (real_type) +9.50E-01,
+            = (real_type) +9.00E-01,
         real_type  _qinc 
             = (real_type) +1.00E-08
         )
@@ -160,6 +160,15 @@
             _itri->node(2)].pval(0)
             ) ;
 
+        real_type _ipwr = (real_type)+0.;
+        _ipwr += _mesh._set1[
+            _itri->node(0)].pval(_dims) ;
+        _ipwr += _mesh._set1[
+            _itri->node(1)].pval(_dims) ;
+        _ipwr += _mesh._set1[
+            _itri->node(2)].pval(_dims) ;
+        _ipwr /= (real_type) +3. ;
+
         real_type _jbal[_dims+1] ;
         _pred.mini_ball(_jbal ,
            &_mesh._set1[
@@ -169,6 +178,15 @@
            &_mesh._set1[
             _jtri->node(2)].pval(0)
             ) ;
+        
+        real_type _jpwr = (real_type)+0.;
+        _jpwr += _mesh._set1[
+            _jtri->node(0)].pval(_dims) ;
+        _jpwr += _mesh._set1[
+            _jtri->node(1)].pval(_dims) ;
+        _jpwr += _mesh._set1[
+            _jtri->node(2)].pval(_dims) ;
+        _jpwr /= (real_type) +3. ;
         
         iptr_type _inod [3] ;
         iptr_type _jnod [3] ;
@@ -203,12 +221,17 @@
                 break ;
         }
         
-        real_type _ball[_dims+1] ;
+        real_type _ball[_dims+1] = 
+        {   (real_type) +0.000 } ;
         real_type _circ[_dims+1] = 
         {   (real_type) +0.000 } ;
         
         iptr_type static 
             constexpr _INUM = (iptr_type)+16 ;
+        
+        _ball[_dims+0] = 
+        (real_type)+.5 * _ipwr +
+        (real_type)+.5 * _jpwr ;
         
         for (auto _iloc = +0; _iloc != _INUM ; 
                 ++_iloc )
