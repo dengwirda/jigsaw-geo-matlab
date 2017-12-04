@@ -175,11 +175,17 @@ function [varargout] = jigsaw(opts)
 %       function above which gradient-based optimisation is
 %       attempted.
 %
-%   OPTS.OPTM_ZIP_ - {default=true} allow for "merge" opera-
-%       tions on sub-faces.
+%   OPTS.OPTM_ZIP_ - {default= true} allow for "merge" oper-
+%       ations on sub-faces.
 %
-%   OPTS.OPTM_DIV_ - {default=true} allow for "split" opera-
-%       tions on sub-faces.
+%   OPTS.OPTM_DIV_ - {default= true} allow for "split" oper-
+%       ations on sub-faces.
+%
+%   OPTS.OPTM_TRIA - {default= true} allow for optimisation
+%       of TRIA grid geometry.
+%
+%   OPTS.OPTM_DUAL - {default=false} allow for optimisation
+%       of DUAL grid geometry.
 %
 %
 %   OPTIONAL fields (MISC):
@@ -224,11 +230,11 @@ function [varargout] = jigsaw(opts)
 %
 
 %-----------------------------------------------------------
-%   JIGSAW-0.9.4.x
+%   JIGSAW-0.9.5.x
 %   Darren Engwirda
 %   github.com/dengwirda/jigsaw-matlab
-%   09-Aug-2017
-%   de2363@columbia.edu
+%   03-Dec-2017
+%   darren.engwirda@columbia.edu
 %-----------------------------------------------------------
 %
 
@@ -428,6 +434,10 @@ function makejig(name,opts)
         pushbool(ffid,opts.optm_zip_,'OPTM_ZIP_');
         case 'optm_div_'
         pushbool(ffid,opts.optm_div_,'OPTM_DIV_');
+        case 'optm_tria'
+        pushbool(ffid,opts.optm_tria,'OPTM_TRIA');
+        case 'optm_dual'
+        pushbool(ffid,opts.optm_dual,'OPTM_DUAL');
 
     %------------------------------------------ abandoned OP
         case{'hfun_kern', ...
