@@ -27,12 +27,12 @@
      * JIGSAW: an unstructured mesh generation package.
     --------------------------------------------------------
      *
-     * JIGSAW release 0.9.4.x
-     * Last updated: 15 September, 2017
+     * JIGSAW release 0.9.5.x
+     * Last updated: 04 December, 2017
      *
      * Copyright 2013 -- 2017
      * Darren Engwirda
-     * de2363@columbia.edu
+     * darren.engwirda@columbia.edu
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
@@ -77,7 +77,7 @@
      *
      * JIGSAW has grown out of my Ph.D. research, in which
      * I explored early versions of both the refinement and
-     * optimisation algorithms used here:
+     * optimisation-based algorithms described here:
      *
      * D. Engwirda, (2014): "Locally-optimal Delaunay-
      * refinement and optimisation-based mesh generation", 
@@ -98,7 +98,7 @@
      */
 
 
-#   define __JGSWVSTR "JIGSAW VERSION 0.9.4"
+#   define __JGSWVSTR "JIGSAW VERSION 0.9.5"
 
 
     /*---------------------------------- for i/o on files */

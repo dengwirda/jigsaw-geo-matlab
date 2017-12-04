@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 25 August, 2017
+     * Last updated: 11 November, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -930,7 +930,7 @@
                 _file << "# " << _name << ".msh"
                       << "; created by " ;
                 _file << __JGSWVSTR "\n" ;
-                _file << "MSHID=2;EUCLIDEAN-MESH \n" ;
+                _file << "MSHID=3;EUCLIDEAN-MESH \n" ;
                 _file << "NDIMS=2 \n" ;
 
                 _file << std::scientific ;
@@ -993,6 +993,7 @@
                 _file << "POINT=" << _nnum << "\n" ;
                 
                 iptr_type _npos  = +0;
+                
                 for (auto _iter  = _mesh.
                 _euclidean_mesh_2d._mesh._set1.head() ;
                           _iter != _mesh.
@@ -1005,6 +1006,28 @@
                     _file << _iter->pval(0) << ";"
                           << _iter->pval(1) << ";"
                           << +0 << "\n" ;
+                    }
+                }
+                }
+                
+                if (_nnum > +0)
+                {
+            /*-------------------------- write POWER data */                
+                _file << "POWER=" 
+                      << _nnum << ";1" << "\n" ;
+                
+                iptr_type _npos  = +0;
+                
+                for (auto _iter  = _mesh.
+                _euclidean_mesh_2d._mesh._set1.head() ;
+                          _iter != _mesh.
+                _euclidean_mesh_2d._mesh._set1.tend() ;
+                        ++_iter, ++_npos)
+                {
+                    if (_iter->mark() >= 0 &&
+                        _nmap[_npos ] >= 0)
+                    {
+                    _file << _iter->pval(2) << "\n" ;
                     }
                 }
                 }
@@ -1067,7 +1090,7 @@
                 _file << "# " << _name << ".msh" 
                       << "; created by " ;
                 _file << __JGSWVSTR "\n" ;
-                _file << "MSHID=2;EUCLIDEAN-MESH \n" ;
+                _file << "MSHID=3;EUCLIDEAN-MESH \n" ;
                 _file << "NDIMS=3 \n" ;
                 
                 _file << std::scientific ;
@@ -1148,6 +1171,7 @@
                 _file << "POINT=" << _nnum << "\n" ;
                 
                 iptr_type _npos  = +0;
+                
                 for (auto _iter  = _mesh.
                 _euclidean_mesh_3d._mesh._set1.head() ;
                           _iter != _mesh.
@@ -1161,6 +1185,28 @@
                           << _iter->pval(1) << ";"
                           << _iter->pval(2) << ";"
                           << +0 << "\n" ;
+                    }
+                }
+                }
+                
+                if (_nnum > +0)
+                {
+            /*-------------------------- write POWER data */                
+                _file << "POWER=" 
+                      << _nnum << ";1" << "\n" ;
+                
+                iptr_type _npos  = +0;
+                
+                for (auto _iter  = _mesh.
+                _euclidean_mesh_3d._mesh._set1.head() ;
+                          _iter != _mesh.
+                _euclidean_mesh_3d._mesh._set1.tend() ;
+                        ++_iter, ++_npos)
+                {
+                    if (_iter->mark() >= 0 &&
+                        _nmap[_npos ] >= 0)
+                    {
+                    _file << _iter->pval(3) << "\n" ;
                     }
                 }
                 }
