@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 November, 2017
+     * Last updated: 07 December, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -237,10 +237,10 @@
              node(_nadj)->topo() ;
              
     /*--------------------- find intersections with geom. */       
-        mesh::keep_all_2d <
+        mesh::keep_all_3d <
             real_type ,
             iptr_type > _pred ;
-        mesh::keep_all_2d <
+        mesh::keep_all_3d <
             real_type ,
             iptr_type > _halo ;
         
