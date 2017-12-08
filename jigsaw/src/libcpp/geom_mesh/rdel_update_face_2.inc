@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 04 October, 2017
+     * Last updated: 09 November, 2017
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -375,12 +375,21 @@
         iptr_type  _tpos
         )
     {
+        iptr_type _tnod[3] = {
+        _mesh._tria.tria(_tpos)->node(0),
+        _mesh._tria.tria(_tpos)->node(1),
+        _mesh._tria.tria(_tpos)->node(2)
+            } ;
+
+        algorithms::isort(
+            &_tnod[0], &_tnod[3], 
+                std::less<iptr_type>()) ;
+    
         iptr_type _fnod = +0;
         for (auto _inod = +3; _inod-- != +0; )
         {
         if (_mesh._tria.node(
-            _mesh._tria.tria(
-            _tpos)->node(_inod))->fdim() < +2)
+                _tnod[_inod])->fdim() <= +1)
             _fnod += +1 ;
         }
     
@@ -390,15 +399,12 @@
             real_type _tbal[3] ;
             geometry::tria_ball_2d (
                 _tbal , 
-           &_mesh._tria.node(
-            _mesh._tria.tria(
-            _tpos)->node(0))->pval(0) , 
-           &_mesh._tria.node(
-            _mesh._tria.tria(
-            _tpos)->node(1))->pval(0) ,
-           &_mesh._tria.node(
-            _mesh._tria.tria(
-            _tpos)->node(2))->pval(0)
+           &_mesh._tria.
+                node(_tnod[0])->pval(0) , 
+           &_mesh._tria.
+                node(_tnod[1])->pval(0) ,
+           &_mesh._tria.
+                node(_tnod[2])->pval(0)
                 ) ;
                 
             _mesh._tria.tria(
@@ -410,28 +416,22 @@
         {
     /*---------------------- calc. ball in adaptive-prec. */
             dd_flt _pos1[ +2] = {
-            _mesh._tria.node(
-            _mesh._tria.tria(
-            _tpos)->node(0))->pval(0) ,
-            _mesh._tria.node(
-            _mesh._tria.tria(
-            _tpos)->node(0))->pval(1)
+            _mesh._tria.
+                node(_tnod[0])->pval(0) ,
+            _mesh._tria.
+                node(_tnod[0])->pval(1)
                 } ;
             dd_flt _pos2[ +2] = {
-            _mesh._tria.node(
-            _mesh._tria.tria(
-            _tpos)->node(1))->pval(0) ,
-            _mesh._tria.node(
-            _mesh._tria.tria(
-            _tpos)->node(1))->pval(1)
+            _mesh._tria.
+                node(_tnod[1])->pval(0) ,
+            _mesh._tria.
+                node(_tnod[1])->pval(1)
                 } ;
             dd_flt _pos3[ +2] = {
-            _mesh._tria.node(
-            _mesh._tria.tria(
-            _tpos)->node(2))->pval(0) ,
-            _mesh._tria.node(
-            _mesh._tria.tria(
-            _tpos)->node(2))->pval(1)
+            _mesh._tria.
+                node(_tnod[2])->pval(0) ,
+            _mesh._tria.
+                node(_tnod[2])->pval(1)
                 } ;
             
             dd_flt _tbal[ +3] ;
