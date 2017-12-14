@@ -1,3 +1,0 @@
-#
-# to-do: place OSX binaries here and delete me!
-#
