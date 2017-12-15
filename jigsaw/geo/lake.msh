@@ -1,5 +1,5 @@
 # lake.msh geometry file
-mshid=2;EUCLIDEAN-MESH
+mshid=1
 ndims=2
 point=303
 -8.915414699999999;1.661592;0
