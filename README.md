@@ -82,10 +82,10 @@ Additionally, the <a href="../master/jigsaw/example.jig">`../jigsaw/example.jig`
 ## `Gallery`
 
 <p align="center">
-  <img width="370" src = "../master/jigsaw/img/JIGSAW-pole-hfun.jpg"> &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+  <img width="370" src = "../master/jigsaw/img/JIGSAW-pole-hfun.jpg"> &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
   <img width="370" src = "../master/jigsaw/img/JIGSAW-pole-dual.jpg">
 
-  Figure 1. Multi-resolution grid for the global ocean, with bathymetric refinement included in the Arctic region.
+  Figure 1. Multi-resolution grid for the global ocean, with additional bathymetric refinement included in the Arctic region.
 	
 </p>
 
