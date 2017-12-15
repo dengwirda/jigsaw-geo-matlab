@@ -82,10 +82,10 @@ Additionally, the <a href="../master/jigsaw/example.jig">`../jigsaw/example.jig`
 ## `Gallery`
 
 <p align="center">
-  <img width="400" src = "../master/jigsaw/img/pole-hfun.jpg">
-  <img width="400" src = "../master/jigsaw/img/pole-dual.jpg">
+  <img width="360" src = "../master/jigsaw/img/pole-hfun.jpg"> &nbsp&nbsp&nbsp&nbsp&nbsp
+  <img width="360" src = "../master/jigsaw/img/pole-dual.jpg">
 
-  Figure 1. Multi-resolution grid for the global ocean, refined in the coastal zone.
+  Figure 1. Multi-resolution grid for the global ocean, with bathymetric refinement included in the Arctic region.
 	
 </p>
 
@@ -94,7 +94,7 @@ Additionally, the <a href="../master/jigsaw/example.jig">`../jigsaw/example.jig`
   <img width="400" src = "../master/jigsaw/img/JIGSAW-aust-hfun.jpg">
   <img width="400" src = "../master/jigsaw/img/JIGSAW-aust-dual.jpg">
 
-  Figure 2. Multi-resolution coastal grid for the Australian shelf, showing the dual grid (with Herzfeld et al., CSIRO).
+  Figure 2. Multi-resolution coastal grid for the Australian shelf region, showing the dual grid (with Herzfeld et al., CSIRO).
 	
 </p>
 
