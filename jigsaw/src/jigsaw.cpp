@@ -126,7 +126,7 @@
 
     /*---------------------------------- JIGSAW's dyn-lib */
 
-//  define __lib_jigsaw               // define makes lib
+#   define __lib_jigsaw               // define makes lib
 
     extern  "C" 
     {
