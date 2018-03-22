@@ -935,6 +935,8 @@
         geom_opts &_opts
         )
     {
+		__unreferenced(_opts) ;
+
     /*------------------------- push set of feature nodes */
         for (auto _iter  = 
              this->_tria._set1.head() ;

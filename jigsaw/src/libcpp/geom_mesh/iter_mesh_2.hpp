@@ -559,6 +559,8 @@
         iptr_type static 
             constexpr _ITER = (iptr_type)+8 ;
     
+		__unreferenced(_hval);
+
         _okay = false ;
     
         real_type  _radj, _line, _save ;

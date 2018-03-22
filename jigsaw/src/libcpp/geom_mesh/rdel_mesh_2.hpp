@@ -504,6 +504,8 @@
         rdel_opts &_opts
         )
     {
+		__unreferenced(_size) ;
+
     /*------------------------------ initialise mesh bbox */
         real_type _plen[ +2];
         _plen[ 0] = _geom._bmax[ 0] - 

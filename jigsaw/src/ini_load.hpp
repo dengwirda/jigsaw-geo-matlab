@@ -165,6 +165,7 @@
             )
         {
             __unreferenced(_ipos) ;
+			__unreferenced(_itag) ;
 
             if (this->_ndim == +2 &&
                 this->_kind == 
@@ -204,6 +205,7 @@
             )
         {
             __unreferenced(_ipos) ;
+			__unreferenced(_itag) ;
 
             if (this->_ndim == +2 &&
                 this->_kind == 
@@ -245,6 +247,7 @@
             )
         {
             __unreferenced(_ipos) ;
+			__unreferenced(_itag) ;
 
             if (this->_ndim == +2 &&
                 this->_kind == 
