@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 16 September, 2017
+     * Last updated: 13 March, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -220,21 +220,21 @@
         real_type static const PI_2 = 
        (real_type)+2. * PI ; 
  
-        if (_alat<-PI_h) _alat  =-PI_h ;
-        if (_alat>=PI_h) _alat  = PI_h ;
-        
         if (_alon<-PI_1) _alon += PI_2 ;
         if (_alon>=PI_1) _alon -= PI_2 ;   
         
         if (_alon < *this->_xpos.head())
-            return _hval ;
+            _alon = *this->_xpos.head();
         if (_alon > *this->_xpos.tail())
-            return _hval ;
+            _alon = *this->_xpos.tail();
+        
+        if (_alat<-PI_h) _alat  =-PI_h ;
+        if (_alat>=PI_h) _alat  = PI_h ;
         
         if (_alat < *this->_ypos.head())
-            return _hval ;
+            _alat = *this->_ypos.head();
         if (_alat > *this->_ypos.tail())
-            return _hval ;
+            _alat = *this->_ypos.tail();
         
     /*---------------------------- find enclosing x-range */
         iptr_type _ipos = (iptr_type) -1 ;

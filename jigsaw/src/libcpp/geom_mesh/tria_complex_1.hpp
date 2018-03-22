@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 September, 2017
+     * Last updated: 21 March, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -384,6 +384,35 @@
             _tmp1(_asrc),_tmp2(_asrc)
         {
         }
+        
+    /*
+    --------------------------------------------------------
+     * 'clear' a tria-complex
+    --------------------------------------------------------
+     */
+        
+    __normal_call void_type clear (
+        containers::alloc_types _kind = 
+        containers::loose_alloc
+        )
+    {
+            this->_adj1.clear (_kind) ;
+            this->_adj2.clear (_kind) ;
+            
+            this->_map1.clear (_kind) ;
+            this->_map2.clear (_kind) ;
+
+            this->_set1.clear (_kind) ;
+            this->_set2.clear (_kind) ;
+       
+            this->_del1.clear (_kind) ;
+            this->_del2.clear (_kind) ;
+        
+            this->_tmp1.clear (_kind) ;
+            this->_tmp2.clear (_kind) ;
+            
+        //!!do something with pool'd-alloc?
+    }
     
     /*
     --------------------------------------------------------

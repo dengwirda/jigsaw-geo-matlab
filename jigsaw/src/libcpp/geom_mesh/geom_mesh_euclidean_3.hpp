@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 16 September, 2017
+     * Last updated: 14 March, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -922,28 +922,24 @@
 
     /*
     --------------------------------------------------------
-     * SEED-MESH: setup initial node set.
+     * SEED-FEAT: setup initial node set.
     --------------------------------------------------------
      */
      
     template <
         typename  mesh_type ,
-        typename  size_type ,
         typename  geom_opts
              >
-    __normal_call void_type seed_mesh (
+    __normal_call void_type seed_feat (
         mesh_type &_mesh ,
-        size_type &_size ,
         geom_opts &_opts
         )
     {
-        __unreferenced(_size) ;
-    
     /*------------------------- push set of feature nodes */
         for (auto _iter  = 
-                   this->_tria._set1.head() ;
+             this->_tria._set1.head() ;
                   _iter != 
-                   this->_tria._set1.tend() ;
+             this->_tria._set1.tend() ;
                 ++_iter  )
         {
             if (_iter->mark() >= +0 )
@@ -969,11 +965,27 @@
             }
             }
             }
-        }
+        }      
+    }
     
+    /*
+    --------------------------------------------------------
+     * SEED-MESH: setup initial node set.
+    --------------------------------------------------------
+     */
+    
+    template <
+        typename  mesh_type ,
+        typename  geom_opts
+             >
+    __normal_call void_type seed_mesh (
+        mesh_type &_mesh ,
+        geom_opts &_opts
+        )
+    {
     /*------------------------- well-distributed sampling */
-        while (_mesh._tria.
-               _nset.count() < (std::size_t)_opts.seed())
+        while (_mesh._tria._nset.count() 
+                < (std::size_t)_opts.seed() + 4)
         {
             typename geom_type::
                      mesh_type::
@@ -993,7 +1005,8 @@
                 if (_ipos->fdim() == _fdim)
                 {
                 real_type _dmin  = 
-            +std::numeric_limits<real_type>::infinity() ;
+                    +std::numeric_limits
+                        <real_type>::infinity();
 
                 for (auto _jpos  = 
                     _mesh._tria._nset.head() ;
@@ -1041,7 +1054,6 @@
             }
             else break  ;
         }
-
     }
 
     /*

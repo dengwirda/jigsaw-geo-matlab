@@ -1,7 +1,7 @@
 
     /*
     --------------------------------------------------------
-     * GEO-LOAD: parse *.MSH file into GEOM data.
+     * INI-LOAD: parse *.MSH file into INIT data.
     --------------------------------------------------------
      *
      * This program may be freely redistributed under the 
@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 21 March, 2018
+     * Last updated: 22 March, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -43,38 +43,38 @@
 
 #   pragma once
 
-#   ifndef __GEO_LOAD__
-#   define __GEO_LOAD__
+#   ifndef __INI_LOAD__
+#   define __INI_LOAD__
 
     /*
     --------------------------------------------------------
-     * GEOM-FROM-JMSH: read *.JMSH file into GEOM data.
+     * INIT-FROM-JMSH: read *.JMSH file into INIT data.
     --------------------------------------------------------
      */
  
     template <
     typename      jlog_data
              >
-    __normal_call iptr_type geom_from_jmsh (
+    __normal_call iptr_type init_from_jmsh (
         jcfg_data &_jcfg ,
         jlog_data &_jlog ,
-        geom_data &_geom
+        mesh_data &_init
         )
     {
-        class geom_reader: 
+        class init_reader: 
             public jmsh_reader_base
         {
         public  :
-            geom_data           *_geom ;
+            mesh_data           *_init ;
             std::int32_t         _ftag ;
             jmsh_kind::
             enum_data            _kind ;
             std::int32_t         _ndim ;
         public  :
     /*---------------------------------- construct reader */
-        __normal_call geom_reader (
-            geom_data*_gsrc =  nullptr
-            ) : _geom(_gsrc) {}
+        __normal_call init_reader (
+            mesh_data*_isrc =  nullptr
+            ) : _init(_isrc) {}
     /*---------------------------------- parse MSHID data */
         __normal_call void_type push_mshid (
             std::int32_t  _ftag ,
@@ -84,19 +84,7 @@
             this->_ftag = _ftag ;
             this->_kind = _kind ;
             this->
-           _geom->_kind = _kind ;
-        }
-    /*---------------------------------- parse RADII data */
-        __normal_call void_type push_radii (
-            double       *_erad
-            )
-        {
-            this->_geom->_ellipsoid_mesh_3d.
-                _radA = _erad[ 0] ;
-            this->_geom->_ellipsoid_mesh_3d.
-                _radB = _erad[ 1] ;
-            this->_geom->_ellipsoid_mesh_3d.
-                _radC = _erad[ 2] ;  
+           _init->_kind = _kind ;
         }
     /*---------------------------------- parse NDIMS data */
         __normal_call void_type push_ndims (
@@ -105,7 +93,7 @@
         {   
             this->_ndim = _ndim ;
             this->
-           _geom->_ndim = _ndim ;
+           _init->_ndim = _ndim ;
         }
     /*---------------------------------- parse POINT data */
         __normal_call void_type push_point (
@@ -121,15 +109,25 @@
                     jmsh_kind::euclidean_mesh)
             {
                 typename 
-                geom_data::euclidean_mesh_2d
+                mesh_data::euclidean_mesh_2d
                     ::node_type _ndat ;
                 _ndat.pval(0) = _pval[0];
                 _ndat.pval(1) = _pval[1];
-                _ndat.itag () = _itag ;
-           
-                this->_geom->
+                
+                _ndat.pval(2) = +0.;
+                
+                _ndat.fdim () = +0 ;
+                
+                if (_itag < +0)
+                    _ndat.feat () = 
+                        mesh::user_feat ;
+                else
+                    _ndat.feat () = 
+                        mesh::null_feat ;
+                
+                this->_init->
                    _euclidean_mesh_2d.
-                        _tria.push_node(_ndat) ;
+                        _mesh.push_node(_ndat) ;
             }
             else
             if (this->_ndim == +3 &&
@@ -137,22 +135,26 @@
                     jmsh_kind::euclidean_mesh)
             {
                 typename 
-                geom_data::euclidean_mesh_3d
+                mesh_data::euclidean_mesh_3d
                     ::node_type _ndat ;
                 _ndat.pval(0) = _pval[0];
                 _ndat.pval(1) = _pval[1];
                 _ndat.pval(2) = _pval[2];
-                _ndat.itag () = _itag ;
-           
-                this->_geom->
+                
+                _ndat.pval(3) = +0.;
+                
+                _ndat.fdim () = +0 ;
+                
+                if (_itag < +0)
+                    _ndat.feat () = 
+                        mesh::user_feat ;
+                else
+                    _ndat.feat () = 
+                        mesh::null_feat ;
+                
+                this->_init->
                    _euclidean_mesh_3d.
-                        _tria.push_node(_ndat) ;
-            }
-            else
-            if (this->_kind == 
-                    jmsh_kind::ellipsoid_mesh)
-            {
-                //!! do things here...
+                        _mesh.push_node(_ndat) ;
             }
         }
     /*---------------------------------- parse EDGE2 data */
@@ -169,15 +171,14 @@
                     jmsh_kind::euclidean_mesh)
             {
                 typename 
-                geom_data::euclidean_mesh_2d
+                mesh_data::euclidean_mesh_2d
                     ::edge_type _edat ;
                 _edat.node(0) = _node[0];
                 _edat.node(1) = _node[1];
-                _edat.itag () = _itag ;
-           
-                this->_geom->
+                
+                this->_init->
                    _euclidean_mesh_2d.
-                        _tria.push_edge(_edat) ;
+                        _mesh.push_edge(_edat) ;
             }
             else
             if (this->_ndim == +3 &&
@@ -185,25 +186,59 @@
                     jmsh_kind::euclidean_mesh)
             {
                 typename 
-                geom_data::euclidean_mesh_3d
+                mesh_data::euclidean_mesh_3d
                     ::edge_type _edat ;
                 _edat.node(0) = _node[0];
                 _edat.node(1) = _node[1];
-                _edat.itag () = _itag ;
-           
-                this->_geom->
+                
+                this->_init->
                    _euclidean_mesh_3d.
-                        _tria.push_edge(_edat) ;
-            }
-            else
-            if (this->_kind == 
-                    jmsh_kind::ellipsoid_mesh)
-            {
-                //!! do things here...
+                        _mesh.push_edge(_edat) ;
             } 
         }
     /*---------------------------------- parse TRIA3 data */
         __normal_call void_type push_tria3 (
+            std::int32_t  _ipos ,
+            std::int32_t *_node ,
+            std::int32_t  _itag
+            )
+        {
+            __unreferenced(_ipos) ;
+
+            if (this->_ndim == +2 &&
+                this->_kind == 
+                    jmsh_kind::euclidean_mesh)
+            {
+                typename 
+                mesh_data::euclidean_mesh_2d
+                    ::tria_type _tdat ;
+                _tdat.node(0) = _node[0];
+                _tdat.node(1) = _node[1];
+                _tdat.node(2) = _node[2];
+                
+                this->_init->
+                   _euclidean_mesh_2d.
+                        _mesh.push_tri3(_tdat) ;
+            }
+            else
+            if (this->_ndim == +3 &&
+                this->_kind == 
+                    jmsh_kind::euclidean_mesh)
+            {
+                typename 
+                mesh_data::euclidean_mesh_3d
+                    ::face_type _tdat ;
+                _tdat.node(0) = _node[0];
+                _tdat.node(1) = _node[1];
+                _tdat.node(2) = _node[2];
+                
+                this->_init->
+                   _euclidean_mesh_3d.
+                        _mesh.push_tri3(_tdat) ;
+            }
+        }
+    /*---------------------------------- parse TRIA4 data */
+        __normal_call void_type push_tria4 (
             std::int32_t  _ipos ,
             std::int32_t *_node ,
             std::int32_t  _itag
@@ -223,27 +258,21 @@
                     jmsh_kind::euclidean_mesh)
             {
                 typename 
-                geom_data::euclidean_mesh_3d
-                    ::tri3_type _tdat ;
+                mesh_data::euclidean_mesh_3d
+                    ::tria_type _tdat ;
                 _tdat.node(0) = _node[0];
                 _tdat.node(1) = _node[1];
                 _tdat.node(2) = _node[2];
-                _tdat.itag () = _itag ;
-           
-                this->_geom->
+                _tdat.node(3) = _node[3];
+                
+                this->_init->
                    _euclidean_mesh_3d.
-                        _tria.push_tri3(_tdat) ;
+                        _mesh.push_tri4(_tdat) ;
             }
-            else
-            if (this->_kind == 
-                    jmsh_kind::ellipsoid_mesh)
-            {
-                // do nothing...
-            }
-        }
+        }      
         } ;
     
-    /*---------------------------------- parse GEOM. file */
+    /*---------------------------------- parse INIT. file */
         iptr_type _errv  = __no_error ;
         
         try
@@ -251,12 +280,12 @@
             jmsh_reader   _jmsh ;
             std::ifstream _file ; 
             _file. open(
-            _jcfg._geom_file, std::ifstream::in);
+            _jcfg._init_file, std::ifstream::in);
 
             if (_file.is_open() )
             {
                 _jmsh.read_file (
-                _file, geom_reader(&_geom));
+                _file, init_reader(&_init));
             }
             else
             {           
@@ -281,20 +310,20 @@
 
         return (  _errv ) ;
     }
-
+    
     /*
     --------------------------------------------------------
-     * READ-GEOM: read geometry input file.
+     * READ-INIT: read init. distribution file.
     --------------------------------------------------------
      */
      
     template <
     typename      jlog_data
              >
-    __normal_call iptr_type read_geom (
+    __normal_call iptr_type read_init (
         jcfg_data &_jcfg ,
         jlog_data &_jlog ,
-        geom_data &_geom
+        mesh_data &_init
         )
     {
         iptr_type _errv  = __no_error ;
@@ -302,13 +331,13 @@
         std::string _path ;
         std::string _name ;
         std::string _fext ;
-        file_part(_jcfg._geom_file, 
+        file_part(_jcfg._init_file, 
             _path, _name, _fext);
 
         if (_fext.find("msh") == +0)
         {
-        return geom_from_jmsh (
-                _jcfg, _jlog, _geom)  ;
+        return init_from_jmsh (
+                _jcfg, _jlog, _init)  ;
         }
         else
         {   
@@ -320,226 +349,42 @@
     
     /*
     --------------------------------------------------------
-     * GEOM-FROM-MSHT: read MSH_t data into GEOM data.
-    --------------------------------------------------------
-     */
-    
-    template <
-    typename      jlog_data
-             >
-    __normal_call iptr_type geom_from_msht (
-        jcfg_data &_jcfg ,
-        jlog_data &_jlog ,
-        geom_data &_geom ,
-        jigsaw_msh_t const&_gmsh
-        )
-    {
-        iptr_type _errv  = __no_error ;
-        
-        try
-        {
-        
-        if (_gmsh._flags == 
-                JIGSAW_EUCLIDEAN_MESH )
-        {
-            if (_gmsh._vert2._size > 0)
-            {
-    /*--------------------------------- euclidean-mesh-2d */
-            _geom._kind 
-                = jmsh_kind::euclidean_mesh ;
-            _geom._ndim = +2;
-    
-            for (auto _ipos = (iptr_type)+0 ;
-                _ipos != _gmsh._vert2._size ; 
-                    ++_ipos )
-            {
-                typename 
-                geom_data::euclidean_mesh_2d
-                    ::node_type _ndat ;
-                _ndat.pval(0) = _gmsh.
-                    _vert2._data[_ipos]._ppos[0];
-                _ndat.pval(1) = _gmsh.
-                    _vert2._data[_ipos]._ppos[1];
-                _ndat.itag () = _gmsh.
-                    _vert2._data[_ipos]._itag ;
-            
-                _geom._euclidean_mesh_2d.
-                        _tria.push_node(_ndat);
-            }
-            
-            for (auto _ipos = (iptr_type)+0 ;
-                _ipos != _gmsh._edge2._size ; 
-                    ++_ipos )
-            {
-                typename 
-                geom_data::euclidean_mesh_2d
-                    ::edge_type _edat ;
-                _edat.node(0) = _gmsh.
-                    _edge2._data[_ipos]._node[0];
-                _edat.node(1) = _gmsh.
-                    _edge2._data[_ipos]._node[1];
-                _edat.itag () = _gmsh.
-                    _edge2._data[_ipos]._itag ;
-            
-                _geom._euclidean_mesh_2d.
-                        _tria.push_edge(_edat);
-            }
-            
-            }
-            else
-            if (_gmsh._vert3._size > 0)
-            {
-    /*--------------------------------- euclidean-mesh-3d */
-            _geom._kind 
-                = jmsh_kind::euclidean_mesh ;
-            _geom._ndim = +3;
-            
-            for (auto _ipos = (iptr_type)+0 ;
-                _ipos != _gmsh._vert3._size ; 
-                    ++_ipos )
-            {
-                typename 
-                geom_data::euclidean_mesh_3d
-                    ::node_type _ndat ;
-                _ndat.pval(0) = _gmsh.
-                    _vert3._data[_ipos]._ppos[0];
-                _ndat.pval(1) = _gmsh.
-                    _vert3._data[_ipos]._ppos[1];
-                _ndat.pval(2) = _gmsh.
-                    _vert3._data[_ipos]._ppos[2];
-                _ndat.itag () = _gmsh.
-                    _vert3._data[_ipos]._itag ;
-            
-                _geom._euclidean_mesh_3d.
-                        _tria.push_node(_ndat);
-            }
-            
-            for (auto _ipos = (iptr_type)+0 ;
-                _ipos != _gmsh._edge2._size ; 
-                    ++_ipos )
-            {
-                typename 
-                geom_data::euclidean_mesh_3d
-                    ::edge_type _edat ;
-                _edat.node(0) = _gmsh.
-                    _edge2._data[_ipos]._node[0];
-                _edat.node(1) = _gmsh.
-                    _edge2._data[_ipos]._node[1];
-                _edat.itag () = _gmsh.
-                    _edge2._data[_ipos]._itag ;
-            
-                _geom._euclidean_mesh_3d.
-                        _tria.push_edge(_edat);
-            }
-            
-            for (auto _ipos = (iptr_type)+0 ;
-                _ipos != _gmsh._tria3._size ; 
-                    ++_ipos )
-            {
-                typename 
-                geom_data::euclidean_mesh_3d
-                    ::tri3_type _tdat ;
-                _tdat.node(0) = _gmsh.
-                    _tria3._data[_ipos]._node[0];
-                _tdat.node(1) = _gmsh.
-                    _tria3._data[_ipos]._node[1];
-                _tdat.node(2) = _gmsh.
-                    _tria3._data[_ipos]._node[2];
-                _tdat.itag () = _gmsh.
-                    _tria3._data[_ipos]._itag ;
-            
-                _geom._euclidean_mesh_3d.
-                        _tria.push_tri3(_tdat);
-            }
-     
-            }        
-        }
-        else
-        if (_gmsh._flags == 
-                JIGSAW_ELLIPSOID_MESH )
-        {
-    /*--------------------------------- ellipsoid-mesh-3d */
-            if (_gmsh._radii._size==+3)
-            {
-            _geom._ellipsoid_mesh_3d.
-                _radA = _gmsh._radii._data[0] ;
-            _geom._ellipsoid_mesh_3d.
-                _radB = _gmsh._radii._data[1] ;
-            _geom._ellipsoid_mesh_3d.
-                _radC = _gmsh._radii._data[2] ;
-                
-            //!! blah, also need coastlines...
-                
-            }
-        }
-        
-        }
-        catch (...)
-        {
-            _errv = __unknown_error ;
-        }
-
-        return (  _errv ) ;
-    }
-    
-    /*
-    --------------------------------------------------------
-     * COPY-GEOM: read geometry input data.
+     * TEST-INIT: test INIT data validity.
     --------------------------------------------------------
      */
      
     template <
     typename      jlog_data
              >
-    __normal_call iptr_type copy_geom (
+    __normal_call iptr_type test_init (
         jcfg_data &_jcfg ,
         jlog_data &_jlog ,
-        geom_data &_geom ,
-        jigsaw_msh_t const&_gmsh
-        )
-    {
-        return geom_from_msht (
-            _jcfg, _jlog, _geom, _gmsh) ;
-    }
-    
-    /*
-    --------------------------------------------------------
-     * TEST-GEOM: test GEOM data validity.
-    --------------------------------------------------------
-     */
-     
-    template <
-    typename      jlog_data
-             >
-    __normal_call iptr_type test_geom (
-        jcfg_data &_jcfg ,
-        jlog_data &_jlog ,
-        geom_data &_geom
+        mesh_data &_init
         )
     {
         iptr_type _errv  = __no_error ;
 
         __unreferenced(_jcfg) ;
 
-        if (_geom._ndim == +2 &&
-            _geom._kind ==
+        if (_init._ndim == +2 &&
+            _init._kind ==
              jmsh_kind::euclidean_mesh)
         {
     /*--------------------------------- euclidean-mesh-2d */
             iptr_type _nmax = 
-                (iptr_type) _geom.
+                (iptr_type) _init.
                     _euclidean_mesh_2d.
-                        _tria._set1.count();
+                        _mesh._set1.count();
         
             iptr_type _imin = 
             std::numeric_limits<iptr_type>::max() ;
             iptr_type _imax = 
             std::numeric_limits<iptr_type>::min() ;
 
-            for (auto _iter  = _geom.
-            _euclidean_mesh_2d._tria._set2.head() ;
-                      _iter != _geom.
-            _euclidean_mesh_2d._tria._set2.tend() ;
+            for (auto _iter  = _init.
+            _euclidean_mesh_2d._mesh._set2.head() ;
+                      _iter != _init.
+            _euclidean_mesh_2d._mesh._set2.tend() ;
                     ++_iter )
             {
                 if (_iter->mark() < 0) continue ;
@@ -553,53 +398,11 @@
                 _imax = std::max(
                     _imax, _iter->node(1)) ;
             }
-
-            if (_imin < +0 || _imax>=_nmax)
-            {
-                _jlog.push (
-            "  **input error: invalid indexing\n");
-        
-                _errv = __invalid_argument ;
-            }
-        }
-        else
-        if (_geom._ndim == +3 &&
-            _geom._kind ==
-             jmsh_kind::euclidean_mesh)
-        {
-    /*--------------------------------- euclidean-mesh-3d */
-            iptr_type _nmax = 
-                (iptr_type) _geom.
-                    _euclidean_mesh_3d.
-                        _tria._set1.count();
-        
-            iptr_type _imin = 
-            std::numeric_limits<iptr_type>::max() ;
-            iptr_type _imax = 
-            std::numeric_limits<iptr_type>::min() ;
-
-            for (auto _iter  = _geom.
-            _euclidean_mesh_3d._tria._set2.head() ;
-                      _iter != _geom.
-            _euclidean_mesh_3d._tria._set2.tend() ;
-                    ++_iter )
-            {
-                if (_iter->mark() < 0) continue ;
-                
-                _imin = std::min(
-                    _imin, _iter->node(0)) ;
-                _imin = std::min(
-                    _imin, _iter->node(1)) ;
-                _imax = std::max(
-                    _imax, _iter->node(0)) ;
-                _imax = std::max(
-                    _imax, _iter->node(1)) ;
-            }
-
-            for (auto _iter  = _geom.
-            _euclidean_mesh_3d._tria._set3.head() ;
-                      _iter != _geom.
-            _euclidean_mesh_3d._tria._set3.tend() ;
+            
+            for (auto _iter  = _init.
+            _euclidean_mesh_2d._mesh._set3.head() ;
+                      _iter != _init.
+            _euclidean_mesh_2d._mesh._set3.tend() ;
                     ++_iter )
             {
                 if (_iter->mark() < 0) continue ;
@@ -627,40 +430,112 @@
             }
         }
         else
-        if (_geom._kind ==
-             jmsh_kind::ellipsoid_mesh)
+        if (_init._ndim == +3 &&
+            _init._kind ==
+             jmsh_kind::euclidean_mesh)
         {
-    /*--------------------------------- ellipsoid-mesh-3d */
-            if (_geom._ellipsoid_mesh_3d.
-                _radA <= (real_type)  +0. ||
-                _geom._ellipsoid_mesh_3d.
-                _radB <= (real_type)  +0. ||
-                _geom._ellipsoid_mesh_3d.
-                _radC <= (real_type)  +0. )
+    /*--------------------------------- euclidean-mesh-3d */
+            iptr_type _nmax = 
+                (iptr_type) _init.
+                    _euclidean_mesh_3d.
+                        _mesh._set1.count();
+        
+            iptr_type _imin = 
+            std::numeric_limits<iptr_type>::max() ;
+            iptr_type _imax = 
+            std::numeric_limits<iptr_type>::min() ;
+
+            for (auto _iter  = _init.
+            _euclidean_mesh_3d._mesh._set2.head() ;
+                      _iter != _init.
+            _euclidean_mesh_3d._mesh._set2.tend() ;
+                    ++_iter )
+            {
+                if (_iter->mark() < 0) continue ;
+                
+                _imin = std::min(
+                    _imin, _iter->node(0)) ;
+                _imin = std::min(
+                    _imin, _iter->node(1)) ;
+                _imax = std::max(
+                    _imax, _iter->node(0)) ;
+                _imax = std::max(
+                    _imax, _iter->node(1)) ;
+            }
+
+            for (auto _iter  = _init.
+            _euclidean_mesh_3d._mesh._set3.head() ;
+                      _iter != _init.
+            _euclidean_mesh_3d._mesh._set3.tend() ;
+                    ++_iter )
+            {
+                if (_iter->mark() < 0) continue ;
+            
+                _imin = std::min(
+                    _imin, _iter->node(0)) ;
+                _imin = std::min(
+                    _imin, _iter->node(1)) ;
+                _imin = std::min(
+                    _imin, _iter->node(2)) ;
+                _imax = std::max(
+                    _imax, _iter->node(0)) ;
+                _imax = std::max(
+                    _imax, _iter->node(1)) ;
+                _imax = std::max(
+                    _imax, _iter->node(2)) ;
+            }
+            
+            for (auto _iter  = _init.
+            _euclidean_mesh_3d._mesh._set4.head() ;
+                      _iter != _init.
+            _euclidean_mesh_3d._mesh._set4.tend() ;
+                    ++_iter )
+            {
+                if (_iter->mark() < 0) continue ;
+            
+                _imin = std::min(
+                    _imin, _iter->node(0)) ;
+                _imin = std::min(
+                    _imin, _iter->node(1)) ;
+                _imin = std::min(
+                    _imin, _iter->node(2)) ;
+                _imin = std::min(
+                    _imin, _iter->node(3)) ;
+                _imax = std::max(
+                    _imax, _iter->node(0)) ;
+                _imax = std::max(
+                    _imax, _iter->node(1)) ;
+                _imax = std::max(
+                    _imax, _iter->node(2)) ;
+                _imax = std::max(
+                    _imax, _iter->node(3)) ;
+            }
+
+            if (_imin < +0 || _imax>=_nmax)
             {
                 _jlog.push (
-            "  **input error: bad radius value\n");
+            "  **input error: invalid indexing\n");
         
                 _errv = __invalid_argument ;
             }
         }
-
+    
         return (  _errv ) ;
     }
-
+    
     /*
     --------------------------------------------------------
-     * ECHO-GEOM: print summary of GEOM data.
+     * ECHO-INIT: print summary of INIT data.
     --------------------------------------------------------
      */
      
     template <
     typename      jlog_data
              >
-    __normal_call iptr_type echo_geom (
+    __normal_call iptr_type echo_init (
         jcfg_data &_jcfg ,
         jlog_data &_jlog ,
-        geom_data &_geom
+        mesh_data &_init
         )
     {
         std::stringstream  _sstr;
@@ -688,8 +563,8 @@
         
         __unreferenced(_jcfg) ;
 
-        if (_geom._ndim == +2 &&
-            _geom._kind ==
+        if (_init._ndim == +2 &&
+            _init._kind ==
              jmsh_kind::euclidean_mesh)
         {
     /*--------------------------------- euclidean-mesh-2d */
@@ -702,11 +577,12 @@
             
             iptr_type _num1 = +0 ;
             iptr_type _num2 = +0 ;
+            iptr_type _num3 = +0 ;
             
-            for (auto _iter  = _geom.
-            _euclidean_mesh_2d._tria._set1.head() ;
-                      _iter != _geom.
-            _euclidean_mesh_2d._tria._set1.tend() ;
+            for (auto _iter  = _init.
+            _euclidean_mesh_2d._mesh._set1.head() ;
+                      _iter != _init.
+            _euclidean_mesh_2d._mesh._set1.tend() ;
                     ++_iter )
             {
             if (_iter->mark()>=+0) _num1 += +1 ;
@@ -714,20 +590,31 @@
             
             __dumpINTS("|COORD.|", _num1)
             
-            for (auto _iter  = _geom.
-            _euclidean_mesh_2d._tria._set2.head() ;
-                      _iter != _geom.
-            _euclidean_mesh_2d._tria._set2.tend() ;
+            for (auto _iter  = _init.
+            _euclidean_mesh_2d._mesh._set2.head() ;
+                      _iter != _init.
+            _euclidean_mesh_2d._mesh._set2.tend() ;
                     ++_iter )
             {
             if (_iter->mark()>=+0) _num2 += +1 ;
             }
             
-            __dumpINTS("|EDGE-2|", _num2)   
+            __dumpINTS("|EDGE-2|", _num2)
+            
+            for (auto _iter  = _init.
+            _euclidean_mesh_2d._mesh._set3.head() ;
+                      _iter != _init.
+            _euclidean_mesh_2d._mesh._set3.tend() ;
+                    ++_iter )
+            {
+            if (_iter->mark()>=+0) _num3 += +1 ;
+            }
+            
+            __dumpINTS("|TRIA-3|", _num3)   
         }
         else
-        if (_geom._ndim == +3 &&
-            _geom._kind ==
+        if (_init._ndim == +3 &&
+            _init._kind ==
              jmsh_kind::euclidean_mesh)
         {
     /*--------------------------------- euclidean-mesh-3d */
@@ -741,11 +628,12 @@
             iptr_type _num1 = +0 ;
             iptr_type _num2 = +0 ;
             iptr_type _num3 = +0 ;
+            iptr_type _num4 = +0 ;
             
-            for (auto _iter  = _geom.
-            _euclidean_mesh_3d._tria._set1.head() ;
-                      _iter != _geom.
-            _euclidean_mesh_3d._tria._set1.tend() ;
+            for (auto _iter  = _init.
+            _euclidean_mesh_3d._mesh._set1.head() ;
+                      _iter != _init.
+            _euclidean_mesh_3d._mesh._set1.tend() ;
                     ++_iter )
             {
             if (_iter->mark()>=+0) _num1 += +1 ;
@@ -753,10 +641,10 @@
             
             __dumpINTS("|COORD.|", _num1)
             
-            for (auto _iter  = _geom.
-            _euclidean_mesh_3d._tria._set2.head() ;
-                      _iter != _geom.
-            _euclidean_mesh_3d._tria._set2.tend() ;
+            for (auto _iter  = _init.
+            _euclidean_mesh_3d._mesh._set2.head() ;
+                      _iter != _init.
+            _euclidean_mesh_3d._mesh._set2.tend() ;
                     ++_iter )
             {
             if (_iter->mark()>=+0) _num2 += +1 ;
@@ -764,37 +652,27 @@
             
             __dumpINTS("|EDGE-2|", _num2)
             
-            for (auto _iter  = _geom.
-            _euclidean_mesh_3d._tria._set3.head() ;
-                      _iter != _geom.
-            _euclidean_mesh_3d._tria._set3.tend() ;
+            for (auto _iter  = _init.
+            _euclidean_mesh_3d._mesh._set3.head() ;
+                      _iter != _init.
+            _euclidean_mesh_3d._mesh._set3.tend() ;
                     ++_iter )
             {
             if (_iter->mark()>=+0) _num3 += +1 ;
             }
             
-            __dumpINTS("|TRIA-3|", _num3)           
-        }
-        else
-        if (_geom._kind ==
-             jmsh_kind::ellipsoid_mesh)
-        {
-    /*--------------------------------- ellipsoid-mesh-3d */
-            _jlog.push(
-                "  ELLIPSOID-MESH\n\n") ;
+            __dumpINTS("|TRIA-3|", _num3)  
             
-            __dumpINTS("|NDIMS.|",  +3) ;
+            for (auto _iter  = _init.
+            _euclidean_mesh_3d._mesh._set4.head() ;
+                      _iter != _init.
+            _euclidean_mesh_3d._mesh._set4.tend() ;
+                    ++_iter )
+            {
+            if (_iter->mark()>=+0) _num4 += +1 ;
+            }
             
-            _jlog.push("\n") ;
-            
-            __dumpREAL("|1-RAD.|", 
-                _geom._ellipsoid_mesh_3d._radA) ;
-                
-            __dumpREAL("|2-RAD.|", 
-                _geom._ellipsoid_mesh_3d._radB) ;
-            
-            __dumpREAL("|3-RAD.|", 
-                _geom._ellipsoid_mesh_3d._radC) ;                       
+            __dumpINTS("|TRIA-4|", _num4)
         }
 
         _jlog.push("\n") ;
@@ -804,9 +682,9 @@
 
         return (  _errv) ;
     }
-
-
-#   endif   //__GEO_LOAD__
-
-
-
+    
+    
+#   endif   //__INI_LOAD__
+    
+    
+    

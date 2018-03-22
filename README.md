@@ -79,25 +79,6 @@ meshdemo(5); % a global grid with multi-resolution grid-spacing constraints.
 ````
 Additionally, the <a href="../master/jigsaw/example.jig">`../jigsaw/example.jig`</a> file provides a description of `JIGSAW`'s configuration options, and can be used as a command-line example. A set of unit-tests and `libjigsaw` example programs are contained in <a href="../master/jigsaw/uni/">`../jigsaw/uni/`</a>. The `JIGSAW-API` is documented via the header files in <a href="../master/jigsaw/inc/">`../jigsaw/inc/`</a>.
 
-## `Gallery`
-
-<p align="center">
-  <img width="370" src = "../master/jigsaw/img/JIGSAW-pole-hfun.jpg"> &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-  <img width="370" src = "../master/jigsaw/img/JIGSAW-pole-dual.jpg">
-
-  Figure 1. Multi-resolution grid for the global ocean, with additional bathymetric refinement included in the Arctic region.
-	
-</p>
-
-
-<p align="center">
-  <img width="430" src = "../master/jigsaw/img/JIGSAW-aust-hfun.jpg">
-  <img width="430" src = "../master/jigsaw/img/JIGSAW-aust-dual.jpg">
-
-  Figure 2. Multi-resolution coastal grid for the Australian shelf region, showing the dual grid (with Herzfeld et al., CSIRO).
-	
-</p>
-
 ## `License`
 
 This program may be freely redistributed under the condition that the copyright notices (including this entire header) are not removed, and no compensation is received through use of the software.  Private, research, and institutional use is free.  You may distribute modified versions of this code `UNDER THE CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR NOTICE IS GIVEN OF THE MODIFICATIONS`. Distribution of this code as part of a commercial system is permissible `ONLY BY DIRECT ARRANGEMENT WITH THE AUTHOR`. (If you are not directly supplying this code to a customer, and you are instead telling them how they can obtain it for free, then you are not required to make any arrangement with me.) 

@@ -831,6 +831,9 @@ template <typename _Type>
         if (_sa*_sb<(double)+.0)
             return null_hits ;
             
+        if (_sa == (double)+.0) //!!
+            return null_hits ;
+            
         if (_sa == (double)+.0 && // totally degenerate??
             _sb == (double)+.0 )
         {     

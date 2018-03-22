@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 16 September, 2017
+     * Last updated: 21 March, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -741,8 +741,10 @@
              jmsh_kind::euclidean_mesh)
         {
     /*--------------------------------- euclidean-mesh-2d */
-            #define __max2 (iptr_type) \
-        _hfun._euclidean_mesh_2d._mesh._set1.count()
+            iptr_type _nmax = 
+                (iptr_type) _hfun.
+                    _euclidean_mesh_2d.
+                        _mesh._set1.count();
         
             real_type _hmin = 
             std::numeric_limits<real_type>::max() ;
@@ -795,7 +797,7 @@
                 _errv = __invalid_argument ;
             }
 
-            if (_imin < +0 || _imax >= __max2)
+            if (_imin < +0 || _imax>=_nmax)
             {
                 _jlog.push (
     "  **input error: HFUN. tria. indexing is incorrect.\n") ;
@@ -888,8 +890,10 @@
              jmsh_kind::euclidean_mesh)
         {
     /*--------------------------------- euclidean-mesh-3d */
-            #define __max3 (iptr_type) \
-        _hfun._euclidean_mesh_3d._mesh._set1.count()
+            iptr_type _nmax = 
+                (iptr_type) _hfun.
+                    _euclidean_mesh_3d.
+                        _mesh._set1.count();
         
             real_type _hmin = 
             std::numeric_limits<real_type>::max() ;
@@ -946,7 +950,7 @@
                 _errv = __invalid_argument ;
             }
 
-            if (_imin < +0 || _imax >= __max3)
+            if (_imin < +0 || _imax>=_nmax)
             {
                 _jlog.push (
     "  **input error: HFUN. tria. indexing is incorrect.\n") ;
@@ -1127,9 +1131,6 @@
                 _errv = __invalid_argument ;
             }        
         }
-        
-        #undef  __max2
-        #undef  __max3
 
         return (  _errv ) ;
     }

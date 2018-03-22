@@ -24,6 +24,14 @@ function [varargout] = jigsaw(opts)
 %       name of the output file (will be created on output).
 %
 %
+%   OPTIONAL fields (INIT):
+%   ----------------------
+%
+%   OPTS.INIT_FILE - 'INITNAME.MSH', a string containing the 
+%       name of the initial distribution file (is required 
+%       at input).
+%
+%
 %   OPTIONAL fields (GEOM):
 %   ----------------------
 %
@@ -230,10 +238,10 @@ function [varargout] = jigsaw(opts)
 %
 
 %-----------------------------------------------------------
-%   JIGSAW-0.9.5.x
+%   JIGSAW-0.9.6.x
 %   Darren Engwirda
 %   github.com/dengwirda/jigsaw-matlab
-%   14-Dec-2017
+%   16-Mar-2018
 %   darren.engwirda@columbia.edu
 %-----------------------------------------------------------
 %
@@ -339,7 +347,14 @@ function makejig(name,opts)
         case 'verbosity'
         pushints(ffid,opts.verbosity,'VERBOSITY');
     
+        case 'tria_file'
+        pushchar(ffid,opts.tria_file,'TRIA_FILE');
+        
         case 'jcfg_file' ;
+    
+    %------------------------------------------ INIT options
+        case 'init_file'
+        pushchar(ffid,opts.init_file,'INIT_FILE');
         
     %------------------------------------------ GEOM options
         case 'geom_file'

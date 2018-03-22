@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 04 October, 2017
+     * Last updated: 22 March, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -80,6 +80,13 @@
         std::int32_t  /*_irow*/,
         double     *  /*_pval*/,
         std::int32_t  /*_itag*/
+        ) { }
+    __normal_call void_type open_power (
+        std::int32_t  /*_nrow*/
+        ) { }
+    __normal_call void_type push_power (
+        std::int32_t  /*_irow*/,
+        double        /*_xpwr*/
         ) { }
     __normal_call void_type open_edge2 (
         std::int32_t  /*_nrow*/
@@ -419,7 +426,70 @@
     
     /*
     --------------------------------------------------------
-     * READ-POINT: read POINT data section
+     * READ-POWER: read POWER data section
+    --------------------------------------------------------
+     */
+    
+    template <
+        typename  dest_type
+             >
+    __normal_call void_type read_power (
+        std::ifstream&_ffid ,
+        string_tokens&_stok ,
+        dest_type    &_dest
+        )
+    {
+    /*----------------------------------------- read head */
+        std::int32_t _nrow = -1;
+        std::int32_t _irow = +0;
+        if (_stok.count() == +2)
+        {
+            _nrow = std::stol(_stok[1]);
+        }
+        else
+        {
+            this->_errs.
+            push_tail("Invalid POWER!");
+        }
+        
+        _dest.open_power(_nrow);
+   
+    /*----------------------------------------- read data */
+        std::string _line;
+        while (std::getline(_ffid, _line))
+        {
+            try
+            {
+            containers::
+                array<std::string> _tstr ;
+                
+            find_toks (_line, ";", _tstr);
+       
+            if ((std::int32_t)_tstr.count()==1)
+            {
+                _dest.push_power ( _irow , 
+                    std::stod(_tstr[0])) ;
+            }
+            else
+            {
+                this->_errs.push_tail(_line);
+            }
+            
+            }
+            catch (...)
+            {
+                this->_errs.push_tail(_line);
+            }
+    
+            _irow += +1 ;
+            
+            if (--_nrow == +0) break ;
+        }        
+    }
+    
+    /*
+    --------------------------------------------------------
+     * READ-COORD: read COORD data section
     --------------------------------------------------------
      */
     
@@ -1150,6 +1220,12 @@
             if (_stok[0] == "POINT")
                 {
                 read_point(_ffid, _stok, 
+                           _dest) ; 
+                }
+            else
+            if (_stok[0] == "POWER")
+                {
+                read_power(_ffid, _stok, 
                            _dest) ; 
                 }
             else

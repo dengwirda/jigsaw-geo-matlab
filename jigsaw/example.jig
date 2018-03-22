@@ -19,8 +19,8 @@
 #       bin/MAC-64/jigsaw64r     example.jig
 #
 #   This command calls JIGSAW using the config. data contai-
-#   ned in "example.jig", which, in unmodified form, creates 
-#   a tetrahedral    mesh of the "stanford-bunny" geometry. 
+#   ned in 'example.jig', which, in unmodified form, creates 
+#   a tetrahedral mesh of the 'lake-superior' geometry. 
 #
 
 #   The subsequent sections detail the various configuration 
@@ -39,14 +39,27 @@
 #       eation of *.MSH files.
 #
 
-    GEOM_FILE = geo/bunny.msh
+    GEOM_FILE = geo/lake.msh
     
     
 #   ---> MESH_FILE - 'MESHNAME.MSH', a string containing the 
 #       name of the output file (will be created on output).
 #
 
-    MESH_FILE = out/bunny.msh
+    MESH_FILE = out/lake.msh
+ 
+    
+#    
+#   OPTIONAL fields (INIT):
+#   ----------------------
+#
+
+#   ---> INIT_FILE - 'INITNAME.MSH', a string containing the 
+#       name of the initial distribution file (is required 
+#       at input).
+#
+
+#   INIT_FILE = *.msh
 
 
 #
@@ -62,13 +75,13 @@
 
 
 #   ---> GEOM_FEAT - {default=false} attempt to auto-detect 
-#       "sharp-features" in the input geometry. Features can 
+#       'sharp-features' in the input geometry. Features can 
 #       lie adjacent to 1-dim. entities, (i.e. geometry 
-#       "edges") and/or 2-dim. entities, (i.e. geometry 
-#       "faces") based on both geometrical and/or topologic-
+#       'edges') and/or 2-dim. entities, (i.e. geometry 
+#       'faces') based on both geometrical and/or topologic-
 #       al constraints. Geometrically, features are located 
 #       between any neighbouring entities that subtend 
-#       angles less than GEOM_ETAX degrees, where "X" is the 
+#       angles less than GEOM_ETAX degrees, where 'X' is the 
 #       (topological) dimension of the feature. Topological-
 #       ly, features are located at the apex of any non-man-
 #       ifold connections.
@@ -79,7 +92,7 @@
 
 #   ---> GEOM_ETA1 - {default=45deg} 1-dim. feature-angle, 
 #       features are located between any neighbouring 
-#       "edges" that subtend angles less than ETA1 deg.
+#       'edges' that subtend angles less than ETA1 deg.
 #
 
 #   GEOM_ETA1 = 60
@@ -87,7 +100,7 @@
 
 #   ---> GEOM_ETA2 - {default=45deg} 2-dim. feature angle, 
 #       features are located between any neighbouring 
-#       "faces" that subtend angles less than ETA2 deg.
+#       'faces' that subtend angles less than ETA2 deg.
 #
 
 #   GEOM_ETA2 = 60
@@ -105,6 +118,8 @@
 #       an unstructured triangulation. See SAVEMSH for addi-
 #       tional details.
 #
+
+#   HFUN_FILE = *.msh
 
 
 #   ---> HFUN_SCAL - {default='relative'} scaling type for 
@@ -137,7 +152,7 @@
 #   ----------------------
 #
 
-#   ---> MESH_DIMS - {default=3} number of "topological" di-
+#   ---> MESH_DIMS - {default=3} number of 'topological' di-
 #       mensions to mesh. DIMS=K meshes K-dimensional featu-
 #       res, irrespective of the number of spatial dim.'s of 
 #       the problem (i.e. if the geometry is 3-dimensional 
@@ -166,8 +181,8 @@
 
 #   ---> MESH_TOP1 - {default=false} enforce 1-dim. topolog-
 #       ical constraints. 1-dim. edges are refined until all 
-#       embedded nodes are "locally 1-manifold", i.e. nodes 
-#       are either centred at topological "features", or lie 
+#       embedded nodes are 'locally 1-manifold', i.e. nodes 
+#       are either centred at topological 'features', or lie 
 #       on 1-manifold complexes.
 #
 
@@ -176,8 +191,8 @@
 
 #   ---> MESH_TOP2 - {default=false} enforce 2-dim. topolog-
 #       ical constraints. 2-dim. trias are refined until all 
-#       embedded nodes are "locally 2-manifold", i.e. nodes 
-#       are either centred at topological "features", or lie 
+#       embedded nodes are 'locally 2-manifold', i.e. nodes 
+#       are either centred at topological 'features', or lie 
 #       on 2-manifold complexes.
 #
 
@@ -203,7 +218,7 @@
 
 
 #   ---> MESH_OFF2 - {default=0.90} radius-edge ratio target
-#       for insertion of "shape"-type offcentres for 2-tria
+#       for insertion of 'shape'-type offcentres for 2-tria
 #       elements. When refining an element II, offcentres
 #       are positioned to form a new "frontal" element JJ 
 #       that satisfies JRAD <= OFF2.
@@ -213,7 +228,7 @@
 
 
 #   ---> MESH_OFF3 - {default=1.10} radius-edge ratio target
-#       for insertion of "shape"-type offcentres for 3-tria
+#       for insertion of 'shape'-type offcentres for 3-tria
 #       elements. When refining an element II, offcentres
 #       are positioned to form a new "frontal" element JJ 
 #       that satisfies JRAD <= OFF3.
@@ -223,8 +238,8 @@
 
 
 #   ---> MESH_SNK2 - {default=0.25} inflation tolerance for
-#       insertion of "sink" offcentres for 2-tria elements.
-#       When refining an element II, "sinks" are positioned
+#       insertion of 'sink' offcentres for 2-tria elements.
+#       When refining an element II, 'sinks' are positioned
 #       at the centre of the largest adj. circumball staisf-
 #       ying |JBAL-IBAL| < SNK2 * IRAD, where IRAD is the 
 #       radius of the circumball, and [IBAL,JBAL] are the 
@@ -235,8 +250,8 @@
 
 
 #   ---> MESH_SNK3 - {default=0.33} inflation tolerance for
-#       insertion of "sink" offcentres for 3-tria elements.
-#       When refining an element II, "sinks" are positioned
+#       insertion of 'sink' offcentres for 3-tria elements.
+#       When refining an element II, 'sinks' are positioned
 #       at the centre of the largest adj. circumball staisf-
 #       ying |JBAL-IBAL| < SNK3 * IRAD, where IRAD is the 
 #       radius of the circumball, and [IBAL,JBAL] are the 
@@ -303,14 +318,14 @@
 #   OPTM_QLIM = 0.90
 
 
-#   ---> OPTM_ZIP_ - {default= true} allow for "merge" oper-
+#   ---> OPTM_ZIP_ - {default= true} allow for 'merge' oper-
 #       ations on sub-faces.
 #
 
 #   OPTM_ZIP_ = FALSE
 
 
-#   ---> OPTM_DIV_ - {default= true} allow for "split" oper-
+#   ---> OPTM_DIV_ - {default= true} allow for 'split' oper-
 #       ations on sub-faces.
 #
 

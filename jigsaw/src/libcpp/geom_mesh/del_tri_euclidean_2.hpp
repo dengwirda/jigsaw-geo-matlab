@@ -31,9 +31,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 04 October, 2017
+ * Last updated: 17 March, 2018
  *
- * Copyright 2013-2017
+ * Copyright 2013-2018
  * Darren Engwirda
  * de2363@columbia.edu
  * https://github.com/dengwirda/
@@ -185,7 +185,7 @@
                 &_kpos[ 0] ,
                 &_xpos[ 0] ) ;
                 
-            return (_sign > (double)+0.0) ;
+            return (_sign >= (double)+0.) ;
 		}
 		} ; 
 

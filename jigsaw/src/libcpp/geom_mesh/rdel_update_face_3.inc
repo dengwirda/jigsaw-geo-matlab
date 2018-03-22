@@ -581,102 +581,40 @@
         )
     {
         iptr_type _tnod[4] = {
-        _mesh._tria.tria(_tpos)->node(0),
-        _mesh._tria.tria(_tpos)->node(1),
-        _mesh._tria.tria(_tpos)->node(2),
-        _mesh._tria.tria(_tpos)->node(3)
+        _mesh.
+        _tria.tria( _tpos)->node(0) ,
+        _mesh.
+        _tria.tria( _tpos)->node(1) ,
+        _mesh.
+        _tria.tria( _tpos)->node(2) ,
+        _mesh.
+        _tria.tria( _tpos)->node(3)
             } ;
 
         algorithms::isort(
-            &_tnod[0], &_tnod[4], 
+            &_tnod[0], &_tnod[4] , 
                 std::less<iptr_type>()) ;
     
-        iptr_type _dim1 = +0;
-        iptr_type _dim2 = +0;
-        for (auto _inod = +4; _inod-- != +0; )
-        {
-        
-        if (_mesh._tria.node(
-                _tnod[_inod])->fdim()<+2)
-            _dim1 += +1 ;
-            
-        if (_mesh._tria.node(
-                _tnod[_inod])->fdim()<+3)
-            _dim2 += +1 ;
-            
-        }
-    
-        if (_dim1 <= +1 && _dim2 <= +2)
-        {
     /*---------------------- calc. ball in floating-point */
-            real_type _tbal[4] ;
-            geometry::circ_ball_3d (
-                _tbal , 
-           &_mesh._tria.
-                node(_tnod[0])->pval(0) , 
-           &_mesh._tria.
-                node(_tnod[1])->pval(0) ,
-           &_mesh._tria.
-                node(_tnod[2])->pval(0) ,
-           &_mesh._tria.
-                node(_tnod[3])->pval(0)
-                ) ;
-                
-            _mesh._tria.tria(
-            _tpos)->circ(0)= _tbal[0] ;
-            _mesh._tria.tria(
-            _tpos)->circ(1)= _tbal[1] ;
-            _mesh._tria.tria(
-            _tpos)->circ(2)= _tbal[2] ;
-        }
-        else
-        {
-    /*---------------------- calc. ball in adaptive-prec. */
-            dd_flt _pos1[ +3] = {
-            _mesh._tria.
-                node(_tnod[0])->pval(0) ,
-            _mesh._tria.
-                node(_tnod[0])->pval(1) ,
-            _mesh._tria.
-                node(_tnod[0])->pval(2)
-                } ;
-            dd_flt _pos2[ +3] = {
-            _mesh._tria.
-                node(_tnod[1])->pval(0) ,
-            _mesh._tria.
-                node(_tnod[1])->pval(1) ,
-            _mesh._tria.
-                node(_tnod[1])->pval(2)
-                } ;
-            dd_flt _pos3[ +3] = {
-            _mesh._tria.
-                node(_tnod[2])->pval(0) ,
-            _mesh._tria.
-                node(_tnod[2])->pval(1) ,
-            _mesh._tria.
-                node(_tnod[2])->pval(2)
-                } ;
-            dd_flt _pos4[ +3] = {
-            _mesh._tria.
-                node(_tnod[3])->pval(0) ,
-            _mesh._tria.
-                node(_tnod[3])->pval(1) ,
-            _mesh._tria.
-                node(_tnod[3])->pval(2)
-                } ;
+        real_type _tbal[4] ;
+        geometry::circ_ball_3d (
+            _tbal , 
+       &_mesh._tria.
+            node(_tnod[0])->pval(0) , 
+       &_mesh._tria.
+            node(_tnod[1])->pval(0) ,
+       &_mesh._tria.
+            node(_tnod[2])->pval(0) ,
+       &_mesh._tria.
+            node(_tnod[3])->pval(0)
+            ) ;
             
-            dd_flt _tbal[ +4] ;
-            geometry::circ_ball_3d(_tbal ,
-                _pos1, _pos2, 
-                _pos3, _pos4) ;
-           
-            _mesh._tria.tria(
-            _tpos)->circ(0)= _tbal[0] ;
-            _mesh._tria.tria(
-            _tpos)->circ(1)= _tbal[1] ;
-            _mesh._tria.tria(
-            _tpos)->circ(2)= _tbal[2] ;
-        }
+        _mesh._tria.tria(
+        _tpos)->circ(0)= _tbal[0] ;
+        _mesh._tria.tria(
+        _tpos)->circ(1)= _tbal[1] ;
+        _mesh._tria.tria(
+        _tpos)->circ(2)= _tbal[2] ;
     }
 
     /*

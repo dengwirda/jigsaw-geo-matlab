@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 14 December, 2017
+     * Last updated: 22 March, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -72,18 +72,21 @@
             = (real_type) +1.00E-08
         )
     {
+        __unreferenced(_pred) ;         // for MSVC...
+    
+    /*--------------------------------- get edge indexing */
          auto _eptr = 
         _mesh._set2.head() + _edge;
         
         typename mesh_type::
             edge_type _edat(*_eptr) ;
         
-        _okay = false ;
-        
          auto _iptr = _mesh.
         _set1.head()+ _eptr->node(0);        
          auto _jptr = _mesh.
         _set1.head()+ _eptr->node(1);
+        
+        _okay = false ;
         
         _iset.set_count(+0) ;
         _jset.set_count(+0) ;
@@ -92,7 +95,14 @@
         
         _csrc.set_count(+0) ;
         _cdst.set_count(+0) ;
+    
+    /*--------------------------------- exit if FEAT node */    
+        if (_iptr->feat() != mesh::null_feat)
+            return ;
+        if (_jptr->feat() != mesh::null_feat)
+            return ;
         
+    /*--------------------------------- get edge h-sizing */
         real_type _ipos[_dims] ;
         real_type _jpos[_dims] ;
         iptr_type _idim = +0;
@@ -109,20 +119,24 @@
         real_type  _jsiz = 
         _hfun.eval(_jpos, _jptr->hidx ()) ;
         
-        real_type  _elen = std::
-        sqrt(_pred.length_sq(_ipos, _jpos)) ;
+        real_type  _lsqr =
+            _pred.length_sq(_ipos, _jpos) ;
 
         real_type  _hbar = 
-            std::min(_isiz , _jsiz) ;
+            std::min(_isiz , _jsiz);
 
-        if (_elen >= _hbar * _lmax)
+    /*--------------------------------- exit if too large */
+        if (_lsqr >= _hbar * _lmax *
+                     _hbar * _lmax )
             return  ;
         
+    /*--------------------------------- get adjacent face */
         _mesh.node_tri3(_eptr->node (0), 
              _iset) ;
         _mesh.node_tri3(_eptr->node (1), 
              _jset) ;
                 
+    /*--------------------------------- exit if poor topo */
         if (_iset.count() <= +1 ||
             _jset.count() <= +1 )
             return  ;
@@ -133,6 +147,7 @@
             _jset.count() > +12 )
             return  ;
         
+    /*--------------------------------- get disjoint face */
         for (auto _tria  = _iset.head();
                   _tria != _iset.tend();
                 ++_tria  )
@@ -195,6 +210,7 @@
             _bset.push_tail(*_tria) ;
         }
     
+    /*--------------------------------- get adjacent cost */
         loop_tscr(_mesh, _pred , 
                   _iset, 
                   _csrc) ;
@@ -203,6 +219,7 @@
                   _bset, 
                   _csrc) ;
         
+    /*--------------------------------- get adjacent ball */
         real_type _pbal[_dims+1] = {   
             (real_type) +0.000 } ;
         
@@ -262,6 +279,7 @@
                          _jset.count() )  ;
         }
         
+    /*--------------------------------- save current node */
         real_type _isav[_dims+1] ;
         real_type _jsav[_dims+1] ;        
         for(_idim = _dims+1; _idim-- != +0; )
@@ -273,6 +291,7 @@
                 _jptr->pval(_idim) ;
         }
         
+    /*--------------------------------- try to merge node */
         real_type _pmid[_dims+1] = {   
             (real_type) +0.000 } ;
             
@@ -283,21 +302,22 @@
         (real_type)+.5*_jptr->pval(_idim) ;
         }
     
-        iptr_type static 
-            constexpr _INUM = (iptr_type)+16 ;
-        
         real_type _pnew[_dims+1] = {   
             (real_type) +0.000 } ;
         real_type _circ[_dims+1] = {   
             (real_type) +0.000 } ;
-        
-        _pnew[_dims+0]  = 
-        (real_type) +.5 * _iptr->pval (_dims)+
-        (real_type) +.5 * _jptr->pval (_dims);
+    
+        _pnew[_dims + 0] = 
+        (real_type)+.5*_iptr->pval(_dims) +
+        (real_type)+.5*_jptr->pval(_dims) ;
+    
+        iptr_type static 
+            constexpr _INUM = (iptr_type)+16 ;
                
         for (auto _iloc = +0; _iloc != _INUM ; 
                 ++_iloc )
         {   
+    /*--------------------------------- interp. adj. ball */
             real_type _bias = 
            (real_type)_iloc / (_INUM - 1) ;
             
@@ -313,6 +333,7 @@
                 _bpos*_pbal[_idim] ;
             }
         
+    /*--------------------------------- push onto surface */
             _pred. proj_node(
                 _geom, _circ, _pnew) ;
        
@@ -325,6 +346,7 @@
                     = _pnew[_idim] ;
             }
             
+    /*--------------------------------- check new quality */
             _cdst.set_count(0) ;
          
             loop_tscr(_mesh, _pred , 
@@ -339,11 +361,13 @@
                       _okay, _good ,
                       _qinc) ;
              
+    /*--------------------------------- good enough: DONE */
             if (_okay) break ;         
         }
                   
         if(!_okay) 
         {
+    /*--------------------------------- undo if zip fails */
             for(_idim = _dims+1; _idim-- != 0; )
             {
                 _iptr->pval(_idim) 
@@ -352,9 +376,11 @@
                 _jptr->pval(_idim) 
                     = _jsav[_idim] ;
             }
+    /*--------------------------------- exit if zip fails */           
             return  ;
         }
             
+    /*--------------------------------- redo mesh indexes */
         for (auto _tria  = _bset.head();
                   _tria != _bset.tend();
                 ++_tria  )

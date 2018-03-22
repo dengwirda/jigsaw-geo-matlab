@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 01 November, 2017
+     * Last updated: 21 March, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -73,24 +73,40 @@
     
     class node_type : public node_base
         {
+    /*------------------------- node type for ITER-MESH-2 */
         public  :
         
         iptr_type                     _hidx ;
+        
+        char_type                     _fdim ;
+        char_type                     _feat ;
        
         public  :
         
-    /*------------------------------------ "write" access */
 	    __inline_call iptr_type      & hidx (
 	        )
 	    {   return  this->_hidx ;
 	    }
-	    
-    /*------------------------------------ "const" access */
 	    __inline_call iptr_type const& hidx (
 	        ) const
 	    {   return  this->_hidx ;
 	    }
-        
+	    __inline_call char_type      & fdim (
+	        )
+	    {   return  this->_fdim ;
+	    }   
+	    __inline_call char_type const& fdim (
+	        ) const
+	    {   return  this->_fdim ;
+	    }
+	    __inline_call char_type      & feat (
+	        )
+	    {   return  this->_feat ;
+	    }   
+	    __inline_call char_type const& feat (
+	        ) const
+	    {   return  this->_feat ;
+	    }
         } ;
     
     typedef mesh::tria_complex_2 <
