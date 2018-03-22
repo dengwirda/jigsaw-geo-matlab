@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated 04 October, 2017
+     * Last updated: 14 March, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -492,15 +492,21 @@
     --------------------------------------------------------
      */
 
+    template <
+    typename      init_type
+             >
     __static_call
     __normal_call void_type init_mesh (
         geom_type &_geom,
+        init_type &_init,
         size_type &_size,
         mesh_type &_mesh,
         rdel_opts &_opts
         )
     {
-    /*------------------------------ initialise mesh obj. */
+		__unreferenced(_size) ;
+
+    /*------------------------------ initialise mesh bbox */
         real_type _plen[ +2];
         _plen[ 0] = _geom._bmax[ 0] - 
                     _geom._bmin[ 0] ;
@@ -522,9 +528,10 @@
         _pmax[ 1] = _geom._bmax[ 1] + 
                           _plen[ 1] ;
         
-        _mesh._tria.push_root( _pmin, 
-                               _pmax) ;
+        _mesh.
+        _tria.push_root(_pmin, _pmax) ;
 
+    /*------------------------------ initialise mesh root */
         _mesh.
         _tria.node(+0)->fdim() = +3 ;
         _mesh.
@@ -545,9 +552,41 @@
         _tria.node(+1)->topo() = +0 ;
         _mesh.
         _tria.node(+2)->topo() = +0 ;
+    
+    /*------------------------------ seed feat from geom. */
+        _geom.seed_feat(_mesh, _opts) ;
+                        
+    /*------------------------------ seed mesh from init. */
+        for (auto _node  = 
+            _init._mesh._set1.head(); 
+                  _node != 
+            _init._mesh._set1.tend();
+                ++_node  )
+        {
+            if (_node->mark() >= +0)
+            {
+            iptr_type _npos = -1 ;
+            if (_mesh._tria.push_node (
+               &_node->pval(0), _npos))
+            {
+                _mesh._tria.node
+                    (_npos)->fdim() 
+                        = _node->fdim() ;
+                        
+                _mesh._tria.node
+                    (_npos)->feat() 
+                        = _node->feat() ;
+                        
+                _mesh._tria.node
+                    (_npos)->topo() = 2 ;  
+                    
+            }     
+            }
+        }
         
-        _geom.seed_mesh(_mesh, _size,
-                        _opts) ;
+    /*------------------------------ seed mesh from geom. */
+        _geom.seed_mesh(_mesh, _opts) ;
+            
     }
 
     /*
@@ -557,20 +596,49 @@
      */
 
     template <
+    typename      init_type ,
     typename      jlog_file
              >
     __static_call
     __normal_call void_type rdel_mesh (
         geom_type &_geom ,
+        init_type &_init ,
         size_type &_size ,
         mesh_type &_mesh ,
         rdel_opts &_args ,
         jlog_file &_dump
         )
     {   
-        mode_type  _mode = null_mode ;
+        mode_type _mode = null_mode ;
+        
+    /*------------------------------ push log-file header */
+        _dump.push (
+    "#------------------------------------------------------------\n"
+    "#    |ITER.|      |DEL-1|      |DEL-2| \n"
+    "#------------------------------------------------------------\n"
+            ) ;
 
-    /*------------------------- push alloc. for hash obj. */
+    /*------------------------------ init. list workspace */
+        iptr_list _nnew, _nold ;
+        iptr_list _tnew, _told ;
+        
+        escr_list _escr  ;
+        tscr_list _tscr  ;
+        
+        edat_list _edat, _etmp ;
+        tdat_list _tdat  ;
+        nbal_list _nbal  ;
+
+    /*------------------------------ refinement p.-queues */
+        edge_heap _eepq  ;
+        tria_heap _ttpq  ;
+        node_heap _etpq  ;
+        
+    /*------------------------------ "feature" protection */        
+        nbal_sets _nclr  ;
+        nbal_heap _nbpq  ;
+
+    /*------------------------------ alloc. for hash obj. */
         _mesh._eset._lptr. set_count (
         _mesh._tria._tset.count()*+3 , 
         containers::loose_alloc, nullptr);
@@ -602,38 +670,9 @@
         _enod.fill( +0 ) ;
         _tnod.fill( +0 ) ;
 
-    /*------------------------------ push log-file header */
-        _dump.push (
-    "#------------------------------------------------------------\n"
-    "#    |ITER.|      |DEL-1|      |DEL-2| \n"
-    "#------------------------------------------------------------\n"
-            ) ;
-
-        iptr_type _pass  = + 0 ;
-
-    /*------------------------------ init. list workspace */
-        iptr_list _nnew, _nold ;
-        iptr_list _tnew, _told ;
-        
-        escr_list _escr  ;
-        tscr_list _tscr  ;
-        
-        edat_list _edat, _etmp ;
-        tdat_list _tdat  ;
-        nbal_list _nbal  ;
-
-    /*------------------------------ refinement p.-queues */
-        edge_heap _eepq  ;
-        tria_heap _ttpq  ;
-        node_heap _etpq  ;
-        
-    /*------------------------------ "feature" protection */        
-        nbal_sets _nclr  ;
-        nbal_heap _nbpq  ;
-     
     /*------------------------------ initialise mesh obj. */
-        init_mesh(_geom, _size, _mesh , 
-                  _args) ;
+        init_mesh( _geom , _init, _size, 
+            _mesh, _args ) ;
         
     /*-------------------- calc. size-func for seed nodes */ 
        
@@ -646,11 +685,13 @@
             if (_node->mark() >= +0)
             {
                 _node->idxh()  = 
-                size_type::null_hint() ;
+                    size_type::null_hint();
             }
         }
 
     /*-------------------- main: refine edges/faces/trias */
+    
+        iptr_type _pass  =   +0  ;
     
         for(bool_type _done=false; !_done ; )
         {

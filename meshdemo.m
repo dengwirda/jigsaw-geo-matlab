@@ -27,7 +27,7 @@ function meshdemo(demo)
 %-----------------------------------------------------------
 %   Darren Engwirda
 %   github.com/dengwirda/jigsaw-geo-matlab
-%   31-Oct-2017
+%   13-Mar-2018
 %   de2363@columbia.edu
 %-----------------------------------------------------------
 %
@@ -134,72 +134,14 @@ function demo1
   
     opts.mesh_dims = +2 ;               % 2-dim. simplexes
     
-    opts.optm_qlim = 0.9375 ;
+    opts.optm_qlim = 0.95 ;
    
     opts.mesh_top1 = true ;             % for sharp feat's
     opts.geom_feat = true ;
     
     mesh = jigsaw  (opts) ;
  
-%------------------------------------ draw mesh/cost outputs
-
-    ang2 = triang2( ...                 % calc. tri-angles
-        mesh.point.coord(:,1:2), ...
-        mesh.tria3.index(:,1:3)) ;
-            
-    t_90 = max(ang2,[],2) > 90.0 ;
-    t_95 = max(ang2,[],2) > 95.0 ;
-    
-    figure;
-    patch ('faces',geom.edge2.index(:,1:2), ...
-        'vertices',geom.point.coord(:,1:2), ...
-        'facecolor','w', ...
-        'edgecolor',[.1,.1,.1], ...
-        'linewidth',1.5) ;
-    hold on; axis image;
-    title('JIGSAW GEOM data') ;
-
-    figure;
-    surf(XPOS,YPOS,hfun);
-    view(2); hold on; axis image; 
-    shading interp ;
-    title('JIGSAW HFUN data') ;
-
-    figure;
-    patch ('faces',mesh.tria3.index(:,1:3), ...
-        'vertices',mesh.point.coord(:,1:2), ...
-        'facecolor','w', ...
-        'edgecolor',[.2,.2,.2]) ;
-    hold on; axis image;
-    patch ('faces',mesh.tria3.index(t_90,1:3), ...
-        'vertices',mesh.point.coord(:,1:2), ...
-        'facecolor','y', ...
-        'edgecolor',[.2,.2,.2]) ;
-    patch ('faces',mesh.tria3.index(t_95,1:3), ...
-        'vertices',mesh.point.coord(:,1:2), ...
-        'facecolor','r', ...
-        'edgecolor',[.2,.2,.2]) ;
-    patch ('faces',mesh.edge2.index(:,1:2), ...
-        'vertices',mesh.point.coord(:,1:2), ...
-        'facecolor','w', ...
-        'edgecolor',[.1,.1,.1], ...
-        'linewidth',1.5) ;
-    title('JIGSAW TRIA mesh') ;
-
-    drawscr(mesh.point.coord (:,1:2), ...
-            mesh.edge2.index (:,1:2), ...
-            mesh.tria3.index (:,1:3)) ;
-    
-    drawnow ;        
-    set(figure(1),'units','normalized', ...
-        'position',[.05,.55,.30,.35]) ;
-    set(figure(2),'units','normalized', ...
-        'position',[.35,.55,.30,.35]) ;
-    set(figure(3),'units','normalized', ...
-        'position',[.35,.10,.30,.35]) ;
-    set(figure(4),'units','normalized', ...
-        'position',[.05,.10,.30,.35]) ;
-    drawnow ;
+    plotplanar(geom,mesh,hmat) ;
 
 end
  
@@ -259,10 +201,10 @@ function demo2
         
     fprintf(1,'  Forming HFUN data...\n'); 
     
-    hmin = +.075 ;                      % min. H(X) [deg.]
+    hmin = +.025 ;                      % min. H(X) [deg.]
     hmax = +.750 ;                      % max. H(X)
     
-    hfun = -zlev(:) / 2000.;            % scale with depth
+    hfun = sqrt(max(-zlev(:),eps))/75;  % scale with sqrt(H)
     hfun = max(hfun,hmin);
     hfun = min(hfun,hmax);
     
@@ -303,76 +245,10 @@ function demo2
     opts.mesh_dims = +2 ;               % 2-dim. simplexes
     
     opts.mesh_eps1 = 1.00 ;
-    opts.mesh_rad2 = 1.00 ;
     
     mesh = jigsaw  (opts) ;
   
-%------------------------------------ draw mesh/cost outputs
-
-    ang2 = triang2( ...                 % calc. tri-angles
-        mesh.point.coord(:,1:2), ...
-        mesh.tria3.index(:,1:3)) ;
-            
-    t_90 = max(ang2,[],2) > 90.0 ;
-    t_95 = max(ang2,[],2) > 95.0 ;
-
-    figure;
-    patch ('faces',geom.edge2.index(:,1:2), ...
-        'vertices',geom.point.coord(:,1:2), ...
-        'facecolor','none', ...
-        'edgecolor',[.1,.1,.1], ...
-        'linewidth',1.5) ;
-    hold on; axis image;
-    title('JIGSAW GEOM data') ;
-
-    hmat.value(zlev > +0.) = +inf ;
-    
-    figure;
-    surf(alon,alat,hmat.value);
-    view(2); hold on; axis image; 
-    shading interp;
-    title('JIGSAW HFUN data') ;
-
-    figure;
-    patch ('faces',mesh.tria3.index(:,1:3), ...
-        'vertices',mesh.point.coord(:,1:2), ...
-        'facecolor','w', ...
-        'edgecolor',[.2,.2,.2]) ;
-    hold on; axis image;
-    patch ('faces',mesh.tria3.index(t_90,1:3), ...
-        'vertices',mesh.point.coord(:,1:2), ...
-        'facecolor','y', ...
-        'edgecolor',[.2,.2,.2]) ;
-    patch ('faces',mesh.tria3.index(t_95,1:3), ...
-        'vertices',mesh.point.coord(:,1:2), ...
-        'facecolor','r', ...
-        'edgecolor',[.2,.2,.2]) ;
-    patch ('faces',mesh.edge2.index(:,1:2), ...
-        'vertices',mesh.point.coord(:,1:2), ...
-        'facecolor','w', ...
-        'edgecolor',[.1,.1,.1], ...
-        'linewidth',1.5) ;
-    patch ('faces',geom.edge2.index(:,1:2), ...
-        'vertices',geom.point.coord(:,1:2), ...
-        'facecolor','none', ...
-        'edgecolor',[.1,.1,.8], ...
-        'linewidth',1.0) ;
-    title('JIGSAW TRIA mesh') ;
-
-    drawscr(mesh.point.coord (:,1:2), ...
-            mesh.edge2.index (:,1:2), ...
-            mesh.tria3.index (:,1:3)) ;
-    
-    drawnow ;        
-    set(figure(1),'units','normalized', ...
-        'position',[.05,.55,.30,.35]) ;
-    set(figure(2),'units','normalized', ...
-        'position',[.35,.55,.30,.35]) ;
-    set(figure(3),'units','normalized', ...
-        'position',[.35,.10,.30,.35]) ;
-    set(figure(4),'units','normalized', ...
-        'position',[.05,.10,.30,.35]) ;
-    drawnow ;
+    plotplanar(geom,mesh,hmat) ;
     
 end
 
@@ -404,69 +280,15 @@ function demo3
     
     opts.mesh_dims = +2 ;               % 2-dim. simplexes
     
-    opts.optm_qlim = 0.9375 ;
+    opts.optm_qlim = 0.95 ;
     
     opts.verbosity = +1 ;
     
     mesh = jigsaw  (opts) ;
     
-%------------------------------------ draw mesh/cost outputs
-
-    topo = loadmsh('jigsaw/geo/topo.msh');
+    hfun = [] ;
     
-    xpos = topo.point.coord{1};
-    ypos = topo.point.coord{2};
-    zlev = reshape( ...
-    topo.value,length(ypos),length(xpos));
-
-    tlev = ...
-        findalt(mesh,xpos,ypos,zlev) ;
-
-    ang2 = triang2( ...                 % calc. tri-angles
-        mesh.point.coord(:,1:3), ...
-        mesh.tria3.index(:,1:3)) ;
-            
-    t_90 = max(ang2,[],2) > 90.0 ;
-    t_95 = max(ang2,[],2) > 95.0 ;
-    
-    twet = tlev <= +0. ;
-    tdry = tlev >  +0. ;
-    
-    figure;
-    patch ('faces',mesh.tria3.index(twet,1:3), ...
-        'vertices',mesh.point.coord(:,1:3), ...
-        'facevertexcdata',tlev(twet,:), ...
-        'facecolor','flat', ...
-        'edgecolor',[.2,.2,.2]) ;
-    hold on; axis image off;
-    patch ('faces',mesh.tria3.index(tdry,1:3), ...
-        'vertices',mesh.point.coord(:,1:3), ...
-        'facecolor','w', ...
-        'edgecolor','none');
-    patch ('faces',mesh.tria3.index(t_90,1:3), ...
-        'vertices',mesh.point.coord(:,1:3), ...
-        'facecolor','y', ...
-        'edgecolor',[.2,.2,.2]) ;
-    patch ('faces',mesh.tria3.index(t_95,1:3), ...
-        'vertices',mesh.point.coord(:,1:3), ...
-        'facecolor','r', ...
-        'edgecolor',[.2,.2,.2]) ;
-    set(gca,'clipping','off') ;
-    caxis([min(zlev(:))*4./3., +0.]);
-    colormap('hot');
-    brighten(+0.75);
-    title('JIGSAW TRIA mesh') ;
-    
-    drawscr(mesh.point.coord (:,1:3), ...
-            [], ...
-            mesh.tria3.index (:,1:3)) ;
-            
-    drawnow ;        
-    set(figure(1),'units','normalized', ...
-        'position',[.05,.55,.30,.35]) ;
-    set(figure(2),'units','normalized', ...
-        'position',[.05,.10,.30,.35]) ;
-    drawnow ;
+    plotsphere(mesh,hfun) ;
     
 end
 
@@ -531,72 +353,13 @@ function demo4
     
     opts.mesh_dims = +2 ;               % 2-dim. simplexes
     
-    opts.optm_qlim = 0.9375 ;
+    opts.optm_qlim = 0.95 ;
     
     opts.verbosity = +1 ;
     
     mesh = jigsaw  (opts) ;
     
-%------------------------------------ draw mesh/cost outputs
-
-    tlev = ...
-        findalt(mesh,xpos,ypos,zlev) ;
-
-    ang2 = triang2( ...                 % calc. tri-angles
-        mesh.point.coord(:,1:3), ...
-        mesh.tria3.index(:,1:3)) ;
-            
-    t_90 = max(ang2,[],2) > 90.0 ;
-    t_95 = max(ang2,[],2) > 95.0 ;
-    
-    hfun(zlev > +0.) = inf;
-    
-    figure;
-    surf(XPOS*180/pi,YPOS*180/pi,hfun) ;
-    view(2); axis image; hold on ;
-    shading interp;
-    title('JIGSAW HFUN data') ;
-    
-    twet = tlev <= +0. ;
-    tdry = tlev >  +0. ;
-    
-    figure;
-    patch ('faces',mesh.tria3.index(twet,1:3), ...
-        'vertices',mesh.point.coord(:,1:3), ...
-        'facevertexcdata',tlev(twet,:), ...
-        'facecolor','flat', ...
-        'edgecolor',[.2,.2,.2]) ;
-    hold on; axis image off;
-    patch ('faces',mesh.tria3.index(tdry,1:3), ...
-        'vertices',mesh.point.coord(:,1:3), ...
-        'facecolor','w', ...
-        'edgecolor','none');
-    patch ('faces',mesh.tria3.index(t_90,1:3), ...
-        'vertices',mesh.point.coord(:,1:3), ...
-        'facecolor','y', ...
-        'edgecolor',[.2,.2,.2]) ;
-    patch ('faces',mesh.tria3.index(t_95,1:3), ...
-        'vertices',mesh.point.coord(:,1:3), ...
-        'facecolor','r', ...
-        'edgecolor',[.2,.2,.2]) ;
-    set(gca,'clipping','off') ;
-    caxis([min(zlev(:))*4./3., +0.]);
-    colormap('hot');
-    brighten(+0.75);
-    title('JIGSAW TRIA mesh') ;
-    
-    drawscr(mesh.point.coord (:,1:3), ...
-            [], ...
-            mesh.tria3.index (:,1:3)) ;
-            
-    drawnow ;        
-    set(figure(1),'units','normalized', ...
-        'position',[.35,.55,.30,.35]) ;
-    set(figure(2),'units','normalized', ...
-        'position',[.05,.55,.30,.35]) ;
-    set(figure(3),'units','normalized', ...
-        'position',[.05,.10,.30,.35]) ;
-    drawnow ;
+    plotsphere(mesh,hmat) ;
     
 end
 
@@ -644,15 +407,17 @@ function demo5
    [XPOS,YPOS] = meshgrid (xpos,ypos) ;
       
     hfn0 = +100. ;                      % global spacing
-    hfn2 = +25.;                        % adapt. spacing
+    hfn2 = +20.;                        % adapt. spacing
     hfn3 = +50.;                        % arctic spacing
     
     dhdx = +.10;                        % max. gradients
     
     hfun = +hfn0*ones(nlat,nlon) ;
     
-    htop = max(-hfn2*zlev/1000.,hfn2) ;
+    htop = sqrt(max(-zlev(:),eps))/1.5;
+    htop = max(htop,hfn2);
     htop = min(htop,hfn3);
+    htop(zlev>0.) = hfn0 ;
     
     hfun(YPOS>+50.) = htop(YPOS>+50.) ;
     
@@ -674,36 +439,44 @@ function demo5
     
     opts.mesh_dims = +2 ;               % 2-dim. simplexes
     
-    opts.optm_qlim = 0.9375 ;
-    
     opts.verbosity = +1 ;
     
     mesh = jigsaw  (opts) ;
+
+    plotsphere(mesh,hmat) ;
     
-%------------------------------------ draw mesh/cost outputs
+end
+
+function plotsphere(mesh,hfun)
+%PLOT-SPHERE draw JIGSAW output for sphere problems.
+
+    topo = loadmsh('jigsaw/geo/topo.msh');
+    
+    xpos = topo.point.coord{1};
+    ypos = topo.point.coord{2};
+    zlev = reshape( ...
+    topo.value,length(ypos),length(xpos));
 
     tlev = ...
         findalt(mesh,xpos,ypos,zlev) ;
 
-    ang2 = triang2( ...                 % calc. tri-angles
-        mesh.point.coord(:,1:3), ...
-        mesh.tria3.index(:,1:3)) ;
-            
-    t_90 = max(ang2,[],2) > 90.0 ;
-    t_95 = max(ang2,[],2) > 95.0 ;
-    
-    hnew(zlev > +0.) = inf;
-    
-    figure;
-    surf(XPOS,YPOS,hnew) ;
+    if (~isempty(hfun))
+    if (all(size(hfun.value)==size(zlev)))
+        hfun.value(zlev>0.) = inf;
+    end
+    figure('color','w');
+    surf(hfun.point.coord{1}*180/pi, ...
+         hfun.point.coord{2}*180/pi, ...
+         hfun.value) ;
     view(2); axis image; hold on ;
     shading interp;
-    title('JIGSAW HFUN data') ;
+    title('JIGSAW HFUN data') ; 
+    end
     
     twet = tlev <= +0. ;
     tdry = tlev >  +0. ;
     
-    figure;
+    figure('color','w');
     patch ('faces',mesh.tria3.index(twet,1:3), ...
         'vertices',mesh.point.coord(:,1:3), ...
         'facevertexcdata',tlev(twet,:), ...
@@ -714,19 +487,11 @@ function demo5
         'vertices',mesh.point.coord(:,1:3), ...
         'facecolor','w', ...
         'edgecolor','none');
-    patch ('faces',mesh.tria3.index(t_90,1:3), ...
-        'vertices',mesh.point.coord(:,1:3), ...
-        'facecolor','y', ...
-        'edgecolor',[.2,.2,.2]) ;
-    patch ('faces',mesh.tria3.index(t_95,1:3), ...
-        'vertices',mesh.point.coord(:,1:3), ...
-        'facecolor','r', ...
-        'edgecolor',[.2,.2,.2]) ;
     set(gca,'clipping','off') ;
     caxis([min(zlev(:))*4./3., +0.]);
     colormap('hot');
     brighten(+0.75);
-    title('JIGSAW TRIA mesh') ;
+    title('JIGSAW TRIA mesh (MASK)');
     
     drawscr(mesh.point.coord (:,1:3), ...
             [], ...
@@ -740,7 +505,71 @@ function demo5
     set(figure(3),'units','normalized', ...
         'position',[.05,.10,.30,.35]) ;
     drawnow ;
+
+end
+
+function plotplanar(geom,mesh,hfun)
+%PLOT-PLANAR draw JIGSAW output for planar problems.
+  
+    figure;
+    patch ('faces',geom.edge2.index(:,1:2), ...
+        'vertices',geom.point.coord(:,1:2), ...
+        'facecolor','w', ...
+        'edgecolor',[.1,.1,.1], ...
+        'linewidth',1.5) ;
+    hold on; axis image;
+    title('JIGSAW GEOM data') ;
+
+    if (~isempty(hfun))
+   [xpos,ypos] = meshgrid( ...
+         hfun.point.coord{1}, ...
+         hfun.point.coord{2}) ;
+    mask = ~inpoly2([xpos(:),ypos(:)], ...
+        geom.point.coord(:,1:2), ...
+        geom.edge2.index(:,1:2)) ;
+    hfun.value(mask) = +inf ;
+    figure('color','w');
+    surf(hfun.point.coord{1}, ...
+         hfun.point.coord{2}, ...
+         hfun.value) ;
+    view(2); axis image; hold on ;
+    shading interp;
+    title('JIGSAW HFUN data') ; 
+    end
+
+    figure;
+    patch ('faces',mesh.tria3.index(:,1:3), ...
+        'vertices',mesh.point.coord(:,1:2), ...
+        'facecolor','w', ...
+        'edgecolor',[.2,.2,.2]) ;
+    hold on; axis image;
+    patch ('faces',mesh.edge2.index(:,1:2), ...
+        'vertices',mesh.point.coord(:,1:2), ...
+        'facecolor','w', ...
+        'edgecolor',[.1,.1,.1], ...
+        'linewidth',1.5) ;
+    patch ('faces',geom.edge2.index(:,1:2), ...
+        'vertices',geom.point.coord(:,1:2), ...
+        'facecolor','w', ...
+        'edgecolor',[.1,.1,.8], ...
+        'linewidth',1.5) ;
+    title('JIGSAW TRIA mesh') ;
+
+    drawscr(mesh.point.coord (:,1:2), ...
+            mesh.edge2.index (:,1:2), ...
+            mesh.tria3.index (:,1:3)) ;
     
+    drawnow ;        
+    set(figure(1),'units','normalized', ...
+        'position',[.05,.55,.30,.35]) ;
+    set(figure(2),'units','normalized', ...
+        'position',[.35,.55,.30,.35]) ;
+    set(figure(3),'units','normalized', ...
+        'position',[.35,.10,.30,.35]) ;
+    set(figure(4),'units','normalized', ...
+        'position',[.05,.10,.30,.35]) ;
+    drawnow ;
+
 end
 
 function [zlev] = findalt(mesh,alon,alat,topo)

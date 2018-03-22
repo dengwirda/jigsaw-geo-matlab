@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 04 October, 2017
+     * Last updated: 14 March, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -497,23 +497,21 @@
 
     /*
     --------------------------------------------------------
-     * SEED-MESH: setup initial node set.
+     * SEED-FEAT: setup initial node set.
     --------------------------------------------------------
      */
      
     template <
         typename  mesh_type ,
-        typename  size_type ,
         typename  geom_opts
              >
-    __normal_call void_type seed_mesh (
+    __normal_call void_type seed_feat (
         mesh_type &_mesh ,
-        size_type &_size ,
         geom_opts &_opts
         )
     {
-        __unreferenced(_size) ;
-    
+		__unreferenced(_opts) ;
+
     /*------------------------- push set of feature nodes */
         for (auto _iter  = 
              this->_tria._set1.head() ;
@@ -545,10 +543,26 @@
             }
             }
         }
+    }
      
+    /*
+    --------------------------------------------------------
+     * SEED-MESH: setup initial node set.
+    --------------------------------------------------------
+     */
+     
+    template <
+        typename  mesh_type ,
+        typename  geom_opts
+             >
+    __normal_call void_type seed_mesh (
+        mesh_type &_mesh ,
+        geom_opts &_opts
+        )
+    { 
     /*------------------------- well-distributed sampling */
-        while (_mesh._tria.
-               _nset.count() < (std::size_t)_opts.seed())
+        while (_mesh._tria._nset.count() 
+                < (std::size_t)_opts.seed() + 3)
         {
             typename geom_type::
                      mesh_type::
@@ -615,8 +629,7 @@
                 }
             }
             else break  ;
-        }
-        
+        }      
     }
 
     /*

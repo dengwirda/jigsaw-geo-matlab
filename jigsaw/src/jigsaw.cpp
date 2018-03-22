@@ -5,6 +5,7 @@
     // g++ -std=c++11 -pedantic -Wall -s -O3 -flto -D NDEBUG 
     // -I libcpp -static-libstdc++ jigsaw.cpp -o jigsaw64r
     //
+    //
     // for lib-jigsaw:
     //
     // g++ -std=c++11 -pedantic -Wall -O3 -flto -fPIC -D 
@@ -27,10 +28,10 @@
      * JIGSAW: an unstructured mesh generation package.
     --------------------------------------------------------
      *
-     * JIGSAW release 0.9.5.x
-     * Last updated: 04 December, 2017
+     * JIGSAW release 0.9.6.x
+     * Last updated: 21 March, 2018
      *
-     * Copyright 2013 -- 2017
+     * Copyright 2013 -- 2018
      * Darren Engwirda
      * darren.engwirda@columbia.edu
      * https://github.com/dengwirda/
@@ -67,11 +68,11 @@
      * JIGSAW is a collection of unstructured triangle- and
      * tetrahedron-based meshing algorithms, designed to 
      * produce very high quality Delaunay-based grids for 
-     * computational simulation.  JIGSAW includes both 
-     * Delaunay "refinement" based algorithms for the 
+     * computational simulation. JIGSAW includes both 
+     * Delaunay 'refinement' based algorithms for the 
      * construction of new meshes, as well as optimisation 
-     * driven methods for the "improvement" of existing 
-     * grids.  JIGSAW supports both two- and 
+     * driven methods for the 'improvement' of existing 
+     * grids. JIGSAW supports both two- and 
      * three-dimensional operations, catering to a variety 
      * of planar, surface and volumetric configurations.
      *
@@ -98,7 +99,7 @@
      */
 
 
-#   define __JGSWVSTR "JIGSAW VERSION 0.9.5"
+#   define __JGSWVSTR "JIGSAW VERSION 0.9.6"
 
 
     /*---------------------------------- for i/o on files */
@@ -181,7 +182,9 @@
 
         std::string             _jcfg_file ;
         std::string             _geom_file ;
+        std::string             _init_file ;
         std::string             _hfun_file ;
+        std::string             _tria_file ;
         std::string             _mesh_file ;
         
         iptr_type               _verbosity = +0 ;
@@ -515,6 +518,15 @@
      */
 
     #   include "geo_load.hpp"
+    
+    
+    /*
+    --------------------------------------------------------
+     * READ-INIT: load INIT data from file.
+    --------------------------------------------------------
+     */
+
+    #   include "ini_load.hpp"
 
     
     /*
@@ -524,11 +536,22 @@
      */
     
     #   include "hfn_load.hpp"
-
+    
+    #   include "hfn_init.hpp"
+    
 
     /*
     --------------------------------------------------------
-     * SAVE-JMSH: make *.JMSH output file.
+     * INIT-MESH: initialise mesh pointers.
+    --------------------------------------------------------
+     */
+
+    #   include "msh_init.hpp"
+    
+    
+    /*
+    --------------------------------------------------------
+     * SAVE-MESH: push MESH data into file.
     --------------------------------------------------------
      */
 
@@ -537,21 +560,12 @@
     
     /*
     --------------------------------------------------------
-     * COPY-MESH: copy rDT to tri-complex.
+     * COPY-MESH: copy r-DT to tri-complex.
     --------------------------------------------------------
      */
 
     #   include "msh_copy.hpp"
 
-
-    /*
-    --------------------------------------------------------
-     * INIT-HFUN: init. HFUN data via BOX.
-    --------------------------------------------------------
-     */
-
-    #   include "hfn_init.hpp"
-    
 
     /*
     --------------------------------------------------------
@@ -872,7 +886,7 @@
         {
     /*--------------------------------- call mesh routine */
             _jlog.push (  __jloglndv    "\n" ) ;
-            _jlog.push(
+            _jlog.push (
                 "  Generate rDT MESH...\n\n" ) ;
                 
 #           ifdef  __use_timers
@@ -897,7 +911,7 @@
         {
     /*--------------------------------- call copy routine */
             _jlog.push (  __jloglndv    "\n" ) ;
-            _jlog.push(
+            _jlog.push (
                 "  Pushing MESH data...\n\n" ) ;
 
 #           ifdef  __use_timers
@@ -918,7 +932,7 @@
         
     /*--------------------------------- call iter routine */
             _jlog.push (  __jloglndv    "\n" ) ;
-            _jlog.push(
+            _jlog.push (
                 "  MESH optimisation...\n\n" ) ;
 
 #           ifdef  __use_timers
@@ -1049,6 +1063,7 @@
             {
                 return  _retv ;
             }           
+            
             if ((_retv = test_jcfg (
                  _jcfg, _jlog)) != __no_error)
             {
@@ -1095,7 +1110,24 @@
                 return  _retv ;
             }
 
-            _geom.init_geom (_jcfg);
+#           ifdef  __use_timers
+            _ttoc   = _time.now();
+            _jlog.push(dump_time(_ttic, _ttoc));
+#           endif//__use_timers
+        }
+
+        if(!_jcfg._geom_file.empty())
+        {
+    /*--------------------------------- assemble geometry */
+            _jlog.push (  __jloglndv    "\n" ) ;
+            _jlog.push (
+                "  Forming GEOM data...\n\n" ) ;
+        
+#           ifdef  __use_timers
+            _ttic   = _time.now();
+#           endif//__use_timers
+
+            _geom.init_geom(_jcfg) ;
             
             if (_jcfg._verbosity > 0 )
             {
@@ -1112,6 +1144,69 @@
             
             }
 
+#           ifdef  __use_timers
+            _ttoc   = _time.now();
+            _jlog.push(dump_time(_ttic, _ttoc));
+#           endif//__use_timers
+        }
+        
+        if(!_jcfg._init_file.empty())
+        {
+    /*--------------------------------- parse *.INIT file */
+            _jlog.push (  __jloglndv    "\n" ) ;
+            _jlog.push (
+                "  Reading INIT file...\n\n" ) ;
+        
+#           ifdef  __use_timers
+            _ttic   = _time.now();
+#           endif//__use_timers
+
+            if ((_retv = read_init (
+                 _jcfg, 
+                 _jlog, _mesh)) != __no_error)
+            {
+                return  _retv ;
+            }
+
+            if ((_retv = test_init (
+                 _jcfg, 
+                 _jlog, _mesh)) != __no_error)
+            {
+                return  _retv ;
+            }
+            
+#           ifdef  __use_timers
+            _ttoc   = _time.now();
+            _jlog.push(dump_time(_ttic, _ttoc));
+#           endif//__use_timers
+        }
+        
+        if(!_jcfg._init_file.empty())
+        {
+    /*--------------------------------- assemble init-con */
+            _jlog.push (  __jloglndv    "\n" ) ;
+            _jlog.push (
+                "  Forming INIT data...\n\n" ) ;
+        
+#           ifdef  __use_timers
+            _ttic   = _time.now();
+#           endif//__use_timers
+
+            if (_jcfg._verbosity > 0 )
+            {
+
+            _jlog.push (
+                "  INIT data summary...\n\n" ) ;
+
+            if ((_retv = echo_init (
+                 _jcfg, 
+                 _jlog, _mesh)) != __no_error)
+            {
+                return  _retv ;
+            }
+            
+            }
+            
 #           ifdef  __use_timers
             _ttoc   = _time.now();
             _jlog.push(dump_time(_ttic, _ttoc));
@@ -1192,9 +1287,11 @@
         
         if(!_jcfg._geom_file.empty())
         {
+            if(_jcfg._rdel_opts.iter() != +0 )
+            {
     /*--------------------------------- call mesh routine */
             _jlog.push (  __jloglndv    "\n" ) ;
-            _jlog.push(
+            _jlog.push (
                 "  Generate rDT MESH...\n\n" ) ;
 
 #           ifdef  __use_timers
@@ -1203,7 +1300,7 @@
 
             if ((_retv = make_mesh (
                  _jcfg, _jlog ,
-                 _geom, 
+                 _geom, _mesh ,
                  _hfun, _rdel)) != __no_error)
             {
                 return  _retv ;
@@ -1213,13 +1310,42 @@
             _ttoc   = _time.now();
             _jlog.push(dump_time(_ttic, _ttoc));
 #           endif//__use_timers
+            }
+        }
+        
+        if(!_jcfg._geom_file.empty() &&
+           !_jcfg._tria_file.empty() )
+        {
+    /*--------------------------------- dump tria to file */
+            _jlog.push (  __jloglndv    "\n" ) ;
+            _jlog.push (
+                "  Writing TRIA file...\n\n" ) ;
+
+#           ifdef  __use_timers
+            _ttic   = _time.now();
+#           endif//__use_timers
+
+            if ((_retv = save_tria (
+                 _jcfg, 
+                 _jlog, _rdel)) != __no_error)
+            {
+                return  _retv ;
+            }
+        
+#           ifdef  __use_timers         
+            _ttoc   = _time.now();
+            _jlog.push(dump_time(_ttic, _ttoc));
+#           endif//__use_timers
         }
 
         if(!_jcfg._geom_file.empty())
         {
+            if(_jcfg._rdel_opts.iter() != +0 &&
+               _jcfg._iter_opts.iter() != +0 )
+            {
     /*--------------------------------- call copy routine */
             _jlog.push (  __jloglndv    "\n" ) ;
-            _jlog.push(
+            _jlog.push (
                 "  Pushing MESH data...\n\n" ) ;
 
 #           ifdef  __use_timers
@@ -1237,15 +1363,28 @@
             _ttoc   = _time.now();
             _jlog.push(dump_time(_ttic, _ttoc));
 #           endif//__use_timers
+            }
+        }
         
+        if(!_jcfg._geom_file.empty())
+        {
+            if(_jcfg._iter_opts.iter() != +0 )
+            {
     /*--------------------------------- call iter routine */
             _jlog.push (  __jloglndv    "\n" ) ;
-            _jlog.push(
+            _jlog.push (
                 "  MESH optimisation...\n\n" ) ;
 
 #           ifdef  __use_timers
             _ttic   = _time.now();
 #           endif//__use_timers
+
+            if ((_retv = init_mesh (
+                 _jcfg, 
+                 _jlog, _mesh)) != __no_error)
+            {
+                return  _retv ;
+            }
 
             if ((_retv = iter_mesh (
                  _jcfg, _jlog ,
@@ -1259,9 +1398,11 @@
             _ttoc   = _time.now();
             _jlog.push(dump_time(_ttic, _ttoc));
 #           endif//__use_timers
+            }
         }
         
-        if(!_jcfg._geom_file.empty())
+        if(!_jcfg._geom_file.empty() &&
+           !_jcfg._mesh_file.empty() )
         {
     /*--------------------------------- dump mesh to file */
             _jlog.push (  __jloglndv    "\n" ) ;
@@ -1272,11 +1413,28 @@
             _ttic   = _time.now();
 #           endif//__use_timers
 
+            if (_jcfg._rdel_opts.iter() != +0 &&
+                _jcfg._iter_opts.iter() == +0 )
+            {
+
+            if ((_retv = save_jmsh (
+                 _jcfg, 
+                 _jlog, _rdel)) != __no_error)
+            {
+                return  _retv ;
+            }
+        
+            }    
+            else
+            {
+
             if ((_retv = save_jmsh (
                  _jcfg, 
                  _jlog, _mesh)) != __no_error)
             {
                 return  _retv ;
+            }
+        
             }
 
 #           ifdef  __use_timers         

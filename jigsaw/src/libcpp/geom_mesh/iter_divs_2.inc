@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 14 December, 2017
+     * Last updated: 22 March, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -69,12 +69,11 @@
             = (real_type) +1.00E-08
         )
     {    
+        __unreferenced(_pred) ;         // for MSVC...
+
+    /*--------------------------------- get edge indexing */
          auto _edge = 
         _mesh._set2.head() + _enum ;
-        
-		__unreferenced(_pred) ; // for MSVC...
-
-        _okay = false ;
         
         iptr_type _enod[2] ;
         _enod[ 0] = _edge->node(0) ;
@@ -88,8 +87,11 @@
         _tset.set_count(+0);
         _mesh.edge_tri3(_enum, _tset);
     
+        _okay = false ;
+    
         if (_tset.count()!=2) return ;
     
+    /*--------------------------------- get edge h-sizing */
         real_type _ipos[_dims] ;
         real_type _jpos[_dims] ;
         iptr_type _idim = +0;
@@ -106,15 +108,18 @@
         real_type  _jsiz = 
         _hfun.eval(_jpos, _jptr->hidx ()) ;
         
-        real_type  _elen = std::
-        sqrt(_pred.length_sq(_ipos,_jpos) ) ;
+        real_type  _lsqr =
+            _pred.length_sq(_ipos, _jpos) ;
 
         real_type  _hbar = 
-            std::min(_isiz , _jsiz) ;
+            std::min(_isiz , _jsiz);
 
-        if (_elen <= _hbar * _lmin)
+    /*--------------------------------- exit if too small */
+        if (_lsqr <= _hbar * _lmin *
+                     _hbar * _lmin )
             return  ;
          
+    /*--------------------------------- get adjacent face */
          auto _itri = 
         _mesh._set3.head()+_tset[0];
          auto _jtri = 
@@ -147,8 +152,10 @@
         real_type _cmin = std::min (
             _csrc[0] , _csrc[1]) ;
         
+    /*--------------------------------- exit if too good! */
         if (_cmin > _good) return;
         
+    /*--------------------------------- get adjacent ball */
         real_type _ibal[_dims+1] ;
         _pred.perp_ball(_ibal ,
            &_mesh._set1[
@@ -187,6 +194,7 @@
             _jtri->node(2)].pval(_dims) ;
         _jpwr /= (real_type) +3. ;
         
+    /*--------------------------------- get adjacent apex */
         iptr_type _inod [3] ;
         iptr_type _jnod [3] ;
         for(auto _inum = 3; _inum-- != 0; )
@@ -220,6 +228,7 @@
                 break ;
         }
         
+    /*--------------------------------- try to add a node */
         real_type _ball[_dims+1] = 
         {   (real_type) +0.000 } ;
         real_type _circ[_dims+1] = 
@@ -235,6 +244,7 @@
         for (auto _iloc = +0; _iloc != _INUM ; 
                 ++_iloc )
         {   
+    /*--------------------------------- interp. adj. ball */
             real_type _bias = 
            (real_type)_iloc / (_INUM-1) ;
             
@@ -249,10 +259,12 @@
                   _apos * _jbal[_idim] +
                   _bpos * _ibal[_idim] ;
             }
-            
+   
+    /*--------------------------------- push onto surface */         
             _pred. proj_node(
                 _geom, _circ, _ball) ;
             
+    /*--------------------------------- check new quality */
             _cdst[0] = _pred.cost_tria (
                 _ball, &_mesh.
             _set1[_inod[2]].pval(0),
@@ -283,12 +295,13 @@
                       _okay, _good , 
                       _qinc) ;
              
+    /*--------------------------------- good enough: DONE */
             if (_okay) break ;         
         }
         
         if (!_okay) return ;     
     
-    
+    /*--------------------------------- push node to mesh */
         typename mesh_type
                ::node_type _ndat ;
         typename mesh_type
@@ -296,6 +309,11 @@
         
         _ndat.hidx() = 
             size_type::null_hint() ;
+            
+        _ndat.fdim() =   +2;
+               
+        _ndat.feat() = 
+            mesh::null_feat;
                
         for(_idim = _dims+1; _idim-- != 0; )
         {
@@ -305,7 +323,8 @@
          
         iptr_type _nnew = 
             _mesh.push_node(_ndat) ;
-               
+   
+    /*--------------------------------- redo mesh indexes */            
         _mesh._pop_tri3(_tset[0]);
         _mesh._pop_tri3(_tset[1]);
                

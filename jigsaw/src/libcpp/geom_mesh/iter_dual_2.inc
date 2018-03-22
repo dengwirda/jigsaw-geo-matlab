@@ -86,6 +86,9 @@
             +std::numeric_limits
                 <real_type>::infinity() ;
         
+		__unreferenced(_geom);
+		__unreferenced(_hfun);
+
         real_type _dqdw = (real_type)0. ;
         
         iptr_type _tnum = +0 ;

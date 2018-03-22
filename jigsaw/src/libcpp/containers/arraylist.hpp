@@ -37,9 +37,9 @@
  *
 --------------------------------------------------------
  *
- * Last updated: 04 October, 2017
+ * Last updated: 21 March, 2018
  *
- * Copyright 2013-2017
+ * Copyright 2013-2018
  * Darren Engwirda
  * de2363@columbia.edu
  * https://github.com/dengwirda/
@@ -326,6 +326,8 @@
      */
      
     __normal_call void_type clear (
+        containers::alloc_types _kind = 
+        containers::loose_alloc
         )
     {
     /*------------------------------ clear lists of items */
@@ -350,8 +352,7 @@
             }
         }
     /*------------------------------ resize backing array */
-        this->_lptr.clear (
-            containers::loose_alloc)  ;
+        this->_lptr.clear(_kind) ;
     }
     
     /*

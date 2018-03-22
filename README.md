@@ -4,14 +4,14 @@
   <img src = "../master/jigsaw/img/JIGSAW-southern-ocean-voronoi.jpg">
 </p>
 
-`JIGSAW(GEO)` is a set of algorithms designed to generate complex, unstructured grids for geophysical modelling applications, including: large-scale atmospheric simulation, ocean-modelling and numerical weather prediction, as well as coastal ocean modelling and ice-sheet dynamics. 
+`JIGSAW(GEO)` is a set of algorithms designed to generate complex, unstructured grids for geophysical modelling applications, including: large-scale atmospheric simulation and numerical weather prediction, global and coastal ocean-modelling, and ice-sheet dynamics. 
 
-`JIGSAW(GEO)` is typically able to produce very high-quality staggered Delaunay / Voronoi tessellations appropriate for unstructured finite-volume / element type models of planetary climate. Grids can be generated in local two-dimensional domains, and over general spheroidal surfaces.
+`JIGSAW(GEO)` is typically able to produce very high-quality staggered Delaunay / Voronoi tessellations appropriate for unstructured finite-volume / element type models of planetary climate. Grids can be generated in local two-dimensional domains, and over general spheroidal surfaces. Mesh resolution can be adapted to follow complex user-defined metrics, including, for example, topographic contours, discrete solution profiles or coastal features. Such capabilities enable the generation of complex, multi-resolution climate process models, with simulation fidelity enhanced in regions of interest.
 
 `JIGSAW(GEO)` is a stand-alone mesh generator written in `c++`, based on the general-purpose meshing package <a href="https://github.com/dengwirda/jigsaw-matlab">`JIGSAW`</a>. This toolbox provides a <a href="http://www.mathworks.com">`MATLAB`</a> / <a href="https://www.gnu.org/software/octave">`OCTAVE`</a> based scripting interface, including `file I/O`, `mesh visualisation` and `post-processing` facilities. The underlying `JIGSAW` library is a collection of unstructured triangle- and tetrahedron-based meshing algorithms, designed to produce very high quality Delaunay-based grids for computational simulation. `JIGSAW` includes both Delaunay-refinement based algorithms for the 
-construction of new meshes, as well as optimisation driven methods for the improvement of existing grids. `JIGSAW` supports both two- and three-dimensional operations, catering to a variety of planar, surface and volumetric configurations.
+construction of new meshes, as well as optimisation driven methods for the improvement of existing grids. 
 
-`JIGSAW(GEO)` is typically able to produce the very high-quality `staggered` `Voronoi` type grids required by a number of unstructued geophysical solvers (i.e. <a href="https://github.com/MPAS-Dev/MPAS-Release">`MPAS`</a>, <a href="http://www.emg.cmar.csiro.au/www/en/emg/software/EMS/hydrodynamics/Unstructured.html">`COMPAS`</a>, etc), generating highly optimised, multi-resolution meshes that are `locally-orthogonal`, `centroidal` and `well-centred`.
+`JIGSAW(GEO)` is typically able to produce the very high-quality unstructured grids required by contemporary unstructued general circulation models (i.e. <a href="https://github.com/MPAS-Dev/MPAS-Release">`MPAS`</a>, <a href="https://research.csiro.au/cem/software/ems/hydro/unstructured-compas/">`COMPAS`</a>, <a href="http://fesom.de/">`FESOM`</a>, <a href="https://www.mpimet.mpg.de/en/science/models/icon-esm/">`ICON`</a>, etc), generating highly optimised, multi-resolution meshes that are `locally-orthogonal`, `mutually-centroidal` and `self-centred`.
 
 `JIGSAW(GEO)` has been compiled and tested on various `64-bit` `Linux` , `Windows` and `Mac` based platforms. 
 
@@ -79,25 +79,6 @@ meshdemo(5); % a global grid with multi-resolution grid-spacing constraints.
 ````
 Additionally, the <a href="../master/jigsaw/example.jig">`../jigsaw/example.jig`</a> file provides a description of `JIGSAW`'s configuration options, and can be used as a command-line example. A set of unit-tests and `libjigsaw` example programs are contained in <a href="../master/jigsaw/uni/">`../jigsaw/uni/`</a>. The `JIGSAW-API` is documented via the header files in <a href="../master/jigsaw/inc/">`../jigsaw/inc/`</a>.
 
-## `Gallery`
-
-<p align="center">
-  <img width="370" src = "../master/jigsaw/img/JIGSAW-pole-hfun.jpg"> &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-  <img width="370" src = "../master/jigsaw/img/JIGSAW-pole-dual.jpg">
-
-  Figure 1. Multi-resolution grid for the global ocean, with additional bathymetric refinement included in the Arctic region.
-	
-</p>
-
-
-<p align="center">
-  <img width="430" src = "../master/jigsaw/img/JIGSAW-aust-hfun.jpg">
-  <img width="430" src = "../master/jigsaw/img/JIGSAW-aust-dual.jpg">
-
-  Figure 2. Multi-resolution coastal grid for the Australian shelf region, showing the dual grid (with Herzfeld et al., CSIRO).
-	
-</p>
-
 ## `License`
 
 This program may be freely redistributed under the condition that the copyright notices (including this entire header) are not removed, and no compensation is received through use of the software.  Private, research, and institutional use is free.  You may distribute modified versions of this code `UNDER THE CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE TO IT IN THE SAME FILE REMAIN UNDER COPYRIGHT OF THE ORIGINAL AUTHOR, BOTH SOURCE AND OBJECT CODE ARE MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR NOTICE IS GIVEN OF THE MODIFICATIONS`. Distribution of this code as part of a commercial system is permissible `ONLY BY DIRECT ARRANGEMENT WITH THE AUTHOR`. (If you are not directly supplying this code to a customer, and you are instead telling them how they can obtain it for free, then you are not required to make any arrangement with me.) 
@@ -105,18 +86,7 @@ This program may be freely redistributed under the condition that the copyright 
 `DISCLAIMER`:  Neither I nor: Columbia University, the Massachusetts Institute of Technology, the University of Sydney, nor the National Aeronautics and Space Administration warrant this code in any way whatsoever.  This code is provided "as-is" to be 
 used at your own risk.
 
-## `Attribution`
-
-If you make use of `JIGSAW(GEO)` in your work, please include a reference to the following:
-````
-@misc{JIGSAW-GEO,
-  title = {{JIGSAW(GEO)}: Unstructured grid generation for geophysical modelling},
-  author = {Darren Engwirda},
-  note = {https://github.com/dengwirda/jigsaw-geo-matlab},
-  year = {2017},
-}
-````
-## `References!`
+## `Attribution!`
 
 Information and references regarding the formulation of the underlying `JIGSAW` mesh-generator can also be found <a href="https://github.com/dengwirda/jigsaw-matlab">here</a>. Additionally, there are a number of publications that describe the algorithms used in `JIGSAW(GEO)` in detail. Please cite as appropriate:
 
@@ -125,4 +95,6 @@ Information and references regarding the formulation of the underlying `JIGSAW` 
 `[2]` - Darren Engwirda: JIGSAW-GEO (1.0): locally orthogonal staggered unstructured grid generation for general circulation modelling on the sphere, Geosci. Model Dev., 10, 2117-2140, https://doi.org/10.5194/gmd-10-2117-2017, 2017.
 
 `[3]` - Darren Engwirda: Multi-resolution unstructured grid-generation for geophysical applications on the sphere, Research note, Proceedings of the 24th International Meshing Roundtable, https://arxiv.org/abs/1512.00307, 2015.
+
+`[4]` - Darren Engwirda, Locally-optimal Delaunay-refinement and optimisation-based mesh generation, Ph.D. Thesis, School of Mathematics and Statistics, The University of Sydney, http://hdl.handle.net/2123/13148, 2014.
 

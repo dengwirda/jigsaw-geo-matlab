@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 14 December, 2017
+     * Last updated: 16 March, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -238,6 +238,12 @@
             __putBOOL(_rdel_opts.feat (), _stok) ;
                 }
             else
+        /*---------------------------- read INIT keywords */
+            if (_stok[0] == "INIT_FILE")
+                {
+            __putFILE(_init_file, _stok) ;
+                }
+            else
         /*---------------------------- read HFUN keywords */
             if (_stok[0] == "HFUN_FILE")
                 {
@@ -258,6 +264,12 @@
                 {
             __putREAL(_hfun_hmin, _stok) ;
                 }          
+            else
+        /*---------------------------- read MESH keywords */
+            if (_stok[0] == "TRIA_FILE")
+                {
+            __putFILE(_tria_file, _stok) ;
+                }
             else
         /*---------------------------- read MESH keywords */
             if (_stok[0] == "MESH_FILE")
@@ -643,129 +655,129 @@
         iptr_type _errv = __no_error ;
 
     /*---------------------------- test GEOM keywords */
-        __testINTS("GEOM_SEED", 
+        __testINTS("GEOM-SEED", 
             _jcfg._rdel_opts.seed(), 
             (iptr_type) + 0, 
         std::numeric_limits<iptr_type>::     max())
 
-        __testREAL("GEOM_PHI1", 
+        __testREAL("GEOM-PHI1", 
             _jcfg._rdel_opts.phi1(), 
             (real_type)  0., 
             (real_type)180.)
-        __testREAL("GEOM_PHI2", 
+        __testREAL("GEOM-PHI2", 
             _jcfg._rdel_opts.phi2(), 
             (real_type)  0., 
             (real_type)180.)
             
-        __testREAL("GEOM_ETA1", 
+        __testREAL("GEOM-ETA1", 
             _jcfg._rdel_opts.eta1(), 
             (real_type)  0., 
             (real_type)180.)
-        __testREAL("GEOM_ETA2", 
+        __testREAL("GEOM-ETA2", 
             _jcfg._rdel_opts.eta2(), 
             (real_type)  0., 
             (real_type)180.)
 
     /*---------------------------- test HFUN keywords */
-        __testREAL("HFUN_HMAX", 
+        __testREAL("HFUN-HMAX", 
             _jcfg ._hfun_hmax , 
             (real_type)  0., 
         std::numeric_limits<real_type>::infinity())
-        __testREAL("HFUN_HMIN", 
+        __testREAL("HFUN-HMIN", 
             _jcfg ._hfun_hmin , 
             (real_type)  0., 
         std::numeric_limits<real_type>::infinity())
         
     /*---------------------------- test MESH keywords */
-        __testINTS("MESH_ITER", 
+        __testINTS("MESH-ITER", 
             _jcfg._rdel_opts.iter(), 
             (iptr_type) + 0,
         std::numeric_limits<iptr_type>::     max())
 
-        __testINTS("MESH_DIMS", 
+        __testINTS("MESH-DIMS", 
             _jcfg._rdel_opts.dims(), 
             (iptr_type) + 1,
             (iptr_type) + 3)
 
-        __testREAL("MESH_SIZ1", 
+        __testREAL("MESH-SIZ1", 
             _jcfg._rdel_opts.siz1(), 
             (real_type)  0., 
         std::numeric_limits<real_type>::infinity())
-        __testREAL("MESH_SIZ2", 
+        __testREAL("MESH-SIZ2", 
             _jcfg._rdel_opts.siz2(), 
             (real_type)  0., 
         std::numeric_limits<real_type>::infinity())
-        __testREAL("MESH_SIZ3", 
+        __testREAL("MESH-SIZ3", 
             _jcfg._rdel_opts.siz3(), 
             (real_type)  0., 
         std::numeric_limits<real_type>::infinity())
 
-        __testREAL("MESH_EPS1", 
+        __testREAL("MESH-EPS1", 
             _jcfg._rdel_opts.eps1(), 
             (real_type)  0., 
         std::numeric_limits<real_type>::infinity())
-        __testREAL("MESH_EPS2", 
+        __testREAL("MESH-EPS2", 
             _jcfg._rdel_opts.eps2(), 
             (real_type)  0., 
         std::numeric_limits<real_type>::infinity())
 
-        __testREAL("MESH_RAD2", 
+        __testREAL("MESH-RAD2", 
             _jcfg._rdel_opts.rad2(), 
             (real_type)  0., 
         std::numeric_limits<real_type>::infinity())
-        __testREAL("MESH_RAD3", 
+        __testREAL("MESH-RAD3", 
             _jcfg._rdel_opts.rad3(), 
             (real_type)  0., 
         std::numeric_limits<real_type>::infinity())
         
-        __warnREAL("MESH_RAD2", 
+        __warnREAL("MESH-RAD2", 
             _jcfg._rdel_opts.rad2(), 
             (real_type)  1., 
         std::numeric_limits<real_type>::infinity())
-        __warnREAL("MESH_RAD3", 
+        __warnREAL("MESH-RAD3", 
             _jcfg._rdel_opts.rad3(), 
             (real_type)  2., 
         std::numeric_limits<real_type>::infinity())
 
-        __testREAL("MESH_OFF2", 
+        __testREAL("MESH-OFF2", 
             _jcfg._rdel_opts.off2(), 
             (real_type)  0., 
         std::numeric_limits<real_type>::infinity())
-        __testREAL("MESH_OFF3", 
+        __testREAL("MESH-OFF3", 
             _jcfg._rdel_opts.off3(), 
             (real_type)  0., 
         std::numeric_limits<real_type>::infinity())
 
-        __testREAL("MESH_SNK2", 
+        __testREAL("MESH-SNK2", 
             _jcfg._rdel_opts.snk2(),
             (real_type)  0., 
             (real_type)  1.)
-        __testREAL("MESH_SNK3", 
+        __testREAL("MESH-SNK3", 
             _jcfg._rdel_opts.snk3(),
             (real_type)  0., 
             (real_type)  1.)
 
-        __testREAL("MESH_VOL3", 
+        __testREAL("MESH-VOL3", 
             _jcfg._rdel_opts.vol3(),
             (real_type)  0., 
             (real_type)  1.)            
-        __warnREAL("MESH_VOL3", 
+        __warnREAL("MESH-VOL3", 
             _jcfg._rdel_opts.vol3(),
             (real_type)  0., 
             (real_type)  .3)
 
     /*---------------------------- test OPTM keywords */
-        __testINTS("OPTM_ITER", 
+        __testINTS("OPTM-ITER", 
             _jcfg._iter_opts.iter(), 
             (iptr_type) + 0,
         std::numeric_limits<iptr_type>::     max())
         
-        __testREAL("OPTM_QTOL", 
+        __testREAL("OPTM-QTOL", 
             _jcfg._iter_opts.qtol(),
             (real_type)  0., 
             (real_type)  1.)
             
-        __testREAL("OPTM_QLIM", 
+        __testREAL("OPTM-QLIM", 
             _jcfg._iter_opts.qlim(),
             (real_type)  0., 
             (real_type)  1.)
@@ -840,31 +852,35 @@
         iptr_type _errv  = __no_error;
         
         __dumpFILE(
-            "GEOM_FILE", _geom_file)
+            "GEOM-FILE", _geom_file)
         __dumpFILE(
-            "MESH_FILE", _mesh_file)
+            "MESH-FILE", _mesh_file)
         __dumpFILE(
-            "HFUN_FILE", _hfun_file)
+            "HFUN-FILE", _hfun_file)
+        __dumpFILE(
+            "INIT-FILE", _init_file)
+        __dumpFILE(
+            "TRIA-FILE", _tria_file)
 
         _jlog.push("\n") ;
 
         if (_jcfg._verbosity > +0)
         {
     /*---------------------------- push GEOM keywords */
-        __dumpINTS("GEOM_SEED", 
+        __dumpINTS("GEOM-SEED", 
             _jcfg._rdel_opts.seed())
         
-        __dumpREAL("GEOM_PHI1", 
+        __dumpREAL("GEOM-PHI1", 
             _jcfg._rdel_opts.phi1())
-        __dumpREAL("GEOM_PHI2", 
+        __dumpREAL("GEOM-PHI2", 
             _jcfg._rdel_opts.phi2())
         
-        __dumpREAL("GEOM_ETA1", 
+        __dumpREAL("GEOM-ETA1", 
             _jcfg._rdel_opts.eta1())
-        __dumpREAL("GEOM_ETA2", 
+        __dumpREAL("GEOM-ETA2", 
             _jcfg._rdel_opts.eta2())
         
-        __dumpBOOL("GEOM_FEAT", 
+        __dumpBOOL("GEOM-FEAT", 
             _jcfg._rdel_opts.feat())
 
         _jlog.push("\n") ;
@@ -873,17 +889,17 @@
         if(_jcfg._hfun_scal ==
          jcfg_data::hfun_scal::absolute)
         _jlog.push (
-            "  HFUN_SCAL = ABSOLUTE \n") ;
+            "  HFUN-SCAL = ABSOLUTE \n") ;
         else
         if(_jcfg._hfun_scal ==
          jcfg_data::hfun_scal::relative)
         _jlog.push (
-            "  HFUN_SCAL = RELATIVE \n") ;
+            "  HFUN-SCAL = RELATIVE \n") ;
 
         __dumpREAL(
-            "HFUN_HMAX", _jcfg._hfun_hmax)
+            "HFUN-HMAX", _jcfg._hfun_hmax)
         __dumpREAL(
-            "HFUN_HMIN", _jcfg._hfun_hmin)
+            "HFUN-HMIN", _jcfg._hfun_hmin)
 
         _jlog.push("\n") ;
         
@@ -891,72 +907,72 @@
         if(_jcfg._mesh_pred ==
          jcfg_data::mesh_pred::delaunay)
         _jlog.push (
-            "  MESH_KERN = DELAUNAY \n") ;
+            "  MESH-KERN = DELAUNAY \n") ;
         else
         if(_jcfg._mesh_pred ==
          jcfg_data::mesh_pred::delfront)
         _jlog.push (
-            "  MESH_KERN = DELFRONT \n") ;
+            "  MESH-KERN = DELFRONT \n") ;
 
-        __dumpBOOL("MESH_TOP1", 
+        __dumpBOOL("MESH-TOP1", 
             _jcfg._rdel_opts.top1())
-        __dumpBOOL("MESH_TOP2", 
+        __dumpBOOL("MESH-TOP2", 
             _jcfg._rdel_opts.top2())
 
-        __dumpINTS("MESH_ITER", 
+        __dumpINTS("MESH-ITER", 
             _jcfg._rdel_opts.iter())
 
-        __dumpINTS("MESH_DIMS", 
+        __dumpINTS("MESH-DIMS", 
             _jcfg._rdel_opts.dims())
 
-        __dumpREAL("MESH_SIZ1", 
+        __dumpREAL("MESH-SIZ1", 
             _jcfg._rdel_opts.siz1())
-        __dumpREAL("MESH_SIZ2", 
+        __dumpREAL("MESH-SIZ2", 
             _jcfg._rdel_opts.siz2())
-        __dumpREAL("MESH_SIZ3", 
+        __dumpREAL("MESH-SIZ3", 
             _jcfg._rdel_opts.siz3())
 
-        __dumpREAL("MESH_EPS1", 
+        __dumpREAL("MESH-EPS1", 
             _jcfg._rdel_opts.eps1())
-        __dumpREAL("MESH_EPS2", 
+        __dumpREAL("MESH-EPS2", 
             _jcfg._rdel_opts.eps2())
 
-        __dumpREAL("MESH_RAD2", 
+        __dumpREAL("MESH-RAD2", 
             _jcfg._rdel_opts.rad2())
-        __dumpREAL("MESH_RAD3", 
+        __dumpREAL("MESH-RAD3", 
             _jcfg._rdel_opts.rad3())
 
-        __dumpREAL("MESH_OFF2", 
+        __dumpREAL("MESH-OFF2", 
             _jcfg._rdel_opts.off2())
-        __dumpREAL("MESH_OFF3", 
+        __dumpREAL("MESH-OFF3", 
             _jcfg._rdel_opts.off3())
 
-        __dumpREAL("MESH_SNK2", 
+        __dumpREAL("MESH-SNK2", 
             _jcfg._rdel_opts.snk2())
-        __dumpREAL("MESH_SNK3", 
+        __dumpREAL("MESH-SNK3", 
             _jcfg._rdel_opts.snk3())
 
-        __dumpREAL("MESH_VOL3", 
+        __dumpREAL("MESH-VOL3", 
             _jcfg._rdel_opts.vol3())
 
         _jlog.push("\n") ;
         
     /*---------------------------- push OPTM keywords */
-        __dumpINTS("OPTM_ITER", 
+        __dumpINTS("OPTM-ITER", 
             _jcfg._iter_opts.iter())
 
-        __dumpREAL("OPTM_QTOL", 
+        __dumpREAL("OPTM-QTOL", 
             _jcfg._iter_opts.qtol())
-        __dumpREAL("OPTM_QLIM", 
+        __dumpREAL("OPTM-QLIM", 
             _jcfg._iter_opts.qlim())
             
-        __dumpBOOL("OPTM_ZIP_", 
+        __dumpBOOL("OPTM-ZIP_", 
             _jcfg._iter_opts.zip_())
-        __dumpBOOL("OPTM_DIV_", 
+        __dumpBOOL("OPTM-DIV_", 
             _jcfg._iter_opts.div_())
-        __dumpBOOL("OPTM_TRIA", 
+        __dumpBOOL("OPTM-TRIA", 
             _jcfg._iter_opts.tria())
-        __dumpBOOL("OPTM_DUAL", 
+        __dumpBOOL("OPTM-DUAL", 
             _jcfg._iter_opts.dual())
 
         _jlog.push("\n") ;

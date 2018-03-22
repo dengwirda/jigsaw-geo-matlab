@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 14 December, 2017
+     * Last updated: 22 March, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -559,6 +559,8 @@
         iptr_type static 
             constexpr _ITER = (iptr_type)+8 ;
     
+		__unreferenced(_hval);
+
         _okay = false ;
     
         real_type  _radj, _line, _save ;
@@ -1420,7 +1422,23 @@
     
         init_mark(_mesh, _nmrk, _emrk, _tmrk) ;
         
-        iptr_type _enum  = +0 ;
+        iptr_type _nnum = +0  ;
+        iptr_type _enum = +0  ;
+        
+        for (auto _node  = _mesh._set1.head() ;
+                  _node != _mesh._set1.tend() ;
+                ++_node, ++_nnum )
+        {
+            if (_node->mark() >= +0)
+            {
+            if (_node->feat() 
+                    != mesh::null_feat)
+            {
+                _nmrk[_nnum]   = -1;
+            }
+            }
+        }
+        
         for (auto _edge  = _mesh._set2.head() ;
                   _edge != _mesh._set2.tend() ;
                 ++_edge, ++_enum )

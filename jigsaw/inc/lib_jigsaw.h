@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 14 September, 2017
+     * Last updated: 20 March, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -86,11 +86,26 @@
     --------------------------------------------------------
      */ 
     
-    extern indx_t jigsaw_make_mesh (
-        jigsaw_jig_t *_jcfg,
-        jigsaw_msh_t *_geom,
-        jigsaw_msh_t *_hfun,
-        jigsaw_msh_t *_mesh
+    extern indx_t jigsaw_make_mesh (    
+    
+    /* JCFG (REQUIRED): settings definition.
+     */
+        jigsaw_jig_t   *_jcfg,
+        
+    /* GEOM (REQUIRED): geometry definition.
+     */
+        jigsaw_msh_t   *_geom,
+        
+    /* HFUN (OPTIONAL): mesh-spacing function H(x). 
+     * => NULL for empty H(x). 
+     */
+        jigsaw_msh_t   *_hfun,
+        
+    /* MESH (REQUIRED): mesh data-structure.
+     * Defines initial complex upon entry, returns 
+     * ouput at function exit.
+     */
+        jigsaw_msh_t   *_mesh
         ) ;
 
     /* 
@@ -157,22 +172,22 @@
       
     //!! to-do...
       
-    extern void   jigsaw_save_msh_t (
+    extern indx_t jigsaw_save_msh_t (
         char *_file,
         jigsaw_msh_t *_mesh
         ) ;
 
-    extern void   jigsaw_save_jig_t (
+    extern indx_t jigsaw_save_jig_t (
         char *_file,
         jigsaw_jig_t *_jjig
         ) ;
         
-    extern void   jigsaw_load_msh_t (
+    extern indx_t jigsaw_load_msh_t (
         char *_file,
         jigsaw_msh_t *_mesh
         ) ;
 
-    extern void   jigsaw_load_jig_t (
+    extern indx_t jigsaw_load_jig_t (
         char *_file,
         jigsaw_jig_t *_jjig
         ) ;

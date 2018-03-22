@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 12 May, 2017
+     * Last updated: 17 March, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -92,7 +92,12 @@
 				}
 			}
 		}
-		
+
+    /*------------------------------ need for degeneracy? */
+        algorithms::qsort(_list.head(), 
+                          _list.tend(), 
+                std::less<iptr_type>()) ;
+
     /*------------------------------ unmark list of trias */
 		for (typename iptr_list::
                 size_type _iter = +0 ; 

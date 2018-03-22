@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 04 October, 2017
+     * Last updated: 14 March, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -109,32 +109,26 @@
     
     /*
     --------------------------------------------------------
-     * SEED-MESH: init. "seed" vertex set on geom.
+     * SEED-FEAT: init. "seed" vertex set on geom.
     --------------------------------------------------------
      */
      
     template <
         typename  mesh_type ,
-        typename  size_type ,
         typename  geom_opts
              >
-    __normal_call void_type seed_mesh (
+    __normal_call void_type seed_feat (
         mesh_type &_mesh ,
-        size_type &_size ,
         geom_opts &_opts
         )
     {   
-        __unreferenced(_size) ;
         __unreferenced(_opts) ;
-
-        real_type  _pi = 
-       (real_type)std::atan(1.0) * 4. ;
 
         real_type  _ppos[3] ;
         iptr_type  _inod;
-        _ppos[0] = (real_type) +0. ;
-        _ppos[1] = (real_type) +0. ;
-        _ppos[2] = (real_type) +0. ;
+        _ppos[0] = (real_type) +0.0E+0;
+        _ppos[1] = (real_type) +0.0E+0;
+        _ppos[2] = (real_type) +0.0E+0;
         _mesh.
         _tria.push_node(_ppos, _inod) ;
         _mesh.
@@ -142,8 +136,34 @@
         _mesh.
         _tria.node(_inod)->feat() = +0;
         _mesh.
-        _tria.node(_inod)->topo() = +0;
+        _tria.node(_inod)->topo() = +0;     
+    }       
         
+    /*
+    --------------------------------------------------------
+     * SEED-MESH: init. "seed" vertex set on geom.
+    --------------------------------------------------------
+     */
+    
+    template <
+        typename  mesh_type ,
+        typename  geom_opts
+             >
+    __normal_call void_type seed_mesh (
+        mesh_type &_mesh ,
+        geom_opts &_opts
+        )
+    {   
+        __unreferenced(_opts) ;
+
+        real_type  _pi = 
+       (real_type)std::atan(1.0) * 4. ;
+        
+        if (_mesh._tria.
+                _nset.count() <= +8 )
+        {
+        real_type  _ppos[3] ;
+        iptr_type  _inod;
         _ppos[0] = this->_radA * 
         std::sin(_pi*(real_type)+0.0) *
         std::cos(_pi*(real_type)+0.0) ;
@@ -245,6 +265,8 @@
         _tria.node(_inod)->feat() = +0;
         _mesh.
         _tria.node(_inod)->topo() = +2; 
+        }
+        
     }
     
     /*

@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 16 September, 2017
+     * Last updated: 13 March, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -185,22 +185,26 @@
         if (this->_xpos.count() == +0)
             return _hval ;
         
-        if (_ppos[0] < *this->_xpos.head() )
-            return _hval ;
-        if (_ppos[0] > *this->_xpos.tail() )
-            return _hval ;
+        real_type _xpos = _ppos[0] ;
+        
+        if (_xpos < *this->_xpos.head() )
+            _xpos = *this->_xpos.head() ;
+        if (_xpos > *this->_xpos.tail() )
+            _xpos = *this->_xpos.tail() ;
         
         if (this->_ypos.count() == +0)
             return _hval ;
             
-        if (_ppos[1] < *this->_ypos.head() )
-            return _hval ;
-        if (_ppos[1] > *this->_ypos.tail() )
-            return _hval ;
+        real_type _ypos = _ppos[1] ;
+            
+        if (_ypos < *this->_ypos.head() )
+            _ypos = *this->_ypos.head() ;
+        if (_ypos > *this->_ypos.tail() )
+            _ypos = *this->_ypos.tail() ;
     
     /*---------------------------- find enclosing x-range */
-        iptr_type _ipos = (iptr_type) -1 ;
-        iptr_type _jpos = (iptr_type) -1 ;
+        iptr_type _ipos = (iptr_type)-1 ;
+        iptr_type _jpos = (iptr_type)-1 ;
            
         if (this->_xvar == true)
         {
@@ -208,10 +212,10 @@
             algorithms::upper_bound (
                 this->_xpos.head(), 
                 this->_xpos.tend(), 
-            _ppos[0],std::less<real_type>()) ;
+            _xpos,std::less<real_type>());
            
             _jpos = (iptr_type)
-           (_jits - this->_xpos.head() - 1 ) ;
+           (_jits - this->_xpos.head()-1);
         }
         else
         {
@@ -220,10 +224,10 @@
             _xmax = *this->_xpos.tail();
             
             _xdel = (_xmax - _xmin) /
-                (this->_xpos.count () - 1) ;
+                (this->_xpos.count() - 1);
             
             _jpos = (iptr_type)
-               ((_ppos[+0]-_xmin) / _xdel) ;
+              ( (_xpos - _xmin) / _xdel );
         }
         
     /*---------------------------- find enclosing y-range */
@@ -233,10 +237,10 @@
             algorithms::upper_bound (
                 this->_ypos.head(), 
                 this->_ypos.tend(), 
-            _ppos[1],std::less<real_type>()) ;
+            _ypos,std::less<real_type>());
            
             _ipos = (iptr_type)
-           (_iits - this->_ypos.head() - 1 ) ;
+           (_iits - this->_ypos.head()-1);
         }
         else
         {
@@ -245,10 +249,10 @@
             _ymax = *this->_ypos.tail();
             
             _ydel = (_ymax - _ymin) /
-                (this->_ypos.count () - 1) ;
+                (this->_ypos.count() - 1);
             
             _ipos = (iptr_type)
-               ((_ppos[+1]-_ymin) / _ydel) ;
+              ( (_ypos - _ymin) / _ydel );
         }
         
         if (_ipos == 
@@ -269,17 +273,14 @@
         real_type _yp22 = 
             this->_ypos[_ipos + 1] ;
 
-        real_type _xval = _ppos[0] ;
-        real_type _yval = _ppos[1] ;
-        
         real_type _aa22 = 
-           (_yval-_yp11) * (_xval-_xp11) ;
+           (_ypos-_yp11) * (_xpos-_xp11) ;
         real_type _aa21 = 
-           (_yval-_yp11) * (_xp22-_xval) ;
+           (_ypos-_yp11) * (_xp22-_xpos) ;
         real_type _aa12 = 
-           (_yp22-_yval) * (_xval-_xp11) ;
+           (_yp22-_ypos) * (_xpos-_xp11) ;
         real_type _aa11 = 
-           (_yp22-_yval) * (_xp22-_xval) ;
+           (_yp22-_ypos) * (_xp22-_xpos) ;
     
         iptr_type _kk11 ;
         indx_from_subs(
