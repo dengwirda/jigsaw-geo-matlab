@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 22 March, 2018
+     * Last updated: 28 March, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -441,10 +441,12 @@
     {
     /*----------------------------------------- read head */
         std::int32_t _nrow = -1;
+        std::int32_t _ncol = -1;
         std::int32_t _irow = +0;
-        if (_stok.count() == +2)
+        if (_stok.count() == +3)
         {
             _nrow = std::stol(_stok[1]);
+            _ncol = std::stol(_stok[2]);
         }
         else
         {
