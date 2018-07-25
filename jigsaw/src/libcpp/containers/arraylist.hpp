@@ -37,7 +37,7 @@
  *
 --------------------------------------------------------
  *
- * Last updated: 21 March, 2018
+ * Last updated: 11 April, 2018
  *
  * Copyright 2013-2018
  * Darren Engwirda
@@ -331,6 +331,19 @@
         )
     {
     /*------------------------------ clear lists of items */
+        this->       empty(_kind) ;
+    /*------------------------------ resize backing array */
+        this->_lptr .clear(_kind) ;
+    }
+     
+    __normal_call void_type empty (
+        containers::alloc_types _kind = 
+        containers::loose_alloc
+        )
+    {
+        __unreferenced(_kind);
+    
+    /*------------------------------ clear lists of items */
         typename lptr_list::_write_it
         _iter = this->_lptr.head(),
         _tend = this->_lptr.tend();
@@ -351,8 +364,6 @@
                 this->_size -= 1 ;
             }
         }
-    /*------------------------------ resize backing array */
-        this->_lptr.clear(_kind) ;
     }
     
     /*

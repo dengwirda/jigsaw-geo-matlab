@@ -91,9 +91,13 @@
             return  ;
                  
     /*------------------------- calc. refinement priority */
-        _edat._mark =        +0  ;
+        _edat._mark =         +0  ;
         
-        _edat._cost = _pmax[ +3] ;
+        _edat._cost =    _pmax[3] ;
+        
+        _edat._imax =    _enod[0] ;
+        _edat._imax = std::max(
+            _edat._imax, _enod[1]);
 
     /*------------------------- eval. size func. at _tbal */
         real_type _esiz = (real_type)+0.;
@@ -253,17 +257,11 @@
     /*------------------------- calc. refinement priority */
         _fdat._cost = _prat * _pmax[3] ;
     
-        uint32_t  _hash = hash_ball (_pmax) ;
-
-        real_type static const _seps = 
-            std::sqrt(std::
-        numeric_limits<real_type>::epsilon()) ;
-
-        real_type _pert =
-      ((real_type)(_hash%65536))/65536 ;
-      
-        _fdat._cost -=  
-           _seps * _pert * _fdat._cost ;
+        _fdat._imax =    _fnod[0] ;
+        _fdat._imax = std::max(
+            _fdat._imax, _fnod[1]);
+        _fdat._imax = std::max(
+            _fdat._imax, _fnod[2]);
          
     /*------------------------- refinement classification */
         if (_prat >= _args.rad2() *
@@ -513,17 +511,13 @@
     /*------------------------- calc. refinement priority */
         _tdat._cost = _erat * _tbal[3] ;
 
-        uint32_t  _hash = hash_ball (_tbal) ;
-
-        real_type static const _seps = 
-            std::sqrt(std::
-        numeric_limits<real_type>::epsilon()) ;
-
-        real_type _pert =
-      ((real_type)(_hash%65536))/65536 ;
-      
-        _tdat._cost -=  
-           _seps * _pert * _tdat._cost ;
+        _tdat._imax =    _tnod[0] ;
+        _tdat._imax = std::max(
+            _tdat._imax, _tnod[1]);
+        _tdat._imax = std::max(
+            _tdat._imax, _tnod[2]);
+        _tdat._imax = std::max(
+            _tdat._imax, _tnod[3]);
 
     /*------------------------- refinement classification */
         if (_erat >= _args.rad3() *

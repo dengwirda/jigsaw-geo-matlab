@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 30 November, 2017
+     * Last updated: 08 April, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -46,15 +46,15 @@
      
     /*
     --------------------------------------------------------
-     * _BAD-NBAL: refine a "bad" node-ball.
+     * _BAD-BALL: refine a "bad" ball.
     --------------------------------------------------------
      */
 
     __static_call 
     __normal_call 
-    typename rdel_opts::node_kind _bad_nbal (
+    typename rdel_opts::node_kind _bad_ball (
         geom_type &_geom ,
-        size_type &_size ,
+        hfun_type &_hfun ,
         mesh_type &_mesh ,
         mode_type  _mode ,
         typename 
@@ -63,14 +63,14 @@
         iptr_list &_nold ,
         iptr_list &_tnew ,
         iptr_list &_told ,
-        nbal_heap &_nbpq ,
+        ball_heap &_nbpq ,
         edat_list &_eold ,
         edat_list &_ecav ,
         escr_list &_escr ,
         tdat_list &_tcav ,
         tscr_list &_tscr ,
-        nbal_sets &_nclr ,
-        nbal_list &_nbal ,
+        ball_list &_bcav ,
+        ball_list &_bscr ,
         char_type &_tdim ,
         iptr_type  _pass ,
         rdel_opts &_args
@@ -111,54 +111,54 @@
         typename rdel_opts::node_kind 
         _kind =  rdel_opts::null_kind ;
      
-        __unreferenced( _size) ;
+        __unreferenced( _hfun) ;
 		__unreferenced( _mode) ;
 		__unreferenced( _eold) ; 
 		__unreferenced( _tdim) ;
 		__unreferenced( _pass) ;
         __unreferenced( _args) ;
 
-        _nnew.set_count( +0) ;
-        _nold.set_count( +0) ;
-        _tnew.set_count( +0) ;
-        _told.set_count( +0) ;
+        _nnew.set_count(  +0 ) ;
+        _nold.set_count(  +0 ) ;
+        _tnew.set_count(  +0 ) ;
+        _told.set_count(  +0 ) ;
         
-        _eold.set_count( +0) ;
-        _escr.set_count( +0) ;
-        _ecav.set_count( +0) ;
-        _tscr.set_count( +0) ;
-        _tcav.set_count( +0) ;
-        
-        _nbal.set_count( +0) ;
+        _eold.set_count(  +0 ) ;
+        _escr.set_count(  +0 ) ;
+        _ecav.set_count(  +0 ) ;
+        _tscr.set_count(  +0 ) ;
+        _tcav.set_count(  +0 ) ;
+        _bcav.set_count(  +0 ) ;
+        _bscr.set_count(  +0 ) ;
         
     /*--------------------- pop() leading element from PQ */
         bool_type _find = false;
-        nbal_data _ball ;
+        ball_data _ball ;
         for ( ; !_nbpq.empty() ; )
         {
     /*--------------------- cycles until valid ball found */
             _nbpq._pop_root(_ball) ;
 
-            typename nbal_sets
-                   ::item_type  *_same ;
-            if (_nclr.find(_ball,_same))
+            typename mesh_type::
+                     ball_list::
+                 item_type *_bptr = nullptr ;    
+            if (_mesh.find_ball(_ball,_bptr))
             {
-                if (_same->_data._pass ==
-                           _ball._pass )
-                {
-                    _find = true; break;
-                }
+            if (_bptr->_data._pass ==
+                       _ball._pass )
+            {
+                _find = true; break;
             }
- 
+            } 
         }
         if (!_find) return (_kind) ;
- 
+        
     /*--------------------- check dist. to existing nodes */ 
         real_type static const _HTOL = 
-       (real_type) (1./3.) * (1./3.) ;
+            (real_type) +.33 * .33 ;
        
         real_type static const _STOL = 
-       (real_type) (1./2.) * (1./2.) ;
+            (real_type) +.50 * .50 ;
         
         iptr_list _tset;
         _tset.set_alloc( +32) ;
@@ -192,9 +192,9 @@
             
             real_type _dsqr = 
                 geometry::lensqr_2d (
-           &_mesh._tria.
+               &_mesh._tria.
              node(_nadj)->pval(0) ,
-           &_mesh._tria.
+               &_mesh._tria.
              node(_node)->pval(0) ) ;
      
             if (_feat == hard_feat)
@@ -219,18 +219,18 @@
           
         iptr_type _hpos = 
             _mesh._tria.
-             node(_nadj)->idxh() ;
+                node(_nadj)->idxh() ;
         iptr_type _ndeg = 
             _mesh._tria.
-             node(_nadj)->topo() ;
+                node(_nadj)->topo() ;
              
-    /*--------------------- find intersections with geom. */       
+    /*--------------------- find intersections with GEOM. */       
         mesh::keep_all_2d <
             real_type ,
-            iptr_type > _pred ;
+                iptr_type > _pred ;
         mesh::keep_all_2d <
             real_type ,
-            iptr_type > _halo ;
+                iptr_type > _halo ;
         
         for (auto _iter = 32; _iter-- != 0 ; )
         {         
@@ -254,14 +254,14 @@
                                     
             if(!_okay)
             {
-                _ball._ball[2] *=   // reduce rad. for geom.
+                _ball._ball[2] *=   // reduce R for GEOM.
                     (real_type) +.67 ;
             }
             else
             if (_pred._inum != _ndeg ||
                 _halo._inum != _ndeg )
             {
-                _ball._ball[2] *=   // reduce rad. for topo.
+                _ball._ball[2] *=   // reduce R for TOPO.
                     (real_type) +.67 ;
             }
             else { break ; }
@@ -274,7 +274,7 @@
         {
             iptr_type _hint = 
                 _mesh._tria.
-                 node(_nadj)->next() ; 
+                    node(_nadj)->next(); 
                    
             iptr_type _node = -1;
             if (_mesh._tria.push_node(
@@ -294,11 +294,11 @@
                 _edat._node[0] = _nadj ;
                 _edat._node[1] = _node ;
 
-                _pedg.push(_edat) ;
+                _pedg.push(_edat)  ;
             }        
         }  
  
-        return ( _kind ) ;   
+        return ( _kind ) ;
     }
 
 

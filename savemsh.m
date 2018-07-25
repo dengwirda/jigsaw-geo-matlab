@@ -55,12 +55,10 @@ function savemsh(name,mesh)
 %       the vertices of the mesh. NV values are associated
 %       with each vertex.
 %
-%
 %   .IF. MESH.MSHID == 'ELLIPSOID-MESH':
 %   -----------------------------------
 %
 %   MESH.RADII - [ 3x 1] array of principle ellipsoid radii.
-%
 %
 %   .IF. MESH.MSHID == 'EUCLIDEAN-GRID':
 %   .OR. MESH.MSHID == 'ELLIPSOID-GRID':

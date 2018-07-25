@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 14 March, 2018
+     * Last updated: 08 April, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -64,7 +64,7 @@
     typedef M                               mesh_type ;
     typedef P                               mesh_pred ;
     typedef G                               geom_type ;
-    typedef H                               size_type ;
+    typedef H                               hfun_type ;
     typedef A                               allocator ;
 
     typedef typename 
@@ -75,43 +75,37 @@
     typedef typename 
             allocator::size_type            uint_type ;
 
-    enum mode_type {
-         null_mode ,
-         node_mode ,
-         edge_mode ,
-         etop_mode ,
-         tria_mode };
+    char_type static constexpr null_ball = +0 ;
+    char_type static constexpr feat_ball = +1 ;
 
-    class node_pred ; class edge_pred ; 
-    class tria_pred ;
+    typedef char_type mode_type ;
     
-    class nbal_less ; class nbal_hash ; 
-    class nbal_same ;
+    char_type static constexpr null_mode = +0 ;
+    char_type static constexpr node_mode = +1 ;
+    char_type static constexpr edge_mode = +2 ;
+    char_type static constexpr etop_mode = +3 ;
+    char_type static constexpr tria_mode = +4 ;
+
+    class node_pred ; class ball_pred ; 
+    class edge_pred ; class tria_pred ;
     
     class edge_cost : public mesh_pred::edge_data
         {
         public  :
-        iptr_type           _node[ +2] ;
+        iptr_type           _node[ 2] ;
         iptr_type           _pass;
         } ;
     class tria_cost : public mesh_pred::tria_data
         {
         public  :
-        iptr_type           _node[ +3] ;
+        iptr_type           _node[ 3] ;
         iptr_type           _pass;
         } ;
-
-    class nbal_data
-        {
-        public  :
-        real_type           _ball[ +3] ;
-        iptr_type           _node[ +1] ;
-
-        iptr_type           _pass;
-        } ;
-        
+    
     typedef typename 
             mesh_type::node_data            node_data ;
+    typedef typename 
+            mesh_type::ball_data            ball_data ;
     typedef typename 
             mesh_type::edge_data            edge_data ;
     typedef typename 
@@ -151,20 +145,13 @@
                 tria_pred           >       tria_heap ;
                 
 /*------------------------------------------ collar lists */
-    typedef containers::hash_table  <
-                nbal_data, 
-                nbal_hash, 
-                nbal_same>                  nbal_sets ;     //!! memory pool?
-    
     typedef containers::array       <
-                nbal_data           >       nbal_list ;
+                ball_data           >       ball_list ;
                 
     typedef containers::priorityset <
-                nbal_data, 
-                nbal_less           >       nbal_heap ;
-        
-    #define __hashscal sizeof(iptr_type)/sizeof(uint32_t)  
-                                                 
+                ball_data, 
+                ball_pred           >       ball_heap ;
+                                           
     class node_pred
         {
     /*---------------------- "less-than" for node objects */
@@ -174,6 +161,18 @@
             node_data const& _jdat
             ) const
         {   return _idat._pass < _jdat._pass ; 
+        }
+        } ;
+    class ball_pred
+        {
+    /*---------------------- "less-than" for ball objects */
+        public  :
+        __inline_call bool_type operator() (
+            ball_data const& _idat,
+            ball_data const& _jdat
+            ) const
+        {   return _idat._ball[2] > 
+                   _jdat._ball[2] ; 
         }
         } ;
     class edge_pred
@@ -200,47 +199,6 @@
                  ::tria_pred(_idat, _jdat) ;
         }
         } ;
-        
-    class nbal_less
-        {
-    /*---------------------- "less-than" for ball objects */
-        public  :
-        __inline_call bool_type operator() (
-            nbal_data const& _idat,
-            nbal_data const& _jdat
-            ) const
-        {   return _idat._ball[2] > 
-                   _jdat._ball[2] ;
-        }
-        } ;
-    class nbal_hash
-        {
-    /*----------------------- hash node indexing for ball */
-        public  :
-        __inline_call iptr_type operator() (
-            nbal_data const&_nbal
-            ) const
-        {
-            return hash::hashword (
-                (uint32_t*)&_nbal._node[0], 
-                    +1 * __hashscal, +137);
-        }
-        } ;
-    class nbal_same
-        {
-    /*------------------------------- "equal-to" for node */
-        public  :
-        __inline_call bool_type operator() (
-            nbal_data const&_idat ,
-            nbal_data const&_jdat
-            ) const
-        {
-            return _idat._node[0] ==
-                   _jdat._node[0]  ;
-        }
-        } ;
-        
-    #undef __hashscal
 
 
     /*
@@ -439,7 +397,7 @@
     __static_call 
     __normal_call void_type init_rdel (
         geom_type &_geom ,
-        size_type &_size ,
+        hfun_type &_hfun ,
         mesh_type &_mesh ,
         iptr_list &_nnew ,
         iptr_list &_tnew ,
@@ -447,7 +405,8 @@
         escr_list &_escr ,
         tdat_list &_tcav ,
         tscr_list &_tscr ,
-        nbal_list &_nbal ,
+        ball_list &_bcav ,
+        ball_list &_bscr ,
         iptr_type  _pass ,
         mode_type  _fdim ,
         rdel_opts &_args
@@ -478,11 +437,12 @@
             }
         }
     /*-------------------- init. restricted triangulation */
-        push_rdel( _geom, _size, 
+        push_rdel( _geom, _hfun, 
             _mesh, _nnew, _tnew, 
             _escr, _ecav, 
             _tscr, _tcav,
-            _nbal,    -1, _pass,
+            _bscr, _bcav,    
+               -1, _pass,
             _fdim, _fdim, _args) ;
     }
 
@@ -499,12 +459,12 @@
     __normal_call void_type init_mesh (
         geom_type &_geom,
         init_type &_init,
-        size_type &_size,
+        hfun_type &_hfun,
         mesh_type &_mesh,
         rdel_opts &_opts
         )
     {
-		__unreferenced(_size) ;
+		__unreferenced(_hfun) ;
 
     /*------------------------------ initialise mesh bbox */
         real_type _plen[ +2];
@@ -603,7 +563,7 @@
     __normal_call void_type rdel_mesh (
         geom_type &_geom ,
         init_type &_init ,
-        size_type &_size ,
+        hfun_type &_hfun ,
         mesh_type &_mesh ,
         rdel_opts &_args ,
         jlog_file &_dump
@@ -624,20 +584,18 @@
         
         escr_list _escr  ;
         tscr_list _tscr  ;
+        ball_list _bscr  ;
         
         edat_list _edat, _etmp ;
         tdat_list _tdat  ;
-        nbal_list _nbal  ;
+        ball_list _bdat  ;
 
     /*------------------------------ refinement p.-queues */
         edge_heap _eepq  ;
         tria_heap _ttpq  ;
         node_heap _etpq  ;
-        
-    /*------------------------------ "feature" protection */        
-        nbal_sets _nclr  ;
-        nbal_heap _nbpq  ;
-
+        ball_heap _nbpq  ;
+ 
     /*------------------------------ alloc. for hash obj. */
         _mesh._eset._lptr. set_count (
         _mesh._tria._tset.count()*+3 , 
@@ -662,7 +620,7 @@
     /*------------------------------ init. point counters */
         containers:: fixed_array<
             iptr_type ,
-            rdel_opts::last_kind> _enod;
+            rdel_opts::last_kind> _enod;          
         containers:: fixed_array<
             iptr_type , 
             rdel_opts::last_kind> _tnod;
@@ -671,7 +629,7 @@
         _tnod.fill( +0 ) ;
 
     /*------------------------------ initialise mesh obj. */
-        init_mesh( _geom , _init, _size, 
+        init_mesh( _geom , _init, _hfun, 
             _mesh, _args ) ;
         
     /*-------------------- calc. size-func for seed nodes */ 
@@ -685,13 +643,13 @@
             if (_node->mark() >= +0)
             {
                 _node->idxh()  = 
-                    size_type::null_hint();
+                    hfun_type::null_hint();
             }
         }
 
     /*-------------------- main: refine edges/faces/trias */
     
-        iptr_type _pass  =   +0  ;
+        iptr_type _pass = +0   ;
     
         for(bool_type _done=false; !_done ; )
         {
@@ -705,19 +663,20 @@
             if(++_pass>_args.iter()) break;
         
         /*------------------------- init. array workspace */
-            _nnew.set_count( +0) ;
-            _nold.set_count( +0) ;
-            _tnew.set_count( +0) ;
-            _told.set_count( +0) ;
+            _nnew.set_count(  +0 ) ;
+            _nold.set_count(  +0 ) ;
+            _tnew.set_count(  +0 ) ;
+            _told.set_count(  +0 ) ;
             
-            _etmp.set_count( +0) ;
-            _edat.set_count( +0) ;
-            _escr.set_count( +0) ;
-            _tdat.set_count( +0) ;
-            _tscr.set_count( +0) ;
-        
-            _nbal.set_count( +0) ;
-        
+            _escr.set_count(  +0 ) ;
+            _tscr.set_count(  +0 ) ;
+            _bscr.set_count(  +0 ) ;
+            
+            _etmp.set_count(  +0 ) ;
+            _edat.set_count(  +0 ) ;
+            _tdat.set_count(  +0 ) ;
+            _bdat.set_count(  +0 ) ;
+            
         /*--------- calc. "restricted-ness" incrementally */
 
             if (_mode == null_mode )
@@ -725,30 +684,32 @@
         /*------------------------- init. protecting ball */
                 _mode  = node_mode ;
              
-                init_rdel( _geom, _size, 
+                init_rdel( _geom, _hfun, 
                     _mesh, _nnew, _tnew, 
                     _edat, _escr, 
                     _tdat, _tscr,
-                    _nbal, _pass, 
-                    _mode, _args)  ;    
+                    _bdat, _bscr, _pass, 
+                    _mode, _args)  ;
             }
        
             if (_mode == node_mode &&
                     _nbpq. empty() &&
-                    _nbal. empty() )
+                    _bscr. empty() &&
+                    _bdat. empty() )
             {
         /*------------------------- init. restricted edge */
                 _mode  = edge_mode ;
                
-                init_rdel( _geom, _size, 
+                init_rdel( _geom, _hfun, 
                     _mesh, _nnew, _tnew, 
                     _edat, _escr, 
-                    _tdat, _tscr, 
-                    _nbal, _pass, 
+                    _tdat, _tscr,
+                    _bdat, _bscr, _pass, 
                     _mode, _args)  ;
             }          
             if (_mode == edge_mode && 
                     _eepq. empty() &&
+                    _escr. empty() &&
                     _edat. empty() )
             {
         /*------------------------- init. restricted topo */
@@ -757,24 +718,27 @@
                   
             if (_mode == etop_mode && 
                     _etpq. empty() &&
+                    _escr. empty() &&
                     _edat. empty() )
             {
         /*------------------------- init. restricted tria */
                 _mode  = tria_mode ;
         
-                init_rdel( _geom, _size, 
+                init_rdel( _geom, _hfun, 
                     _mesh, _nnew, _tnew, 
                     _edat, _escr, 
-                    _tdat, _tscr, 
-                    _nbal, _pass,
+                    _tdat, _tscr,
+                    _bdat, _bscr, _pass, 
                     _mode, _args)  ;
             }
 
-
         /*------------- refine "bad" sub-faces until done */
 
-            if ( _nbal.empty() &&
+            if ( _bscr.empty() &&
+                 _bdat.empty() &&
+                 _escr.empty() &&
                  _edat.empty() &&
+                 _tscr.empty() &&
                  _tdat.empty() )
             {
 
@@ -782,70 +746,73 @@
             typename rdel_opts::node_kind 
             _kind =  rdel_opts::null_kind ;
             
-            if (!_nbpq.empty())
+            if (!_nbpq.empty() )
             {
         /*----------------------------- refine "bad" ball */
-                _kind =_bad_nbal( _geom,
-                    _size, _mesh, _mode,
+                _kind =_bad_ball( _geom,
+                    _hfun, _mesh, _mode,
                     _pedg, _nnew, _nold,
                     _tnew, _told, _nbpq,
                     _etmp, _edat, _escr,
-                    _tdat, _tscr,
-                    _nclr, _nbal,
-                    _tdim, _pass, _args) ;
+                    _tdat, _tscr, 
+                    _bdat, _bscr, _tdim, 
+                    _pass, _args)  ;
             }
             else
-            if (!_eepq.empty())
+            if (!_eepq.empty() )
             {
         /*----------------------------- refine "bad" edge */
                 _kind =_bad_edge( _geom, 
-                    _size, _mesh, _mode,
+                    _hfun, _mesh, _mode,
                     _pedg, _nnew, _nold, 
                     _tnew, _told, _eepq,
                     _etmp, _edat, _escr, 
-                    _tdat, _tscr, _nbal,
-                    _tdim, _pass, _args) ;
+                    _tdat, _tscr, 
+                    _bdat, _bscr, _tdim, 
+                    _pass, _args)  ;
             }
             else
-            if (!_etpq.empty())
+            if (!_etpq.empty() )
             {
         /*----------------------------- refine "bad" topo */
                 _kind =_bad_etop( _geom, 
-                    _size, _mesh, _mode, 
+                    _hfun, _mesh, _mode, 
                     _pedg, _nnew, _nold, 
                     _tnew, _told,
                     _etpq, _etin, 
                     _etmp, _edat, _escr, 
-                    _tdat, _tscr, _nbal, 
-                    _tdim, _pass, _args) ;
+                    _tdat, _tscr, 
+                    _bdat, _bscr, _tdim, 
+                    _pass, _args)  ;
             }
             else
-            if (!_ttpq.empty())
+            if (!_ttpq.empty() )
             {
         /*----------------------------- refine "bad" tria */
                 _kind =_bad_tria( _geom, 
-                    _size, _mesh, _mode, 
+                    _hfun, _mesh, _mode, 
                     _pedg, _nnew, _nold,
                     _tnew, _told, _ttpq, 
                     _etmp, _edat, _escr,
-                    _tdat, _tscr, _nbal, 
-                    _tdim, _pass, _args) ;
+                    _tdat, _tscr, 
+                    _bdat, _bscr, _tdim, 
+                    _pass, _args)  ;
             }
         /*----------------------------- meshing converged */
-            else { _done = true ; }
+            else { _done = true ;  }
     
             if (_pass%_jlog_freq==+0 || _done )
             {
         /*----------------------------- output to logfile */
-                std::stringstream _sstr ;
+                std::stringstream _sstr;
                 _sstr << std::setw(11) <<
-                        _pass
+                    _pass
                       << std::setw(13) << 
-                        _mesh._eset.count()
+                    _mesh._eset.count()
                       << std::setw(13) << 
-                        _mesh._tset.count()
+                    _mesh._tset.count()
                       <<   "\n" ;
-                _dump.push(_sstr.str()) ;
+                _dump.push(_sstr.str());
             }
 
             if (_kind != rdel_opts::null_kind )
@@ -860,7 +827,6 @@
 
             }
             
-         
             if (_pass%_trim_freq == +0 )
             {
         /*--------------- trim null PQ items "on-the-fly" */
@@ -879,8 +845,8 @@
                 trim_list(_escr) ;
                 trim_list(_tdat) ;
                 trim_list(_tscr) ;
-                
-                trim_list(_nbal) ;              
+                trim_list(_bscr) ;
+                trim_list(_bdat) ;
             }
 
         /*----------------------------- enqueue edge topo */ 
@@ -902,11 +868,11 @@
                 for (_npos = +2; _npos-- != +0; )
                 {        
                     iptr_type _node = 
-                        _edge->_node[_npos];
+                        _edge->_node[_npos] ;
                 
                     node_data _ndat;
-                    _ndat._pass    = _pass ;
-                    _ndat._node[0] = _node ;
+                    _ndat._pass    = _pass;
+                    _ndat._node[0] = _node;
                     
                     typename mesh_type::
                              node_list::
@@ -923,26 +889,18 @@
                 }
             }
             
-        /*--------------- update "protecting-ball" collar */
-
+        /*--------------- update restricted triangulation */
+            
             for (auto _npos  = _nold.head() ;
                       _npos != _nold.tend() ; 
                     ++_npos  )
             {
-                nbal_data  _ball, _same;
-                _ball._node[0] = *_npos;                
-                _nclr._pop(_ball, _same) ;
+                ball_data  _ball, _same;
+                _ball._node[0] = *_npos;
+                _ball._kind = feat_ball;                
+                _mesh.
+                _pop_ball( _ball, _same) ;
             }
-            
-            for (auto _iter  = _nbal.head() ;
-                      _iter != _nbal.tend() ; 
-                    ++_iter  )
-            {
-                _nclr. push( *_iter ) ;
-                _nbpq. push( *_iter ) ;
-            }
-            
-        /*--------------- update restricted triangulation */
                     
             for (auto _tpos  = _told.head() ;
                       _tpos != _told.tend() ; 
@@ -955,22 +913,16 @@
                       _tpos != _told.tend() ; 
                     ++_tpos  )
             {
-            _mesh._tria._put_tria( *_tpos ) ;
+                _mesh.
+                _tria._put_tria( *_tpos) ;
             }
             
-            for (auto _iter  = _edat.head() ;
-                      _iter != _edat.tend() ; 
+            for (auto _iter  = _bscr.head() ;
+                      _iter != _bscr.tend() ; 
                     ++_iter  )
             {
-                _mesh.push_edge( *_iter) ;
-            }       
-            for (auto _iter  = _tdat.head() ;
-                      _iter != _tdat.tend() ; 
-                    ++_iter  )
-            {
-                _mesh.push_tria( *_iter) ;
+                _nbpq .push( *_iter ) ;
             }
-         
             for (auto _iter  = _escr.head() ;
                       _iter != _escr.tend() ; 
                     ++_iter  )
@@ -983,7 +935,26 @@
             {
                 _ttpq .push( *_iter ) ;
             }
-                 
+            
+            for (auto _iter  = _bdat.head() ;
+                      _iter != _bdat.tend() ; 
+                    ++_iter  )
+            {
+                _mesh.push_ball( *_iter) ;
+            }
+            for (auto _iter  = _edat.head() ;
+                      _iter != _edat.tend() ; 
+                    ++_iter  )
+            {
+                _mesh.push_edge( *_iter) ;
+            }       
+            for (auto _iter  = _tdat.head() ;
+                      _iter != _tdat.tend() ; 
+                    ++_iter  )
+            {
+                _mesh.push_tria( *_iter) ;
+            }
+              
         }
 
         /*
@@ -1008,40 +979,40 @@
         _dump.push("  REFINE statistics... \n") ;
         _dump.push("\n")  ;
 
-        _dump.push("  |TYPE-1| (edge) = ");
+        _dump.push("  |TYPE-1| (edge) = ") ;
         _dump.push(std::to_string(
-             _enod[rdel_opts::circ_kind]));
+             _enod[rdel_opts::circ_kind])) ;
         _dump.push("\n")  ;
-        _dump.push("  |TYPE-2| (edge) = ");
+        _dump.push("  |TYPE-2| (edge) = ") ;
         _dump.push(std::to_string(
-             _enod[rdel_opts::offh_kind]));
+             _enod[rdel_opts::offh_kind])) ;
         _dump.push("\n")  ;
-        _dump.push("  |TYPE-D| (edge) = ");
+        _dump.push("  |TYPE-D| (edge) = ") ;
         _dump.push(std::to_string(
-             _enod[rdel_opts::disk_kind]));
+             _enod[rdel_opts::disk_kind])) ;
         _dump.push("\n")  ;
         _dump.push("\n")  ;
 
-        _dump.push("  |TYPE-1| (tria) = ");
+        _dump.push("  |TYPE-1| (tria) = ") ;
         _dump.push(std::to_string(
-             _tnod[rdel_opts::circ_kind]));
+             _tnod[rdel_opts::circ_kind])) ;
         _dump.push("\n")  ;
-        _dump.push("  |TYPE-2| (tria) = ");
+        _dump.push("  |TYPE-2| (tria) = ") ;
         _dump.push(std::to_string(
-             _tnod[rdel_opts::offh_kind]));
+             _tnod[rdel_opts::offh_kind])) ;
         _dump.push("\n")  ;
-        _dump.push("  |TYPE-3| (tria) = ");
+        _dump.push("  |TYPE-3| (tria) = ") ;
         _dump.push(std::to_string(
-             _tnod[rdel_opts::offc_kind]));
+             _tnod[rdel_opts::offc_kind])) ;
         _dump.push("\n")  ;
-        _dump.push("  |TYPE-4| (tria) = ");
+        _dump.push("  |TYPE-4| (tria) = ") ;
         _dump.push(std::to_string(
-             _tnod[rdel_opts::sink_kind]));
+             _tnod[rdel_opts::sink_kind])) ;
         _dump.push("\n")  ;
         
         }
         
-        _dump.push("\n")  ;        
+        _dump.push("\n")  ;
     }
     
     } ;

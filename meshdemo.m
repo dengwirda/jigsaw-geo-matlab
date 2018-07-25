@@ -27,20 +27,13 @@ function meshdemo(demo)
 %-----------------------------------------------------------
 %   Darren Engwirda
 %   github.com/dengwirda/jigsaw-geo-matlab
-%   13-Mar-2018
+%   23-Jul-2018
 %   de2363@columbia.edu
 %-----------------------------------------------------------
 %
-
-%------------------------------------ push path to utilities
+   
+    close all ; libpath ;
     
-    filename = mfilename('fullpath') ;
-    filepath = fileparts( filename ) ;
-    
-    addpath([filepath,'/mesh-util']) ;
- 
-    close all ;
-
     switch (demo)
 %------------------------------------ call the demo programs
 
@@ -204,7 +197,7 @@ function demo2
     hmin = +.025 ;                      % min. H(X) [deg.]
     hmax = +.750 ;                      % max. H(X)
     
-    hfun = sqrt(max(-zlev(:),eps))/75;  % scale with sqrt(H)
+    hfun = sqrt(max(-zlev,eps))/75;     % scale with sqrt(H)
     hfun = max(hfun,hmin);
     hfun = min(hfun,hmax);
     
@@ -212,27 +205,15 @@ function demo2
 
     fprintf(1,'  Set HFUN limiters...\n');
     
-   [ALON,ALAT] = meshgrid(alon,alat) ;
-    
-    vert = [ALON(:),ALAT(:)];           % triangulate vert
-    
-    tria = ...
-        delaunayn(double (vert));
-    
-    dhdx = +.150 ;                      % smoothing limits
-    
-   [hfun] = ...
-    limhfn2(vert,tria,hfun,dhdx);
-    
-%------------------------------------ save GEOM/HFUN to file
-    
-    fprintf(1,'  Save data to file...\n');
+    dhdx = +.15 ;                       % smoothing limits
     
     hmat.mshID = 'EUCLIDEAN-GRID';
     hmat.point.coord{1} = alon ;
     hmat.point.coord{2} = alat ;
     hmat.value = single(reshape( ...
         hfun,length(alat),length(alon)) );
+    
+    hmat = limgrad(hmat,dhdx);
     
     savemsh(opts.hfun_file,hmat) ;
 
@@ -420,14 +401,14 @@ function demo5
     htop(zlev>0.) = hfn0 ;
     
     hfun(YPOS>+50.) = htop(YPOS>+50.) ;
-    
-    hnew = limhfun( ...
-       xpos,ypos,radE,true,hfun,dhdx) ;
    
     hmat.mshID = 'ELLIPSOID-GRID';
+    hmat.radii = radE ;
     hmat.point.coord{1} = xpos*pi/180 ;
     hmat.point.coord{2} = ypos*pi/180 ;
-    hmat.value = hnew ;
+    hmat.value = hfun ;
+    
+    hmat = limgrad(hmat,dhdx) ;
     
     savemsh(opts.hfun_file,hmat) ;
     
@@ -493,9 +474,7 @@ function plotsphere(mesh,hfun)
     brighten(+0.75);
     title('JIGSAW TRIA mesh (MASK)');
     
-    drawscr(mesh.point.coord (:,1:3), ...
-            [], ...
-            mesh.tria3.index (:,1:3)) ;
+    drawcost(meshcost( mesh, hfun)) ;
             
     drawnow ;        
     set(figure(1),'units','normalized', ...
@@ -511,7 +490,7 @@ end
 function plotplanar(geom,mesh,hfun)
 %PLOT-PLANAR draw JIGSAW output for planar problems.
   
-    figure;
+    figure('color','w');
     patch ('faces',geom.edge2.index(:,1:2), ...
         'vertices',geom.point.coord(:,1:2), ...
         'facecolor','w', ...
@@ -524,7 +503,8 @@ function plotplanar(geom,mesh,hfun)
    [xpos,ypos] = meshgrid( ...
          hfun.point.coord{1}, ...
          hfun.point.coord{2}) ;
-    mask = ~inpoly2([xpos(:),ypos(:)], ...
+    mask = ~inpoly2( ...
+        [xpos(:),ypos(:)], ...
         geom.point.coord(:,1:2), ...
         geom.edge2.index(:,1:2)) ;
     hfun.value(mask) = +inf ;
@@ -537,7 +517,7 @@ function plotplanar(geom,mesh,hfun)
     title('JIGSAW HFUN data') ; 
     end
 
-    figure;
+    figure('color','w');
     patch ('faces',mesh.tria3.index(:,1:3), ...
         'vertices',mesh.point.coord(:,1:2), ...
         'facecolor','w', ...
@@ -555,9 +535,8 @@ function plotplanar(geom,mesh,hfun)
         'linewidth',1.5) ;
     title('JIGSAW TRIA mesh') ;
 
-    drawscr(mesh.point.coord (:,1:2), ...
-            mesh.edge2.index (:,1:2), ...
-            mesh.tria3.index (:,1:3)) ;
+    drawcost( ...
+        meshcost( mesh,hfun)) ;
     
     drawnow ;        
     set(figure(1),'units','normalized', ...

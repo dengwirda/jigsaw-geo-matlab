@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 16 March, 2018
+     * Last updated: 12 April, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -103,6 +103,26 @@
                     std::string::npos ) \
                 _jcfg.__var =           \
             jcfg_data::mesh_pred::delfront; \
+            else                        \
+           _errs.push_tail(_line) ;     \
+            }                           \
+            else                        \
+           _errs.push_tail(_line) ;
+           
+    /*---------------------------------- read "BNDS" pred */
+        #define __putBNDS(__var, __str)     \
+            if (__str.count() == 2 )    \
+            {                           \
+                __toUPPER(__str [1])    \
+            if (__str[1].find("BND-TRIA")!= \
+                    std::string::npos ) \
+                _jcfg.__var =           \
+            jcfg_data::bnds_pred::bnd_tria; \
+            else                        \
+            if (__str[1].find("BND-DUAL")!= \
+                    std::string::npos ) \
+                _jcfg.__var =           \
+            jcfg_data::bnds_pred::bnd_dual; \
             else                        \
            _errs.push_tail(_line) ;     \
             }                           \
@@ -271,6 +291,11 @@
             __putFILE(_tria_file, _stok) ;
                 }
             else
+            if (_stok[0] == "BNDS_FILE")
+                {
+            __putFILE(_bnds_file, _stok) ;
+                }
+            else
         /*---------------------------- read MESH keywords */
             if (_stok[0] == "MESH_FILE")
                 {
@@ -280,6 +305,11 @@
             if (_stok[0] == "MESH_KERN")
                 {
             __putMESH(_mesh_pred, _stok) ;
+                }
+            else
+            if (_stok[0] == "BNDS_KERN")
+                {
+            __putBNDS(_bnds_pred, _stok) ;
                 }
             else
             if (_stok[0] == "MESH_DIMS")
@@ -409,6 +439,7 @@
     
         #undef  __putFILE
         #undef  __putMESH
+        #undef  __putBNDS
         #undef  __putSCAL
         #undef  __putREAL
         #undef  __putINTS 
@@ -458,7 +489,7 @@
                     ++_iter  )
             {
                 _jlog.push(
-            "  **parse error: " + *_iter + "\n");
+            "**parse error: " + * _iter + "\n") ;
             }        
         }
         catch (...)
@@ -493,6 +524,18 @@
             _jcfg._iter_opts.
                 verb() = _jjig._verbosity ;
     
+    /*------------------------------------- BNDS keywords */
+            
+            if (_jjig._bnds_kern == 
+                    JIGSAW_KERN_BND_TRIA)
+            _jcfg._bnds_pred = 
+                jcfg_data::bnds_pred::bnd_tria ;
+            else
+            if (_jjig._bnds_kern ==
+                    JIGSAW_KERN_BND_DUAL)
+            _jcfg._bnds_pred = 
+                jcfg_data::bnds_pred::bnd_dual ;
+    
     /*------------------------------------- GEOM keywords */
             _jcfg._rdel_opts.
                 seed() = _jjig._geom_seed ;
@@ -520,12 +563,12 @@
             _hfun_hmin = _jjig._hfun_hmin ;
             
     /*------------------------------------- RDEL keywords */
-            if (_jjig._hfun_scal == 
+            if (_jjig._mesh_kern == 
                     JIGSAW_KERN_DELFRONT)
             _jcfg._mesh_pred = 
                 jcfg_data::mesh_pred::delfront ;
             else
-            if (_jjig._hfun_scal ==
+            if (_jjig._mesh_kern ==
                     JIGSAW_KERN_DELAUNAY)
             _jcfg._mesh_pred = 
                 jcfg_data::mesh_pred::delaunay ;
@@ -861,6 +904,8 @@
             "INIT-FILE", _init_file)
         __dumpFILE(
             "TRIA-FILE", _tria_file)
+        __dumpFILE(
+            "BNDS-FILE", _bnds_file)
 
         _jlog.push("\n") ;
 
@@ -913,6 +958,16 @@
          jcfg_data::mesh_pred::delfront)
         _jlog.push (
             "  MESH-KERN = DELFRONT \n") ;
+            
+        if(_jcfg._bnds_pred ==
+         jcfg_data::bnds_pred::bnd_tria)
+        _jlog.push (
+            "  BNDS-KERN = BND-TRIA \n") ;
+        else
+        if(_jcfg._bnds_pred ==
+         jcfg_data::bnds_pred::bnd_dual)
+        _jlog.push (
+            "  BNDS-KERN = BND-DUAL \n") ;
 
         __dumpBOOL("MESH-TOP1", 
             _jcfg._rdel_opts.top1())

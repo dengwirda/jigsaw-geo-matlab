@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 07 December, 2017
+     * Last updated: 13 April, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -46,15 +46,15 @@
     
     /*
     --------------------------------------------------------
-     * _BAD-NBAL: refine a "bad" node-ball.
+     * _BAD-BALL: refine a "bad" ball.
     --------------------------------------------------------
      */
     
     __static_call 
     __normal_call 
-    typename rdel_opts::node_kind _bad_nbal (
+    typename rdel_opts::node_kind _bad_ball (
         geom_type &_geom ,
-        size_type &_size ,
+        hfun_type &_hfun ,
         mesh_type &_mesh ,
         mode_type  _mode ,
         typename 
@@ -65,7 +65,7 @@
         iptr_list &_nold ,
         iptr_list &_tnew ,
         iptr_list &_told ,
-        nbal_heap &_nbpq ,
+        ball_heap &_nbpq ,
         edat_list &_eold ,
         edat_list &_ecav ,
         escr_list &_escr ,
@@ -74,10 +74,8 @@
         fscr_list &_fscr ,
         tdat_list &_tcav ,
         tscr_list &_tscr ,
-        nbal_sets &_nclr ,
-        ebal_sets &_eclr ,
-        nbal_list &_nbal ,
-        ebal_list &_ebal ,
+        ball_list &_bcav ,
+        ball_list &_bscr ,
         char_type &_tdim ,
         iptr_type  _pass ,
         rdel_opts &_args
@@ -118,59 +116,58 @@
         typename rdel_opts::node_kind 
         _kind =  rdel_opts::null_kind ;
     
-		__unreferenced( _size) ;
+		__unreferenced( _hfun) ;
 		__unreferenced( _mode) ;
 		__unreferenced( _pfac) ;
 		__unreferenced( _eold) ;
 		__unreferenced( _fold) ; 
-		__unreferenced( _eclr) ; 
 		__unreferenced( _tdim) ;
 		__unreferenced( _pass) ;
         __unreferenced( _args) ;
 
-        _nnew.set_count( +0) ;
-        _nold.set_count( +0) ;
-        _tnew.set_count( +0) ;
-        _told.set_count( +0) ;
+        _nnew.set_count(  +0 ) ;
+        _nold.set_count(  +0 ) ;
+        _tnew.set_count(  +0 ) ;
+        _told.set_count(  +0 ) ;
         
-        _escr.set_count( +0) ;
-        _ecav.set_count( +0) ;
-        _fscr.set_count( +0) ;
-        _fcav.set_count( +0) ;
-        _tscr.set_count( +0) ;
-        _tcav.set_count( +0) ;
+        _escr.set_count(  +0 ) ;
+        _ecav.set_count(  +0 ) ;
+        _fscr.set_count(  +0 ) ;
+        _fcav.set_count(  +0 ) ;
+        _tscr.set_count(  +0 ) ;
+        _tcav.set_count(  +0 ) ;
         
-        _nbal.set_count( +0) ;
-        _ebal.set_count( +0) ;
+        _bscr.set_count(  +0 ) ;
+        _bcav.set_count(  +0 ) ;
 
     /*--------------------- pop() leading element from PQ */
         bool_type _find = false;
-        nbal_data _ball ;
+        ball_data _ball ;
         for ( ; !_nbpq.empty() ; )
         {
     /*--------------------- cycles until valid ball found */
             _nbpq._pop_root(_ball) ;
 
-            typename nbal_sets
-                   ::item_type  *_same ;    
-            if (_nclr.find(_ball,_same))
+            typename mesh_type::
+                     ball_list::
+                 item_type *_bptr = nullptr ;    
+            if (_mesh.find_ball(_ball,_bptr))
             {
-                if (_same->_data._pass ==
-                           _ball._pass )
-                {
-                    _find = true; break;
-                }
+            if (_bptr->_data._pass ==
+                       _ball._pass )
+            {
+                _find = true; break;
             }
- 
+            }
         }
         if (!_find) return (_kind) ;
  
     /*--------------------- check dist. to existing nodes */ 
         real_type static const _HTOL = 
-       (real_type) (1./3.) * (1./3.) ;
-
+            (real_type) +.33 * .33 ;
+       
         real_type static const _STOL = 
-       (real_type) (1./2.) * (1./2.) ;
+            (real_type) +.50 * .50 ;
         
         iptr_list _tset;
         _tset.set_alloc( +32) ;

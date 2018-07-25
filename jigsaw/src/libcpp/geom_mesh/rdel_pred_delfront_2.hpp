@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 December, 2017
+     * Last updated: 17 March, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -93,13 +93,15 @@
         {
         public  :
         iptr_type       _mark ;
+        iptr_type       _imax ;
         real_type       _cost ;
         } ;
         
     class tria_data
         {
         public  :
-        iptr_type       _mark ;        
+        iptr_type       _mark ;
+        iptr_type       _imax ;        
         real_type       _cost ;
         } ;
 
@@ -112,8 +114,14 @@
         )
     {   
         if(_idat._mark == _jdat._mark )
+        {
+        if(_idat._cost == _jdat._cost )
+        return _idat._imax < 
+               _jdat._imax ;
+        else
         return _idat._cost > 
                _jdat._cost ;
+        }
         else
         return _idat._mark < 
                _jdat._mark ;
@@ -126,8 +134,14 @@
         )
     {   
         if(_idat._mark == _jdat._mark )
+        {
+        if(_idat._cost == _jdat._cost )
+        return _idat._imax < 
+               _jdat._imax ;
+        else
         return _idat._cost > 
                _jdat._cost ;
+        }
         else
         return _idat._mark < 
                _jdat._mark ;

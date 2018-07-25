@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 21 March, 2018
+     * Last updated: 11 April, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -439,10 +439,33 @@
      
     __normal_call iptr_type push_node (
         node_type const&_ndat,
+        bool_type _link = true,
         iptr_type _itop = -1
         )
     {
         iptr_type _ipos = _get_node() ;
+        
+        if (!_link)
+        {
+  
+    /*------------------------ init. external d-face data */
+        this->_set1[_ipos]  = _ndat ;
+        this->_set1[_ipos].mark() = 0 ;
+        
+        this->_set1[_ipos].self() = 1 ;
+        this->
+       _set1 [_ipos].node(0) =_ipos ;
+       
+    /*------------------------ push face data to hash set */
+        this->_map1.push(_ipos) ;
+        
+    /*------------------------ init. local adj. index set */
+        init_list(this->_adj1, _ipos) ;
+  
+        }
+        else
+        {
+              
     /*------------------------ init. external d-face data */
         this->_set1[_ipos]  = _ndat ;
         this->_set1[_ipos].mark() = 0 ;
@@ -473,8 +496,9 @@
         /*----- otherwise, append index to adj. lists */
                 this->
                _adj1.push(_itop,*_same) ;
-            }               
-            _put_node(_ipos); 
+            }        
+                           
+            _put_node(_ipos) ; 
         }
         else
         {
@@ -496,6 +520,8 @@
             this->_map1.push(_ipos) ;
         }
         
+        }
+        
         return _ipos ;
     }
     
@@ -507,11 +533,30 @@
      
     __normal_call iptr_type push_edge (
         edge_type const&_edat,
+        bool_type _link = true,
         iptr_type _itop = -1   
         )
     {
         iptr_type _ipos = _get_edge() ;
         iptr_type _npos ;
+        
+        if (!_link)
+        {
+        
+    /*------------------------ init. external d-face data */
+        this->_set2[_ipos]  = _edat ;
+        this->_set2[_ipos].mark() = 0 ;
+        this->_set2[_ipos].self() = 1 ;
+        
+    /*------------------------ push face data to hash set */
+        this->_map2.push(_ipos) ;
+        
+    /*------------------------ init. local adj. index set */
+        init_list(this->_adj2, _ipos) ;
+        
+        }
+        else
+        {
         
     /*------------------------ init. external d-face data */
         this->_set2[_ipos]  = _edat ;
@@ -539,8 +584,9 @@
         /*----- otherwise, append index to adj. lists */
                 this->
                _adj2.push(_itop,*_same) ;
-            }               
-            _put_edge(_ipos); 
+            }     
+                      
+            _put_edge(_ipos) ; 
         }
         else
         {
@@ -565,14 +611,48 @@
                 _ndat.node(0) = 
                     _edat.node(_npos) ;
                 
-                push_node(_ndat, _ipos) ;
+                push_node( 
+                 _ndat, _link, _ipos) ;
             }
             
         /*-------------- push new face data onto hash */
             this->_map2.push(_ipos) ;
         }
         
+        }
+        
         return _ipos ;
+    }
+    
+    /*
+    --------------------------------------------------------
+     * MAKE-PTRS: build item-to-item adj.
+    --------------------------------------------------------
+     */
+  
+    __normal_call void_type make_ptrs (
+        )
+    {
+        this->_adj1.empty () ;
+        this->_adj2.empty () ;
+    
+        iptr_type _epos = +0 ;
+        for (auto _iter  = this->_set2.head();
+                  _iter != this->_set2.tend();
+                ++_iter, ++_epos  )
+        {
+        /*-------------- descend into (d-1)-face data */
+            iptr_type _ipos;
+            for (_ipos = +2; _ipos-- != 0; )
+            {
+                node_type _ndat;                
+                _ndat.node(0) = 
+                    _iter->node( _ipos) ;
+                
+                push_node(
+                    _ndat, true, _epos) ;
+            }
+        }
     }
     
     /*

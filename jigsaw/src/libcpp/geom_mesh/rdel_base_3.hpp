@@ -167,7 +167,7 @@
         _enod[1] =_mesh._tria.
          tria(_tadj)->node(_enod[ 1]);
          
-        if (_enod[1] > _enod[0])
+        if (_enod[1] < _enod[0])
             std::swap( _enod[0],_enod[1]);
             
     /*--------------------------- init. output balls = 0. */
@@ -235,6 +235,20 @@
         (real_type)+.50*_mesh._tria.
          node(_enod[1])->pval(2) ;
          
+         real_type _nvec[ 3] = {
+            _mesh._tria.
+         node(_enod[1])->pval(0) -
+            _mesh._tria.
+         node(_enod[0])->pval(0) ,
+            _mesh._tria.
+         node(_enod[1])->pval(1) -
+            _mesh._tria.
+         node(_enod[0])->pval(1) ,
+            _mesh._tria.
+         node(_enod[1])->pval(2) -
+            _mesh._tria.
+         node(_enod[0])->pval(2) } ;
+         
         _ebal[3] = (real_type)+.25 * 
             geometry::lensqr_3d (
        &_mesh._tria.
@@ -247,7 +261,7 @@
             iptr_type> _pred(_ebal ) ;
 
     #   ifdef __testdual
-        real_type _nvec[3], _last[3] ;
+        real_type _tvec[3], _last[3] ;
         _last[0] = (real_type)+0. ;
         _last[1] = (real_type)+0. ;
         _last[2] = (real_type)+0. ;
@@ -263,10 +277,10 @@
              tria(*(_tpos-1))->circ(0),
            &_mesh._tria.
              tria(*(_tpos+0))->circ(0),
-            _nvec) ;
+            _tvec) ;
            
             real_type _vdot = 
-            geometry::dot_3d(_nvec, _last) ;
+            geometry::dot_3d(_tvec, _last) ;
            
             if (_vdot < (real_type)0.) 
             {
@@ -274,9 +288,9 @@
                     "bad voronoi face! \n" ;
             }
            
-            _last[0] = _nvec[0] ;
-            _last[1] = _nvec[1] ;
-            _last[2] = _nvec[2] ;
+            _last[0] = _tvec[0] ;
+            _last[1] = _tvec[1] ;
+            _last[2] = _tvec[2] ;
         }
     #   endif
     
@@ -298,7 +312,7 @@
                 tria(*_tpos)->circ( 2) ;
         }
 
-        _geom.intersect (_tbal, _pred) ;
+        _geom.intersect (_ebal, _nvec, _tbal, _pred) ;
 
         if ( _pred._find )
         {

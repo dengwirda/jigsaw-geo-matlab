@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 14 December, 2017
+     * Last updated: 12 April, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -137,6 +137,17 @@
      */
      
         real_t                  _hfun_hmin ;
+        
+    /* 
+    --------------------------------------------------------
+     * BNDS_KERN - {default = 'bnd-tria'} placement of bou-
+     * ndary, enforcing conformance w.r.t the triangulation 
+     * (KERN='bnd-tria') or w.r.t the dual voronoi complex 
+     * (KERN='bnd-dual').
+    --------------------------------------------------------
+     */
+        
+        indx_t                  _bnds_kern ;
             
     /* 
     --------------------------------------------------------

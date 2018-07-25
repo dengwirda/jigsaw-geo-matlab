@@ -92,6 +92,7 @@
         {
         public  :
         iptr_type       _mark ;
+        iptr_type       _imax ;
         real_type       _cost ;
         } ;
         
@@ -99,13 +100,15 @@
         {
         public  :
         iptr_type       _mark ;
+        iptr_type       _imax ;
         real_type       _cost ;
         } ;
         
     class tria_data
         {
         public  :
-        iptr_type       _mark ;        
+        iptr_type       _mark ;
+        iptr_type       _imax ;        
         real_type       _cost ;
         } ;
 
@@ -118,8 +121,14 @@
         )
     {   
         if(_idat._mark == _jdat._mark )
+        {
+        if(_idat._cost == _jdat._cost )
+        return _idat._imax < 
+               _jdat._imax ;
+        else
         return _idat._cost > 
                _jdat._cost ;
+        }
         else
         return _idat._mark < 
                _jdat._mark ;
@@ -132,8 +141,14 @@
         )
     {   
         if(_idat._mark == _jdat._mark )
+        {
+        if(_idat._cost == _jdat._cost )
+        return _idat._imax < 
+               _jdat._imax ;
+        else
         return _idat._cost > 
                _jdat._cost ;
+        }
         else
         return _idat._mark < 
                _jdat._mark ;
@@ -146,8 +161,14 @@
         )
     {   
         if(_idat._mark == _jdat._mark )
+        {
+        if(_idat._cost == _jdat._cost )
+        return _idat._imax < 
+               _jdat._imax ;
+        else
         return _idat._cost > 
                _jdat._cost ;
+        }
         else
         return _idat._mark < 
                _jdat._mark ;

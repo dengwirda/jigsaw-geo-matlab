@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 22 March, 2018
+     * Last updated: 22 April, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -56,16 +56,22 @@
         mesh_type &_mesh , 
         size_type &_hfun ,
         pred_type &_pred ,
+        real_list &_hval ,
+        iter_opts &_opts ,
         iptr_type  _edge ,
         bool_type &_okay ,
         iptr_list &_iset ,
         iptr_list &_jset ,
         iptr_list &_aset ,
         iptr_list &_bset ,
-        real_list &_csrc ,
-        real_list &_cdst ,
+        iptr_list &_cset ,
+        real_list &_tsrc ,
+        real_list &_tdst ,
+        real_list &_ttmp ,
+        real_list &_dsrc ,
+        real_list &_ddst ,
         real_type  _lmax 
-            = (real_type) +0.75E+00 ,
+            = (real_type) +0.80E+00 ,
         real_type  _good 
             = (real_type) +9.75E-01 ,
         real_type  _qinc 
@@ -81,6 +87,10 @@
         typename mesh_type::
             edge_type _edat(*_eptr) ;
         
+        iptr_type _inod, _jnod ; 
+        _inod = _eptr->node(0) ;
+        _jnod = _eptr->node(1) ;
+        
          auto _iptr = _mesh.
         _set1.head()+ _eptr->node(0);        
          auto _jptr = _mesh.
@@ -92,9 +102,13 @@
         _jset.set_count(+0) ;
         _aset.set_count(+0) ;
         _bset.set_count(+0) ;
+        _cset.set_count(+0) ;
         
-        _csrc.set_count(+0) ;
-        _cdst.set_count(+0) ;
+        _tsrc.set_count(+0) ;
+        _tdst.set_count(+0) ;
+        _ttmp.set_count(+0) ;
+        _dsrc.set_count(+0) ;
+        _ddst.set_count(+0) ;
     
     /*--------------------------------- exit if FEAT node */    
         if (_iptr->feat() != mesh::null_feat)
@@ -103,10 +117,10 @@
             return ;
         
     /*--------------------------------- get edge h-sizing */
-        real_type _ipos[_dims] ;
-        real_type _jpos[_dims] ;
+        real_type _ipos[_dims + 1] ;
+        real_type _jpos[_dims + 1] ;
         iptr_type _idim = +0;
-        for (_idim = _dims+0; _idim-- != 0; )
+        for (_idim = _dims+1; _idim-- != 0; )
         {
             _ipos[_idim] =
                 _iptr->pval(_idim) ;
@@ -211,13 +225,19 @@
         }
     
     /*--------------------------------- get adjacent cost */
+        real_type _minA =
         loop_tscr(_mesh, _pred , 
                   _iset, 
-                  _csrc) ;
-                   
+                  _tsrc) ;
+        real_type _minB = 
         loop_tscr(_mesh, _pred , 
                   _bset, 
-                  _csrc) ;
+                  _tsrc) ;
+                  
+        real_type _TMIN = 
+        std::min( _minA, _minB);
+        
+        if (_TMIN>_good) return;
         
     /*--------------------------------- get adjacent ball */
         real_type _pbal[_dims+1] = {   
@@ -273,114 +293,77 @@
             }
         }
  
-        for(_idim = _dims+0; _idim-- != +0; )
+        for(_idim = _dims+0; _idim-- != 0; )
         {
         _pbal[_idim] /= (_iset.count() + 
-                         _jset.count() )  ;
+                         _jset.count() ) ;
         }
         
-    /*--------------------------------- save current node */
-        real_type _isav[_dims+1] ;
-        real_type _jsav[_dims+1] ;        
-        for(_idim = _dims+1; _idim-- != +0; )
-        {
-            _isav[_idim] = 
-                _iptr->pval(_idim) ;
-                
-            _jsav[_idim] = 
-                _jptr->pval(_idim) ;
-        }
+        _pbal[_dims+0] = (real_type) +0. ;
+    
+    /*--------------------------------- try to merge edge */
+        typename mesh_type
+               ::node_type _ndat ;
+        typename mesh_type
+               ::tri3_type _tdat ;
         
-    /*--------------------------------- try to merge node */
-        real_type _pmid[_dims+1] = {   
-            (real_type) +0.000 } ;
+        _ndat.hidx() = 
+            size_type::null_hint() ;
             
-        for(_idim = _dims+0; _idim-- != +0; )
-        {
-            _pmid[_idim] = 
-        (real_type)+.5*_iptr->pval(_idim) +
-        (real_type)+.5*_jptr->pval(_idim) ;
-        }
-    
-        real_type _pnew[_dims+1] = {   
-            (real_type) +0.000 } ;
-        real_type _circ[_dims+1] = {   
-            (real_type) +0.000 } ;
-    
-        _pnew[_dims + 0] = 
-        (real_type)+.5*_iptr->pval(_dims) +
-        (real_type)+.5*_jptr->pval(_dims) ;
-    
-        iptr_type static 
-            constexpr _INUM = (iptr_type)+16 ;
+        _ndat.fdim() =   +2;
+        _ndat.feat() = 
+            mesh::null_feat;
                
-        for (auto _iloc = +0; _iloc != _INUM ; 
-                ++_iloc )
-        {   
-    /*--------------------------------- interp. adj. ball */
-            real_type _bias = 
-           (real_type)_iloc / (_INUM - 1) ;
-            
-            real_type _apos = 
-                (real_type)+0.0+_bias;    
-            real_type _bpos = 
-                (real_type)+1.0-_bias;
-        
-            for(_idim = _dims+0; _idim-- != 0; )
-            {
-                _pnew[_idim] = 
-                _apos*_pmid[_idim] +
-                _bpos*_pbal[_idim] ;
-            }
-        
-    /*--------------------------------- push onto surface */
-            _pred. proj_node(
-                _geom, _circ, _pnew) ;
-       
-            for(_idim = _dims+1; _idim-- != 0; )
-            {
-                _iptr->pval(_idim) 
-                    = _pnew[_idim] ;
-                        
-                _jptr->pval(_idim) 
-                    = _pnew[_idim] ;
-            }
-            
-    /*--------------------------------- check new quality */
-            _cdst.set_count(0) ;
-         
-            loop_tscr(_mesh, _pred , 
-                      _aset, 
-                      _cdst) ;
-                      
-            loop_tscr(_mesh, _pred , 
-                      _bset, 
-                      _cdst) ;
-       
-            move_okay(_cdst, _csrc , 
-                      _okay, _good ,
-                      _qinc) ;
-             
-    /*--------------------------------- good enough: DONE */
-            if (_okay) break ;         
-        }
-                  
-        if(!_okay) 
+        for(_idim = _dims+1; _idim-- != 0; )
         {
-    /*--------------------------------- undo if zip fails */
-            for(_idim = _dims+1; _idim-- != 0; )
-            {
-                _iptr->pval(_idim) 
-                    = _isav[_idim] ;
-                        
-                _jptr->pval(_idim) 
-                    = _jsav[_idim] ;
-            }
-    /*--------------------------------- exit if zip fails */           
-            return  ;
+            _ndat.pval(_idim) = 
+                    _pbal[_idim] ;
         }
+  
+    /*--------------------------------- push node at PBAL */      
+        iptr_type _inew =
+            _mesh.push_node(_ndat) ;
             
-    /*--------------------------------- redo mesh indexes */
+         auto _nptr  = 
+        _mesh._set1.head() + _inew ;
+    
+        _hval.set_count(std::max (
+            _inew + 1, 
+        (iptr_type)_hval.count())) ;
+        
+        _hval[_inew] = (real_type)-1. ;
+    
+    /*--------------------------------- push a new cavity */
+        for (auto _tria  = _aset.head();
+                  _tria != _aset.tend();
+                ++_tria  )
+        {              
+             auto _tptr  = 
+            _mesh._set3.head()+*_tria ;
+        
+            _tdat.node(0) = 
+                _tptr->node(0) ;
+            _tdat.node(1) = 
+                _tptr->node(1) ;
+            _tdat.node(2) = 
+                _tptr->node(2) ;
+       
+            if (_tdat. node(0) == 
+                _edat. node(0) ) 
+                _tdat. node(0) = _inew ;
+            
+            if (_tdat. node(1) == 
+                _edat. node(0) ) 
+                _tdat. node(1) = _inew ;
+            
+            if (_tdat. node(2) == 
+                _edat. node(0) ) 
+                _tdat. node(2) = _inew ;           
+              
+            _cset.push_tail(  
+            _mesh.push_tri3(_tdat)) ;
+        }
+    
         for (auto _tria  = _bset.head();
                   _tria != _bset.tend();
                 ++_tria  )
@@ -388,8 +371,6 @@
              auto _tptr  = 
             _mesh._set3.head()+*_tria ;
         
-            typename mesh_type
-                ::tri3_type _tdat ;
             _tdat.node(0) = 
                 _tptr->node(0) ;
             _tdat.node(1) = 
@@ -399,30 +380,115 @@
        
             if (_tdat. node(0) == 
                 _edat. node(1) ) 
-                _tdat. node(0) = 
-                _edat. node(0) ;
+                _tdat. node(0) = _inew ;
             
             if (_tdat. node(1) == 
                 _edat. node(1) ) 
-                _tdat. node(1) = 
-                _edat. node(0) ;
+                _tdat. node(1) = _inew ;
             
             if (_tdat. node(2) == 
                 _edat. node(1) ) 
-                _tdat. node(2) = 
-                _edat. node(0) ;                
+                _tdat. node(2) = _inew ;                
                 
-            _mesh.push_tri3(_tdat) ;
+            _cset.push_tail(
+            _mesh.push_tri3(_tdat)) ;
         }
+    
+    /*--------------------------------- optim. node coord */
+        iptr_type static 
+            constexpr _INUM = (iptr_type) +8 ;
+               
+        for (auto _iloc = +0; _iloc != _INUM ; 
+                ++_iloc )
+        {
+            bool_type _move = false ;
         
+            _ttmp.set_count(0) ;
+            _dsrc.set_count(0) ;
+        
+            real_type  _minC = 
+            loop_tscr( _mesh, _pred , 
+                       _cset, 
+                       _ttmp ) ;
+                       
+            real_type  _minD = 
+            loop_dscr( _mesh, _pred , 
+                       _cset, 
+                       _dsrc ) ;
+            
+            move_node( _geom, _mesh ,
+                _hfun, _pred, _hval , 
+                _opts, _nptr, +1    , 
+                _move, _cset, 
+                _ttmp, _tdst,
+                _dsrc, _ddst, 
+                _minC, _good,
+                _minD, _good ) ;
+               
+            if (_move) continue;
+            
+            move_node( _geom, _mesh ,
+                _hfun, _pred, _hval , 
+                _opts, _nptr, +2    , 
+                _move, _cset, 
+                _ttmp, _tdst,
+                _dsrc, _ddst, 
+                _minC, _good,
+                _minD, _good ) ;
+               
+            if (_move) continue;
+            
+            break ;
+        }
+    
+    /*--------------------------------- compare cost scr. */
+        _tdst.set_count(0) ;
+    
+        loop_tscr(_mesh, _pred, _cset, 
+                  _tdst) ;
+    
+        move_okay(_tdst, _tsrc, _okay, 
+                  _good,
+                  _qinc) ;
+              
+        if (_okay)
+        {  
+    /*--------------------------------- delete old cavity */   
+        for (auto _tria  = _aset.head();
+                  _tria != _aset.tend();
+                ++_tria  )
+        {              
+            _mesh.
+                _pop_tri3(* _tria) ;
+        }
         for (auto _tria  = _jset.head();
                   _tria != _jset.tend();
                 ++_tria  )
         {              
             _mesh.
                 _pop_tri3(* _tria) ;
+        }   
+        
+            _mesh.
+                _pop_node(& _inod) ;
+            _mesh.
+                _pop_node(& _jnod) ;
         }
-          
+        else
+        {
+    /*--------------------------------- delete new cavity */
+        for (auto _tria  = _cset.head();
+                  _tria != _cset.tend();
+                ++_tria  )
+        {              
+            _mesh.
+                _pop_tri3(* _tria) ;
+        }
+        
+            _mesh.
+                _pop_node(& _inew) ;
+        }
+     
     }
     
     

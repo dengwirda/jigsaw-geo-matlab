@@ -813,7 +813,7 @@ template <typename _Type>
 		char _part =   +1
 		)
 	{
-        hits_type _hits ;
+        hits_type _hits = face_hits;
 
     // does the line straddle the tria??
         double  _sa = 
@@ -828,10 +828,9 @@ template <typename _Type>
 
         if (_bind)
         {
-        if (_sa*_sb<(double)+.0)
+        if (_sa < 0.0 && _sb > 0.0)
             return null_hits ;
-            
-        if (_sa == (double)+.0) //!!
+        if (_sa > 0.0 && _sb < 0.0)
             return null_hits ;
             
         if (_sa == (double)+.0 && // totally degenerate??
@@ -870,6 +869,13 @@ template <typename _Type>
 
         if (_s1*_s3<(double)+.0)
             return null_hits ;
+            
+        if (_s2*_s3<(double)+.0)
+            return null_hits ;
+        
+        
+        
+        /*
         
         if (_s1 == (double)+.0 && // totally degenerate??
             _s2 == (double)+.0 &&
@@ -930,6 +936,8 @@ template <typename _Type>
             _hits = edge_hits ;
         else
             _hits = face_hits ;
+            
+        */
 
 
 
@@ -1162,6 +1170,8 @@ template <typename _Type>
     __normal_call hits_type line_poly_3d (
 	__const_ptr  (double) _pa,  // line
 	__const_ptr  (double) _pb,
+	__const_ptr  (double) _pm,  // point on poly
+	__const_ptr  (double) _nv,  // norm. to poly
       poly_list         & _pi,
 	__write_ptr  (double) _qq   // intersection
 		)
@@ -1172,7 +1182,11 @@ template <typename _Type>
 
     //!! this is exact if the points are
 
-        double _sj = +0.;
+
+        /*
+
+        double _sj = 0.0;
+        double _st = 0.0;
 
         for(size_t _ii  = +0 ;
                    _ii != _pi.count() ;
@@ -1190,25 +1204,42 @@ template <typename _Type>
            (double*) _pa, 
            (double*) _pb)    ;
 
-            if (_si*_sj < +0.) 
+            if (_si < 0.0 && _sj > 0.0)
+            return null_hits ;
+            if (_si > 0.0 && _sj < 0.0)
             return null_hits ;
 
-            if (_si    == +0.)
-            _hits= edge_hits ;
-
-            if (_si    != +0.)
+            if (_si    != 0.0)
             _sj = _si   ;
+            
+            _st+= _si   ;
         }
 
-    /*--------------------------------- poly within line? */
+        if (_st == 0.0)
+            return null_hits ;
+            
+        */
 
-        size_t _nn = +0;
 
-        _qq[0] = +0. ;
-        _qq[1] = +0. ;
-        _qq[2] = +0. ;
+        double _pc[3];
+        _pc[0] = 0.0 ;
+        _pc[1] = 0.0 ;
+        _pc[2] = 0.0 ;
 
-        for(size_t _ii  = +1 ;
+        for(size_t _ii  = +0 ;
+                   _ii != _pi.count() ;
+                 ++_ii  )
+        {
+            _pc[0] += _pi[_ii][0];
+            _pc[1] += _pi[_ii][1];
+            _pc[2] += _pi[_ii][2];
+        }
+        
+        _pc[0] /= _pi.count();
+        _pc[1] /= _pi.count();
+        _pc[2] /= _pi.count();
+        
+        for(size_t _ii  = +0 ;
                    _ii != _pi.count() ;
                  ++_ii  )
         {
@@ -1216,36 +1247,140 @@ template <typename _Type>
             (_ii + 0) % _pi.count() ;
             size_t _i2 = 
             (_ii + 1) % _pi.count() ;
-
-            double _qi[ +3];
-            if (line_tria_3d (
-	            _pa, _pb,
-	           &_pi[ +0][0],  // tria
-	           &_pi[_i1][0],
-	           &_pi[_i2][0],
-	            _qi, true, +1) 
-	            != null_hits )
-	        {
-	            _hits = face_hits ;
-	            
-	            _nn    += +1 ;
-	            
-	            _qq[0] += _qi[0];
-	            _qq[1] += _qi[1];
-	            _qq[2] += _qi[2];
-	        }
-
+            
+            double _s1 = 
+            geompred::orient3d (
+           (double*) _pc, 
+           (double*)&_pi[_i1][0] ,
+           (double*) _pa, 
+           (double*) _pb)    ;
+            
+            double _s2 = 
+            geompred::orient3d (
+           (double*)&_pi[_i1][0] , 
+           (double*)&_pi[_i2][0] ,
+           (double*) _pa, 
+           (double*) _pb)    ;
+           
+            double _s3 = 
+            geompred::orient3d (
+           (double*)&_pi[_i2][0] , 
+           (double*) _pc,
+           (double*) _pa, 
+           (double*) _pb)    ;
+           
+            if (_s1*_s2 >= 0.0)
+            if (_s1*_s3 >= 0.0)
+            if (_s2*_s3 >= 0.0)
+            _hits = face_hits;
+            
         }
         
-        _qq[0] /=  _nn ;
-        _qq[1] /=  _nn ;
-        _qq[2] /=  _nn ;
+        
+
+    /*--------------------------------- poly within line? */
+
+        double _ta = 
+       (_pm[0] - _pa[0]) * _nv[0] +
+       (_pm[1] - _pa[1]) * _nv[1] +
+       (_pm[2] - _pa[2]) * _nv[2] ;
+        
+        double _tb = 
+       (_pb[0] - _pa[0]) * _nv[0] +
+       (_pb[1] - _pa[1]) * _nv[1] +
+       (_pb[2] - _pa[2]) * _nv[2] ;
+       
+        if (_ta < 0.0 && _tb > 0.0)
+            return null_hits ;
+        if (_ta > 0.0 && _tb < 0.0)
+            return null_hits ;
+            
+        if (_ta > 0.0 && _ta > _tb)
+            return null_hits ;
+        if (_ta < 0.0 && _ta < _tb)
+            return null_hits ;
+            
+        if (_tb == 0.0)
+            return null_hits ;
+            
+        double _tt = _ta / _tb ;
+        
+        _tt = std::max(0.0,_tt);
+        _tt = std::min(1.0,_tt);
+        
+        _qq[0] = 
+        _pa[0]+_tt*(_pb[0]-_pa[0]);
+        _qq[1] = 
+        _pa[1]+_tt*(_pb[1]-_pa[1]);
+        _qq[2] = 
+        _pa[2]+_tt*(_pb[2]-_pa[2]);
         
         return ( _hits ) ;
     }
 
 }
 
+
+
+
+
+    template <
+    typename      real_type
+             >
+    __normal_call real_type side_1_2d (
+	__const_ptr  (real_type) _pa,
+	__const_ptr  (real_type) _pb,
+	__const_ptr  (real_type) _pp
+		)
+	{
+	    real_type _pm[2] = {
+	   (real_type)+.5 * _pa[0] + 
+	   (real_type)+.5 * _pb[0] ,
+	   (real_type)+.5 * _pa[1] + 
+	   (real_type)+.5 * _pb[1] 
+	        } ;
+	   
+	    real_type _ss = 
+	       ( _pp[0] - _pm[0] ) * 
+	       ( _pb[0] - _pa[0] ) +
+	       ( _pp[1] - _pm[1] ) * 
+	       ( _pb[1] - _pa[1] ) ;
+	       
+	    return _ss  ;
+	}
+
+    template <
+    typename      real_type
+             >
+    __normal_call real_type side_1_3d (
+	__const_ptr  (real_type) _pa,
+	__const_ptr  (real_type) _pb,
+	__const_ptr  (real_type) _pp
+		)
+	{
+	    real_type _pm[3] = {
+	   (real_type)+.5 * _pa[0] + 
+	   (real_type)+.5 * _pb[0] ,
+	   (real_type)+.5 * _pa[1] + 
+	   (real_type)+.5 * _pb[1] ,
+	   (real_type)+.5 * _pa[2] + 
+	   (real_type)+.5 * _pb[2] 
+	        } ;
+	   
+	    real_type _ss = 
+	       ( _pp[0] - _pm[0] ) * 
+	       ( _pb[0] - _pa[0] ) +
+	       ( _pp[1] - _pm[1] ) * 
+	       ( _pb[1] - _pa[1] ) +
+	       ( _pp[2] - _pm[2] ) * 
+	       ( _pb[2] - _pa[2] ) ;
+	       
+	    return _ss  ;
+	}
+
+
+
 #endif//__INTERSECT__
+
 
 

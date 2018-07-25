@@ -372,11 +372,14 @@
         typename  hits_func
              >
     __normal_call bool_type intersect (
+        real_type *_ppos ,
+        real_type *_nvec ,
         poly_list &_poly ,
         hits_func &_hfun
         )
     {
-    
+        __unreferenced(_ppos) ;
+        __unreferenced(_nvec) ;
         __unreferenced(_poly) ;
         __unreferenced(_hfun) ;
     

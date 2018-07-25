@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 02 October, 2017
+     * Last updated: 02 June, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -407,12 +407,20 @@
         real_type static constexpr _scal = 
             (real_type)+tria_pred::_dims ;
 
-        real_type _pdel[tria_pred::_dims];
+        real_type _pmid[tria_pred::_dims];
+        real_type _pdel = (real_type)+.0 ;
         for (auto _idim = tria_pred::_dims + 0 ; 
                   _idim-- != + 0 ; )
         {
-            _pdel[_idim] = _pmax[_idim] -
-                           _pmin[_idim] ;
+            real_type _xdel=_pmax[_idim] - 
+                            _pmin[_idim] ;   
+            
+            _pdel = 
+                std::max(_pdel,_xdel) ;
+        
+            _pmid[_idim] = 
+            _pmax[_idim] *(real_type)+.5 +
+            _pmin[_idim] *(real_type)+.5 ;
         }
 
     /*---------------------------- push tria indexing */
@@ -420,9 +428,9 @@
         for (auto _inod = tria_pred::_dims + 1 ; 
                   _inod-- != + 0 ; )
         {
-            tria(_itri)->node(_inod) = _inod;
+            tria(_itri)->node(_inod) =_inod;
             
-            tria(_itri)->fpos(_inod) = -1 ;
+            tria(_itri)->fpos(_inod) = -1;
             
 			tria(_itri)->next(_inod) =
                 __doflip(this->null_flag());
@@ -433,19 +441,20 @@
                   _inod-- != + 0 ; )
         {
 	    iptr_type _jnod = _get_node() ;
+	    node(_jnod)->next() = _itri;
 	    for (auto _idim = tria_pred::_dims + 0 ; 
 	              _idim-- != + 0 ; )
 	    {
 	        if (_idim != _jnod - 1 )
-		        node(_jnod)->
-		        pval(_idim) = _pmin [_idim];
+		        node(_jnod)->pval(_idim) = 
+		            _pmid[_idim] - 
+               (real_type).5*_pdel ;
 	        else
-		        node(_jnod)->
-		        pval(_idim) = _pmin [_idim]+ 
-		       _pdel[_idim] * _scal;
+		        node(_jnod)->pval(_idim) = 
+		            _pmid[_idim] + 
+               (real_type)1.*_pdel*_scal ;
 	    }
-	    node(_jnod)->next() = _itri;
-        }
+	    }
 	}
 	
     /*

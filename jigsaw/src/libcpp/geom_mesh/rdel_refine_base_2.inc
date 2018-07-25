@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 07 September, 2017
+     * Last updated: 08 April, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -87,7 +87,7 @@
     __normal_call
     typename rdel_opts::node_kind push_node (
         geom_type &_geom ,
-        size_type &_size ,
+        hfun_type &_hfun ,
         mesh_type &_mesh ,
         mode_type  _mode ,
         char_type  _topo ,
@@ -105,7 +105,8 @@
         escr_list &_escr ,
         tdat_list &_tcav ,
         tscr_list &_tscr ,
-        nbal_list &_nbal ,
+        ball_list &_bcav ,
+        ball_list &_bscr ,
         iptr_type  _hint ,
         char_type &_tdim ,
         iptr_type  _pass ,
@@ -136,8 +137,8 @@
                 _ecav.set_count(+0) ;
                 _tscr.set_count(+0) ;
                 _tcav.set_count(+0) ;
-                
-                _nbal.set_count(+0) ;
+                _bscr.set_count(+0) ;
+                _bcav.set_count(+0) ;
                 
                 _kout = 
                  rdel_opts ::null_kind;
@@ -148,7 +149,7 @@
         /*------------------------- config. new node data */
             _mesh._tria.
                 node(_node)->idxh() = 
-                    size_type::null_hint() ;
+                    hfun_type::null_hint() ;
 
             _mesh._tria.
              node(_node)->fdim() = 0  ;
@@ -170,11 +171,12 @@
 
         /*------------------------- form "new" rDT cavity */
             mode_type  _dim0=null_mode;
-            push_rdel( _geom, _size , 
+            push_rdel( _geom, _hfun , 
                 _mesh, _nnew, _tnew , 
                 _escr, _ecav, 
                 _tscr, _tcav,
-                _nbal, _sign, _pass , 
+                _bscr, _bcav, 
+                _sign, _pass, 
                 _dim0, _mode, _args ) ;
                 
             _mesh._tria.
@@ -185,8 +187,8 @@
             _pnow[1] = _ppos[1] ;
 
             if (_cav_bnds( _geom, _mesh , 
-                    _told, _pedg, _ecav , 
-                    _eold) )
+                    _told, _pedg, 
+                    _ecav, _eold) )
             {
         /*-------- new node modifies restricted sub-faces */
                 _mesh._tria.roll_back (
@@ -195,20 +197,21 @@
                 _tdim = +0 ;
 
                 _kout = 
-                 rdel_opts::null_kind ;
+                   rdel_opts::null_kind ;
                 
-                _nnew.set_count(  +0) ;
-                _nold.set_count(  +0) ;
-                _tnew.set_count(  +0) ;
-                _told.set_count(  +0) ;
+                _nnew.set_count(+0) ;
+                _nold.set_count(+0) ;
+                _tnew.set_count(+0) ;
+                _told.set_count(+0) ;
                 
-                _eold.set_count(  +0) ;
-                _escr.set_count(  +0) ;
-                _ecav.set_count(  +0) ;
-                _tscr.set_count(  +0) ;
-                _tcav.set_count(  +0) ;
+                _eold.set_count(+0) ;
+                _escr.set_count(+0) ;
+                _ecav.set_count(+0) ;
+                _tscr.set_count(+0) ;
+                _tcav.set_count(+0) ;
                 
-                _nbal.set_count(  +0) ;
+                _bscr.set_count(+0) ;
+                _bcav.set_count(+0) ;
             }
             else
             if (_cav_bnds( _geom, _mesh , 
@@ -225,20 +228,21 @@
                     _ppos, _tdim) ;
 
                 _kout = 
-                 rdel_opts::circ_kind ;
+                   rdel_opts::circ_kind ;
                 
-                _nnew.set_count(  +0) ;
-                _nold.set_count(  +0) ;
-                _tnew.set_count(  +0) ;
-                _told.set_count(  +0) ;
+                _nnew.set_count(+0) ;
+                _nold.set_count(+0) ;
+                _tnew.set_count(+0) ;
+                _told.set_count(+0) ;
                 
-                _eold.set_count(  +0) ;
-                _escr.set_count(  +0) ;
-                _ecav.set_count(  +0) ;
-                _tscr.set_count(  +0) ;
-                _tcav.set_count(  +0) ;
+                _eold.set_count(+0) ;
+                _escr.set_count(+0) ;
+                _ecav.set_count(+0) ;
+                _tscr.set_count(+0) ;
+                _tcav.set_count(+0) ;
                 
-                _nbal.set_count(  +0) ;
+                _bscr.set_count(+0) ;
+                _bcav.set_count(+0) ;
             }
         /*------------------- new node acceptable "as-is" */
             else break ;

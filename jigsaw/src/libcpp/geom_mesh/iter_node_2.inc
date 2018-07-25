@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 14 December, 2017
+     * Last updated: 18 April, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -135,8 +135,6 @@
             real_type _tsqr = std::max(
                 (real_type) +0., _ball[_dims]);
             
-            real_type _trad = std::sqrt(_tsqr);
-            
             real_type _hbar = _hval[_tnod[0]] +
                               _hval[_tnod[1]] +
                               _hval[_tnod[2]] ;
@@ -151,7 +149,7 @@
             }
             
             _wsum  += _wval ;
-            _ladj  += _trad ;
+            _ladj  += _tsqr ;
         }
         
         if (_tnum > +0)
@@ -163,7 +161,7 @@
                         - _node->pval(_idim) ;
             }
             
-            _ladj  /= _tnum ;
+            _ladj = std::sqrt(_ladj / _tnum) ;
         }
         
     }
@@ -267,8 +265,6 @@
             real_type _tsqr = std::max(
                 (real_type) +0., _ball[_dims]);
             
-            real_type _trad = std::sqrt(_tsqr);
-          
             real_type _irho = (real_type)+1. 
                             / _hval[_tnod[0]] ;
             real_type _jrho = (real_type)+1. 
@@ -292,7 +288,7 @@
             }
             
             _wsum  += _wval ;
-            _ladj  += _trad ;
+            _ladj  += _tsqr ;
         }
         
         if (_tnum > +0)
@@ -304,7 +300,7 @@
                         - _node->pval(_idim) ;
             }
             
-            _ladj  /= _tnum ;
+            _ladj = std::sqrt(_ladj / _tnum) ;
         }
         
     }
@@ -588,15 +584,13 @@
              auto _tptr  = 
             _mesh._set3.head()+*_tria ;
         
-            real_type _DQDX[_dims];
-            real_type _qtri 
-                    = _cost[_tnum];
+            real_type _qtri = _cost[_tnum];
             
             if (_qtri <=  _qlim)
             {
-   
-            for(auto _idim = _dims; _idim-- != +0; )
-            {      
+                for (auto _idim = _dims ; 
+                          _idim-- != 0; )
+                {      
                 real_type _binc = _bmax[_idim] -
                                   _bmin[_idim] ;
            
@@ -661,6 +655,7 @@
                         _hdel *= 
                             (real_type) +.10 ;
                     }    
+                    else
                     if (_sabs < _RMIN * _sbar)
                     {
                         _hdel *= 
@@ -671,14 +666,10 @@
                     else { break ; }
                 }
             
-                _DQDX[_idim] = _sdel / _hsum ;
-            }
+                _dqdx[_idim]+= _sdel / _hsum ;
             
-            for (auto _idim = _dims; _idim-- != +0; )
-            {
-                _dqdx[_idim] += _DQDX [_idim];
-            }
-        
+                }
+            
                 _qlow += _qtri ; _lnum += +1 ;
             
             }
@@ -692,7 +683,7 @@
         {
             for (auto _idim = _dims; _idim-- != +0; )
             {
-                _dqdx[_idim] /= _lnum ;
+                _dqdx[_idim]  /= _lnum ;
             }
             
             _qlow /=  _lnum ;

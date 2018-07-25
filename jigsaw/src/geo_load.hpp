@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 21 March, 2018
+     * Last updated: 11 April, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -42,6 +42,8 @@
      */
 
 #   pragma once
+
+#   include "msh_read.hpp"
 
 #   ifndef __GEO_LOAD__
 #   define __GEO_LOAD__
@@ -129,7 +131,7 @@
            
                 this->_geom->
                    _euclidean_mesh_2d.
-                        _tria.push_node(_ndat) ;
+               _tria.push_node(_ndat, false) ;
             }
             else
             if (this->_ndim == +3 &&
@@ -146,7 +148,7 @@
            
                 this->_geom->
                    _euclidean_mesh_3d.
-                        _tria.push_node(_ndat) ;
+               _tria.push_node(_ndat, false) ;
             }
             else
             if (this->_kind == 
@@ -177,7 +179,7 @@
            
                 this->_geom->
                    _euclidean_mesh_2d.
-                        _tria.push_edge(_edat) ;
+               _tria.push_edge(_edat, false) ;
             }
             else
             if (this->_ndim == +3 &&
@@ -190,10 +192,10 @@
                 _edat.node(0) = _node[0];
                 _edat.node(1) = _node[1];
                 _edat.itag () = _itag ;
-           
+
                 this->_geom->
                    _euclidean_mesh_3d.
-                        _tria.push_edge(_edat) ;
+               _tria.push_edge(_edat, false) ;
             }
             else
             if (this->_kind == 
@@ -232,7 +234,7 @@
            
                 this->_geom->
                    _euclidean_mesh_3d.
-                        _tria.push_tri3(_tdat) ;
+               _tria.push_tri3(_tdat, false) ;
             }
             else
             if (this->_kind == 
@@ -251,7 +253,7 @@
             jmsh_reader   _jmsh ;
             std::ifstream _file ; 
             _file. open(
-            _jcfg._geom_file, std::ifstream::in);
+            _jcfg._geom_file, std::ifstream::in) ;
 
             if (_file.is_open() )
             {
@@ -271,7 +273,7 @@
                     ++_iter  )
             {
                 _jlog.push(
-            "  **parse error: " + *_iter + "\n");
+            "**parse error: " + * _iter + "\n" ) ;
             }
         }
         catch (...)
@@ -282,42 +284,6 @@
         return (  _errv ) ;
     }
 
-    /*
-    --------------------------------------------------------
-     * READ-GEOM: read geometry input file.
-    --------------------------------------------------------
-     */
-     
-    template <
-    typename      jlog_data
-             >
-    __normal_call iptr_type read_geom (
-        jcfg_data &_jcfg ,
-        jlog_data &_jlog ,
-        geom_data &_geom
-        )
-    {
-        iptr_type _errv  = __no_error ;
-
-        std::string _path ;
-        std::string _name ;
-        std::string _fext ;
-        file_part(_jcfg._geom_file, 
-            _path, _name, _fext);
-
-        if (_fext.find("msh") == +0)
-        {
-        return geom_from_jmsh (
-                _jcfg, _jlog, _geom)  ;
-        }
-        else
-        {   
-            _errv =__file_not_located ;
-        }
-
-        return ( _errv ) ;
-    }
-    
     /*
     --------------------------------------------------------
      * GEOM-FROM-MSHT: read MSH_t data into GEOM data.
@@ -364,7 +330,7 @@
                     _vert2._data[_ipos]._itag ;
             
                 _geom._euclidean_mesh_2d.
-                        _tria.push_node(_ndat);
+                _tria.push_node(_ndat , false) ;
             }
             
             for (auto _ipos = (iptr_type)+0 ;
@@ -382,7 +348,7 @@
                     _edge2._data[_ipos]._itag ;
             
                 _geom._euclidean_mesh_2d.
-                        _tria.push_edge(_edat);
+                _tria.push_edge(_edat , false) ;
             }
             
             }
@@ -411,7 +377,7 @@
                     _vert3._data[_ipos]._itag ;
             
                 _geom._euclidean_mesh_3d.
-                        _tria.push_node(_ndat);
+                _tria.push_node(_ndat , false) ;
             }
             
             for (auto _ipos = (iptr_type)+0 ;
@@ -429,7 +395,7 @@
                     _edge2._data[_ipos]._itag ;
             
                 _geom._euclidean_mesh_3d.
-                        _tria.push_edge(_edat);
+                _tria.push_edge(_edat , false) ;
             }
             
             for (auto _ipos = (iptr_type)+0 ;
@@ -449,7 +415,7 @@
                     _tria3._data[_ipos]._itag ;
             
                 _geom._euclidean_mesh_3d.
-                        _tria.push_tri3(_tdat);
+                _tria.push_tri3(_tdat , false) ;
             }
      
             }        
@@ -484,6 +450,43 @@
     
     /*
     --------------------------------------------------------
+     * READ-GEOM: read geometry input file.
+    --------------------------------------------------------
+     */
+     
+    template <
+    typename      jlog_data
+             >
+    __normal_call iptr_type read_geom (
+        jcfg_data &_jcfg ,
+        jlog_data &_jlog ,
+        geom_data &_geom
+        )
+    {
+        iptr_type _errv  = __no_error ;
+
+        std::string _path ;
+        std::string _name ;
+        std::string _fext ;
+        file_part (
+            _jcfg._geom_file, 
+                _path, _name, _fext ) ;
+
+        if (_fext.find("msh") == +0 )
+        {
+        return geom_from_jmsh (
+                _jcfg, _jlog, _geom ) ;
+        }
+        else
+        {   
+            _errv =__file_not_located ;
+        }
+
+        return ( _errv ) ;
+    }
+    
+    /*
+    --------------------------------------------------------
      * COPY-GEOM: read geometry input data.
     --------------------------------------------------------
      */
@@ -499,7 +502,7 @@
         )
     {
         return geom_from_msht (
-            _jcfg, _jlog, _geom, _gmsh) ;
+           _jcfg, _jlog, _geom, _gmsh);
     }
     
     /*
@@ -526,21 +529,29 @@
              jmsh_kind::euclidean_mesh)
         {
     /*--------------------------------- euclidean-mesh-2d */
-            iptr_type _nmax = 
-                (iptr_type) _geom.
-                    _euclidean_mesh_2d.
-                        _tria._set1.count();
-        
             iptr_type _imin = 
             std::numeric_limits<iptr_type>::max() ;
             iptr_type _imax = 
             std::numeric_limits<iptr_type>::min() ;
 
+            iptr_type _nmax = +0 ;
+
+            for (auto _iter  = _geom.
+            _euclidean_mesh_2d._tria._set1.head() ;
+                      _iter != _geom.
+            _euclidean_mesh_2d._tria._set1.tend() ;
+                    ++_iter  )
+            {
+                if (_iter->mark() < 0) continue ;
+                
+                _nmax += +1  ;
+            }
+
             for (auto _iter  = _geom.
             _euclidean_mesh_2d._tria._set2.head() ;
                       _iter != _geom.
             _euclidean_mesh_2d._tria._set2.tend() ;
-                    ++_iter )
+                    ++_iter  )
             {
                 if (_iter->mark() < 0) continue ;
                 
@@ -557,7 +568,7 @@
             if (_imin < +0 || _imax>=_nmax)
             {
                 _jlog.push (
-            "  **input error: invalid indexing\n");
+    "**input error: GEOM. tria. indexing is incorrect.\n") ;
         
                 _errv = __invalid_argument ;
             }
@@ -568,21 +579,29 @@
              jmsh_kind::euclidean_mesh)
         {
     /*--------------------------------- euclidean-mesh-3d */
-            iptr_type _nmax = 
-                (iptr_type) _geom.
-                    _euclidean_mesh_3d.
-                        _tria._set1.count();
-        
             iptr_type _imin = 
             std::numeric_limits<iptr_type>::max() ;
             iptr_type _imax = 
             std::numeric_limits<iptr_type>::min() ;
 
+            iptr_type _nmax = +0 ;
+
+            for (auto _iter  = _geom.
+            _euclidean_mesh_3d._tria._set1.head() ;
+                      _iter != _geom.
+            _euclidean_mesh_3d._tria._set1.tend() ;
+                    ++_iter  )
+            {
+                if (_iter->mark() < 0) continue ;
+                
+                _nmax += +1  ;
+            }
+
             for (auto _iter  = _geom.
             _euclidean_mesh_3d._tria._set2.head() ;
                       _iter != _geom.
             _euclidean_mesh_3d._tria._set2.tend() ;
-                    ++_iter )
+                    ++_iter  )
             {
                 if (_iter->mark() < 0) continue ;
                 
@@ -600,7 +619,7 @@
             _euclidean_mesh_3d._tria._set3.head() ;
                       _iter != _geom.
             _euclidean_mesh_3d._tria._set3.tend() ;
-                    ++_iter )
+                    ++_iter  )
             {
                 if (_iter->mark() < 0) continue ;
             
@@ -621,7 +640,7 @@
             if (_imin < +0 || _imax>=_nmax)
             {
                 _jlog.push (
-            "  **input error: invalid indexing\n");
+    "**input error: GEOM. tria. indexing is incorrect.\n") ;
         
                 _errv = __invalid_argument ;
             }
@@ -639,7 +658,7 @@
                 _radC <= (real_type)  +0. )
             {
                 _jlog.push (
-            "  **input error: bad radius value\n");
+    "**input error: GEOM. radii entries are incorrect.\n") ;
         
                 _errv = __invalid_argument ;
             }

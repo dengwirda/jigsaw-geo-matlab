@@ -1,0 +1,388 @@
+function [ff] = limmesh( ...
+        pp,e2,t3,q4,t4,h8,ff,varargin)
+%LIMMESH gradient-limiting of a discrete function defined on 
+%an unstructured mesh embedded in R^d.
+%   [FL] = LIMMESH(PP,E2,T3,Q4,T4,H8,FF) returns the limited
+%   function FL, stored at the vertices of the mesh defined
+%   by the NP-by-ND vertex array PP and the topology arrays
+%   {E2,T3,Q4,T4,H8}, where each represents the indexing as-
+%   sociated with the various EDGE-2, TRIA-3, QUAD-4, TRIA-4
+%   and HEXA-8 cells in the mesh. The indexing arrays can be
+%   empty if no cells of given type exist.
+%   [FL] = LIMMESH(..., DFDX) defines the gradient limiting 
+%   value DFDX, leading to |GRAD(FL)| <= DFDX for all cells 
+%   in the mesh. DFDX = 0.25 is set as the default limit.
+%
+%   See also LIMGRAD, LIMEDGE
+
+%   This routine implements a quasi-fast-marching method for
+%   solutions to the Eikonal equation in R^d. Calls to each 
+%   cell 'limiter' bound local vertex values based on local
+%   gradient-limited semi-lagrangian trajectories. All cells 
+%   adjacent to 'active' vertices are iteratively reexamined
+%   and updated until gradient constraints are satisfied.
+
+%-----------------------------------------------------------
+%   Darren Engwirda
+%   github.com/dengwirda/jigsaw-matlab
+%   23-Jul-2018
+%   de2363@columbia.edu
+%-----------------------------------------------------------
+%
+
+    DFDX = +0.25; opts = [] ;
+    
+%---------------------------------------------- extract args
+    if (nargin>=+8), DFDX = varargin{1}; end
+    if (nargin>=+9), opts = varargin{2}; end
+
+   [opts] =  setopts (opts) ;
+
+%---------------------------------------------- basic checks
+    if (~isnumeric(pp) || ...
+        ~isnumeric(e2) || ...
+        ~isnumeric(t3) || ...
+        ~isnumeric(q4) || ...
+        ~isnumeric(t4) || ...
+        ~isnumeric(h8) || ...
+        ~isnumeric(ff) )
+    error('limmesh:incorrectInputClass', ...
+        'Incorrect input class.') ;
+    end
+    
+    if (ndims(pp) ~= 2 || ...
+        ndims(ff) ~= 2 )
+    error('limmesh:incorrectDimensions', ...
+        'Incorrect input dimensions.') ;    
+    end
+    if (size(pp,2) < 2 || ...
+        size(ff,2)~= 1 )
+    error('limmesh:incorrectDimensions', ...
+        'Incorrect input dimensions.') ;
+    end
+    
+%---------------------------------------------- test indices
+    np = size(pp,1) ;
+    
+    if ( ~isempty(e2) )
+    if (ndims(e2) ~= 2)
+    error('limmesh:incorrectDimensions', ...
+        'Incorrect input dimensions.') ;
+    end
+    if (size(e2,2) < 2)
+    error('limmesh:incorrectDimensions', ...
+        'Incorrect input dimensions.') ;
+    end
+    if (min(min(e2(:,1:2))) < +1 || ...
+            max(max(e2(:,1:2))) > np )
+    error('limmesh:invalidMeshIndexing', ...
+        'Invalid mesh indexing data.') ;
+    end
+    end
+    
+    if ( ~isempty(t3) )
+    if (ndims(t3) ~= 2)
+    error('limmesh:incorrectDimensions', ...
+        'Incorrect input dimensions.') ;
+    end
+    if (size(t3,2) < 3)
+    error('limmesh:incorrectDimensions', ...
+        'Incorrect input dimensions.') ;
+    end
+    if (min(min(t3(:,1:3))) < +1 || ...
+            max(max(t3(:,1:3))) > np )
+    error('limmesh:invalidMeshIndexing', ...
+        'Invalid mesh indexing data.') ;
+    end
+    end
+
+    if ( ~isempty(q4) )
+    if (ndims(q4) ~= 2)
+    error('limmesh:incorrectDimensions', ...
+        'Incorrect input dimensions.') ;
+    end
+    if (size(q4,2) < 4)
+    error('limmesh:incorrectDimensions', ...
+        'Incorrect input dimensions.') ;
+    end    
+    if (min(min(q4(:,1:4))) < +1 || ...
+            max(max(q4(:,1:4))) > np )
+    error('limmesh:invalidMeshIndexing', ...
+        'Invalid mesh indexing data.') ;
+    end
+    end
+    
+    if ( ~isempty(t4) )
+    if (ndims(t4) ~= 2)
+    error('limmesh:incorrectDimensions', ...
+        'Incorrect input dimensions.') ;
+    end
+    if (size(t4,2) < 4)
+    error('limmesh:incorrectDimensions', ...
+        'Incorrect input dimensions.') ;
+    end
+    if (min(min(t4(:,1:4))) < +1 || ...
+            max(max(t4(:,1:4))) > np )
+    error('limmesh:invalidMeshIndexing', ...
+        'Invalid mesh indexing data.') ;
+    end
+    end
+ 
+    if ( ~isempty(h8) )
+    if (ndims(h8) ~= 2)
+    error('limmesh:incorrectDimensions', ...
+        'Incorrect input dimensions.') ;
+    end
+    if (size(h8,2) < 8)
+    error('limmesh:incorrectDimensions', ...
+        'Incorrect input dimensions.') ;
+    end   
+    if (min(min(h8(:,1:8))) < +1 || ...
+            max(max(h8(:,1:8))) > np )
+    error('limmesh:invalidMeshIndexing', ...
+        'Invalid mesh indexing data.') ;
+    end
+    end
+
+%---------------------------------------------- update masks
+    E2 = true(size(e2,1),1) ;
+    T3 = true(size(t3,1),1) ;
+    Q4 = true(size(q4,1),1) ;
+    T4 = true(size(t4,1),1) ;
+    H8 = true(size(h8,1),1) ;
+
+%---------------------------------------------- a fast-march
+    for iter = +1:opts.iter
+
+        fi = ff ;
+
+        if (any(E2))
+    %-- limiter on EDGE-2 elements
+            [ff] = ...
+        limit_edge_2(pp,e2(E2,:),ff,DFDX,opts) ;
+        end
+        
+        if (any(T3))
+    %-- limiter on TRIA-3 elements
+            [ff] = ...
+        limit_tria_3(pp,t3(T3,:),ff,DFDX,opts) ;
+        end
+        
+        if (any(Q4))
+    %-- limiter on QUAD-4 elements
+            [ff] = ...
+        limit_quad_4(pp,q4(Q4,:),ff,DFDX,opts) ;
+        end
+        
+        %{
+        if (any(T4))
+    %-- limiter on TRIA-4 elements
+            [ff] = ...
+        limit_tria_4(pp,t4(T4,:),ff,DFDX,opts) ;
+        end
+        
+        if (any(H8))
+    %-- limiter on HEXA-8 elements
+            [ff] = ...
+        limit_hexa_8(pp,h8(H8,:),ff,DFDX,opts) ;
+        end
+        %}
+
+    %-- calc. relative change in F 
+        df = abs(ff-fi);
+        df = df./ max(abs(ff),opts.atol) ;
+        
+    %-- mark cells adj. to updates
+        av = df > 0.E+00 ;
+        
+        if (~isempty(e2))
+        E2 = any(av(e2),2) ;
+        end
+        
+        if (~isempty(t3))
+        T3 = any(av(t3),2) ;
+        end
+        
+        if (~isempty(q4))
+        Q4 = any(av(q4),2) ;
+        end
+        
+        if (~isempty(t4))
+        T4 = any(av(t4),2) ;
+        end
+        
+        if (~isempty(h8))
+        H8 = any(av(h8),2) ;
+        end
+  
+        if (max(df) <= opts.rtol), break ; end
+        
+    end
+
+end
+
+function [ff] = limit_edge_2(pp,e2,ff,DFDX,opts)
+%LIMIT-EDGE-2 local Eikonal solver for EDGE-2 cells.
+
+    f0 = min(ff(e2),[],2);
+    
+    up = f0<ff(e2(:,2),:);
+
+    fb = local_edge_2(  ...
+        pp(e2(up,1),:), ...
+        pp(e2(up,2),:), ...
+        ff(e2(up,1),:), ...
+        ff(e2(up,2),:), ...
+        DFDX) ;
+        
+    Fb = accumarray(e2(up,2), ...
+        fb,[size(pp,1),1],@min,+inf) ;
+    
+    ff = min(Fb,ff) ;
+    
+    up = f0<ff(e2(:,1),:);
+    
+    fb = local_edge_2(  ...
+        pp(e2(up,2),:), ...
+        pp(e2(up,1),:), ...
+        ff(e2(up,2),:), ...
+        ff(e2(up,1),:), ...
+        DFDX) ;
+        
+    Fb = accumarray(e2(up,1), ...
+        fb,[size(pp,1),1],@min,+inf) ;
+    
+    ff = min(Fb,ff) ;
+
+end
+
+function [ff] = limit_tria_3(pp,t3,ff,DFDX,opts)
+%LIMIT-TRIA-3 local Eikonal solver for TRIA-3 cells.
+
+    f0 = min(ff(t3),[],2);
+    
+    up = f0<ff(t3(:,3),:); 
+
+    fb = local_tria_3(  ...
+        pp(t3(up,1),:), ...
+        pp(t3(up,2),:), ...
+        pp(t3(up,3),:), ...
+        ff(t3(up,1),:), ...
+        ff(t3(up,2),:), ...
+        ff(t3(up,3),:), ...
+        DFDX) ;
+        
+    Fb = accumarray(t3(up,3), ...
+        fb,[size(pp,1),1],@min,+inf) ;
+    
+    ff = min(Fb,ff) ;
+                 
+    up = f0<ff(t3(:,2),:);
+                 
+    fb = local_tria_3(  ...
+        pp(t3(up,3),:), ...
+        pp(t3(up,1),:), ...
+        pp(t3(up,2),:), ...
+        ff(t3(up,3),:), ...
+        ff(t3(up,1),:), ...
+        ff(t3(up,2),:), ...
+        DFDX) ;
+                 
+    Fb = accumarray(t3(up,2), ...
+        fb,[size(pp,1),1],@min,+inf) ;
+    
+    ff = min(Fb,ff) ;
+    
+    up = f0<ff(t3(:,1),:);
+    
+    fb = local_tria_3(  ...
+        pp(t3(up,2),:), ...
+        pp(t3(up,3),:), ...
+        pp(t3(up,1),:), ...
+        ff(t3(up,2),:), ...
+        ff(t3(up,3),:), ...
+        ff(t3(up,1),:), ...
+        DFDX) ;
+                 
+    Fb = accumarray(t3(up,1), ...
+        fb,[size(pp,1),1],@min,+inf) ;
+    
+    ff = min(Fb,ff) ;
+
+end
+
+function [ff] = limit_quad_4(pp,q4,ff,DFDX,opts)
+%LIMIT-QUAD-4 local Eikonal solver for QUAD-4 cells. 
+
+    ff = limit_tria_3(pp, ...
+        q4(:,[1,2,3]),ff,DFDX,opts);
+       
+    ff = limit_tria_3(pp, ...
+        q4(:,[1,3,4]),ff,DFDX,opts);
+        
+    ff = limit_tria_3(pp, ...
+        q4(:,[1,2,4]),ff,DFDX,opts);
+        
+    ff = limit_tria_3(pp, ...
+        q4(:,[2,3,4]),ff,DFDX,opts);
+     
+end
+
+function [op] = setopts (op)
+%SETOPTS setup a struct of default user-def. options 
+
+    if (~isfield(op,'iter'))
+        op.iter = +100;
+    else
+    if (~isnumeric(op.iter))
+        error('limgrad:incorrectInputClass', ...
+            'Incorrect input class.');
+    end
+    if (numel(op.iter)~= +1)
+        error('limgrad:incorrectDimensions', ...
+            'Incorrect input dimensions.') ;    
+    end
+    if (op.iter <= +0)
+        error('limgrad:invalidOptionValues', ...
+            'Invalid OPT.ITER selection.') ;
+    end
+    end
+    
+    if (~isfield(op,'rtol'))
+        op.rtol  = +1.0E-04;
+    else
+    if (~isnumeric(op.rtol))
+        error('limgrad:incorrectInputClass', ...
+            'Incorrect input class.');
+    end
+    if (numel(op.rtol)~= +1)
+        error('limgrad:incorrectDimensions', ...
+            'Incorrect input dimensions.') ;    
+    end
+    if (op.rtol <= +0.0E+00)
+        error('limgrad:invalidOptionValues', ...
+            'Invalid OPT.RTOL selection.') ;
+    end
+    end
+    
+    if (~isfield(op,'atol'))
+        op.atol  = +1.0E-08;
+    else
+    if (~isnumeric(op.atol))
+        error('limgrad:incorrectInputClass', ...
+            'Incorrect input class.');
+    end
+    if (numel(op.atol)~= +1)
+        error('limgrad:incorrectDimensions', ...
+            'Incorrect input dimensions.') ;    
+    end
+    if (op.atol <= +0.0E+00)
+        error('limgrad:invalidOptionValues', ...
+            'Invalid OPT.ATOL selection.') ;
+    end
+    end
+   
+end
+
+
+

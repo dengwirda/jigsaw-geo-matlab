@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 03 October, 2017
+     * Last updated: 24 July, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -67,7 +67,7 @@
     typedef typename
             allocator::size_type    uint_type ;
 
-    typedef hfun_mesh_euclidean_2d  <
+    typedef hfun_mesh_euclidean_3d  <
             real_type ,
             iptr_type >             hfun_type ;
 
@@ -204,7 +204,7 @@
             ::epsilon(),(real_type).8) ;
             
         iptr_type static
-        constexpr _NBOX=(iptr_type)+4  ;
+        constexpr _NBOX=(iptr_type)+8  ;
 
         real_type _BTOL[3] ;
         _BTOL[0] = this->_bmax[0] - 
@@ -379,7 +379,7 @@
          && _hint < (iptr_type) 
             this->_mesh._set4.count()
          && this->_mesh.
-           _set3 [_hint].mark() >= 0 ;
+           _set4 [_hint].mark() >= 0 ;
     }
    
     /*
@@ -441,11 +441,13 @@
 	        tri4_type::
 	        face_node(_fnod, _fpos, 3, 2) ;
 	        _fnod[0] = this->_mesh.
-            _set3[_hint].node(_fnod[0]);
+            _set4[_hint].node(_fnod[0]);
 	        _fnod[1] = this->_mesh.
-            _set3[_hint].node(_fnod[1]);
+            _set4[_hint].node(_fnod[1]);
             _fnod[2] = this->_mesh.
-            _set3[_hint].node(_fnod[2]);
+            _set4[_hint].node(_fnod[2]);
+            _fnod[3] = this->_mesh.
+            _set4[_hint].node(_fnod[3]);
             
 	        real_type _tvol = 
                 geometry::tetra_vol_3d (
@@ -458,7 +460,7 @@
                _ppos) ;
 
 	        _hsum += _tvol * this-> 
-            _mesh._set1[_fnod[2]].hval() ; 
+            _mesh._set1[_fnod[3]].hval() ; 
 	        
 	        _vsum += _tvol ;
         }
@@ -483,25 +485,25 @@
             _nptr->_data.ipos() ;
             
         iptr_type  _inod = 
-          _mesh._set3[_tpos].node(0) ;
+          _mesh._set4[_tpos].node(0) ;
         iptr_type  _jnod = 
-          _mesh._set3[_tpos].node(1) ;
+          _mesh._set4[_tpos].node(1) ;
         iptr_type  _knod = 
-          _mesh._set3[_tpos].node(2) ;
+          _mesh._set4[_tpos].node(2) ;
         iptr_type  _lnod = 
-          _mesh._set3[_tpos].node(3) ;
+          _mesh._set4[_tpos].node(3) ;
             
         real_type _isqr  = 
-            geometry::lensqr_2d(_ppos, 
+            geometry::lensqr_3d(_ppos, 
        &_mesh._set1[_inod].pval( +0));
         real_type _jsqr  = 
-            geometry::lensqr_2d(_ppos, 
+            geometry::lensqr_3d(_ppos, 
        &_mesh._set1[_jnod].pval( +0));
         real_type _ksqr  = 
-            geometry::lensqr_2d(_ppos, 
+            geometry::lensqr_3d(_ppos, 
        &_mesh._set1[_knod].pval( +0));
         real_type _lsqr  = 
-            geometry::lensqr_2d(_ppos, 
+            geometry::lensqr_3d(_ppos, 
        &_mesh._set1[_lnod].pval( +0));
     
     /*------------------------- extrap. as inv-dist. fun. */   

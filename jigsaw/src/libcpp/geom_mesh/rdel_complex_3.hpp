@@ -1,7 +1,7 @@
 
     /*
     --------------------------------------------------------
-     * RDEL-COMPLEX-2: restricted delaunay obj. in R^2.
+     * RDEL-COMPLEX-3: restricted delaunay obj. in R^3.
     --------------------------------------------------------
      *
      * This program may be freely redistributed under the 
@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 23 August, 2017
+     * Last updated: 12 April, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -73,12 +73,13 @@
         {
         public  :
     /*---------------------------- delaunay-tri node type */  
-            iptr_type    _idxh ;
+            iptr_type     _idxh ;
+            iptr_type     _part ;
             
-            char_type    _fdim ;
+            char_type     _fdim ;
             
-            char_type    _feat ;
-            char_type    _topo ;
+            char_type     _feat ;
+            char_type     _topo ;
          
         public  :
         
@@ -91,6 +92,16 @@
             ) const
         {
             return  this->_idxh ;
+        }
+        __inline_call iptr_type      & part (
+            )
+        {
+            return  this->_part ;
+        }
+        __inline_call iptr_type const& part (
+            ) const
+        {
+            return  this->_part ;
         }
         __inline_call char_type      & fdim (
             )
@@ -169,6 +180,21 @@
         iptr_type                   _tadj;
         } ;
         
+    class ball_data
+        {
+        public  :
+    /*---------------------------------------- ball radii */
+        containers::
+        fixed_array<real_type, +4>  _ball;
+        
+        containers::
+        fixed_array<iptr_type, +1>  _node;
+        
+        iptr_type                   _pass;
+        
+        char_type                   _kind;
+        } ;
+        
     class edge_data
         {
         public  :
@@ -232,6 +258,19 @@
                     +1 * __hashscal, +137);
         }
         } ;
+    class ball_hash
+        {
+    /*----------------------- hash node indexing for ball */
+        public  :
+        __inline_call iptr_type operator() (
+            ball_data const&_ball
+            ) const
+        {
+            return hash::hashword (
+                (uint32_t*)&_ball._node[0], 
+                    +1 * __hashscal, +137);
+        }
+        } ;
     class edge_hash
         {
         public  :
@@ -283,6 +322,21 @@
     /*------------------------------- "equal-to" for node */
             return _idat._node[0] ==
                    _jdat._node[0]  ;
+        }
+        } ;
+    class ball_pred
+        {
+    /*------------------------------- "equal-to" for ball */
+        public  :
+        __inline_call bool_type operator() (
+            ball_data const&_idat ,
+            ball_data const&_jdat
+            ) const
+        {
+            return _idat._node[0] ==
+                   _jdat._node[0] &&
+                   _idat._kind    ==
+                   _jdat._kind    ;
         }
         } ;
     class edge_pred
@@ -354,6 +408,11 @@
                 node_pred,
                 pool_wrap>              node_list ;
     typedef containers::hash_table  <
+                ball_data, 
+                ball_hash, 
+                ball_pred,
+                pool_wrap>              ball_list ;
+    typedef containers::hash_table  <
                 edge_data, 
                 edge_hash, 
                 edge_pred,
@@ -372,6 +431,8 @@
     typedef typename 
             node_list::item_type        node_item ;
     typedef typename 
+            ball_list::item_type        ball_item ;
+    typedef typename 
             edge_list::item_type        edge_item ;
     typedef typename 
             face_list::item_type        face_item ;
@@ -382,11 +443,13 @@
     tria_type                   _tria ;
 
     pool_base                   _npol ;
+    pool_base                   _bpol ;
     pool_base                   _epol ;
     pool_base                   _fpol ;
     pool_base                   _tpol ;
 
     node_list                   _nset ;
+    ball_list                   _bset ;
     edge_list                   _eset ;
     face_list                   _fset ;
     tria_list                   _tset ;
@@ -397,6 +460,8 @@
         //tria_type const& _tsrc = tria_type()
         ) : _npol(
         sizeof(typename node_list::item_type)) ,
+            _bpol(
+        sizeof(typename ball_list::item_type)) ,
             _epol(
         sizeof(typename edge_list::item_type)) ,
             _fpol(
@@ -407,6 +472,9 @@
             _nset(node_hash(), 
                   node_pred(), 
             +.8, (pool_wrap(&_npol))) ,
+            _bset(ball_hash(), 
+                  ball_pred(), 
+            +.8, (pool_wrap(&_bpol))) ,
             _eset(edge_hash(), 
                   edge_pred(), 
             +.8, (pool_wrap(&_epol))) ,
@@ -419,6 +487,12 @@
     {
     }
 
+    __inline_call 
+    typename ball_list::_write_it push_ball (
+        ball_data const&_bdat
+        )
+    {   return this->_bset.push(_bdat);
+    }
     __inline_call 
     typename edge_list::_write_it push_edge (
         edge_data const&_edat
@@ -438,6 +512,12 @@
     {   return this->_tset.push(_tdat);
     }
 
+    __inline_call bool_type _pop_ball (
+        ball_data const&_bdat,
+        ball_data      &_same
+        )
+    {   return this->_bset._pop(_bdat, _same); 
+    }
     __inline_call bool_type _pop_edge (
         edge_data const&_edat,
         edge_data      &_same
@@ -457,6 +537,12 @@
     {   return this->_tset._pop(_tdat, _same); 
     }
 
+    __inline_call bool_type find_ball (
+        ball_data const&_bdat,
+        ball_item     *&_same
+        )
+    {   return this->_bset.find(_bdat, _same);
+    }
     __inline_call bool_type find_edge (
         edge_data const&_edat,
         edge_item     *&_same

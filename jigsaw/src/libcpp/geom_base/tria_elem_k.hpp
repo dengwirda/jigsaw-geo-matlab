@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 14 December, 2017
+     * Last updated: 06 June, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -197,7 +197,7 @@
             _len1*_len2*_len3 ;
 
         _barB = std::pow(
-            _barB, (real_type)+1./3.);
+            _barB, (data_type)+1./3.);
 
 		data_type _area = 
 		tria_area_2d(_p1, _p2, _p3);
@@ -208,10 +208,9 @@
         data_type _scrB = 
             _mulB * _area / _barB ;
 
-		return (real_type).5 * _scrA +
-		       (real_type).5 * _scrB ;
-		
-		
+		return (data_type).67* _scrA +
+		       (data_type).33* _scrB ;
+				
 	    /*
 	    // 4. * std::sqrt(3.)
 		data_type static 
@@ -267,7 +266,7 @@
             _len1*_len2*_len3 ;
 
         _barB = std::pow(
-            _barB, (real_type)+1./3.);
+            _barB, (data_type)+1./3.);
 
 		data_type _area = 
 		tria_area_3d(_p1, _p2, _p3);
@@ -278,8 +277,8 @@
         data_type _scrB = 
             _mulB * _area / _barB ;
 
-		return (real_type).5 * _scrA +
-		       (real_type).5 * _scrB ;
+		return (data_type).67* _scrA +
+		       (data_type).33* _scrB ;
 		       
 	    /*
 	    // 4. * std::sqrt(3.)
@@ -356,16 +355,13 @@
         data_type _o1[ +3] ;
         geometry::perp_ball_2d(_o1, 
             _p1 , _p2) ;
-            
         data_type _o2[ +3] ;
         geometry::perp_ball_2d(_o2, 
             _p2 , _p3) ;
-            
         data_type _o3[ +3] ;
         geometry::perp_ball_2d(_o3, 
             _p3 , _p1) ;
             
-
         data_type _mb[ +3] ;
         geometry::mass_ball_2d(_mb, 
             _p1 , _p2, _p3);
@@ -373,67 +369,55 @@
         data_type _m1[ +3] ;
         geometry::mass_ball_2d(_m1, 
             _p1 , _p2) ;
-            
         data_type _m2[ +3] ;
         geometry::mass_ball_2d(_m2, 
-            _p2 , _p3) ;
-            
+            _p2 , _p3) ;       
         data_type _m3[ +3] ;
         geometry::mass_ball_2d(_m3, 
             _p3 , _p1) ;
-
 
         data_type _lb = 
         geometry::lensqr_2d(_ob, _mb) ;
         
         data_type _l1 = 
         geometry::lensqr_2d(_o1, _m1) ;
-        
         data_type _l2 = 
-        geometry::lensqr_2d(_o2, _m2) ;
-        
+        geometry::lensqr_2d(_o2, _m2) ;       
         data_type _l3 = 
         geometry::lensqr_2d(_o3, _m3) ;
+             
+        data_type _r1 = _m1[2] ;
+        data_type _r2 = _m2[2] ;
+        data_type _r3 = _m3[2] ;
         
-        
-        data_type _rb = 
-        geometry::lensqr_2d(_ob, _p1) +
-        geometry::lensqr_2d(_ob, _p2) +
-        geometry::lensqr_2d(_ob, _p3) ;
-        
-        _rb /= (real_type) +3. ;
-        
-        
+        data_type _rb =             // chara.-length
+       (_r1+_r2+_r3) / (data_type)+3. ;
+              
         data_type _qb = 
        (data_type)+1. - _lb / _rb ;
        
         data_type _q1 = 
-       (data_type)+1. - _l1 / _rb ;
-       
+       (data_type)+1. - _l1 / _r1 ;
         data_type _q2 = 
-       (data_type)+1. - _l2 / _rb ;
-       
+       (data_type)+1. - _l2 / _r2 ;
         data_type _q3 = 
-       (data_type)+1. - _l3 / _rb ;
+       (data_type)+1. - _l3 / _r3 ;
        
-        
-        /*
         data_type _qe =             // straight mean
-       (_q1+_q2+_q3) / (real_type)+3. ;
-        */
+       (_q1+_q2+_q3) / (data_type)+3. ;
          
+        /*
         data_type _qe =             // harmonic mean
             (data_type) +1. / _q1 + 
             (data_type) +1. / _q2 + 
             (data_type) +1. / _q3 ;
         _qe = 
             (data_type) +3. / _qe ;
+         */
         
-
         data_type _qq = 
-            (data_type)+.50 * _qb + 
-                (data_type)+.50 * _qe ;
-
+            (data_type)+.67 * _qb + 
+                (data_type)+.33 * _qe ;
 
 		return    _qq ;
 	}
@@ -454,17 +438,14 @@
             
         data_type _o1[ +4] ;
         geometry::perp_ball_3d(_o1, 
-            _p1 , _p2) ;
-            
+            _p1 , _p2) ;          
         data_type _o2[ +4] ;
         geometry::perp_ball_3d(_o2, 
             _p2 , _p3) ;
-            
         data_type _o3[ +4] ;
         geometry::perp_ball_3d(_o3, 
             _p3 , _p1) ;
             
-
         data_type _mb[ +4] ;
         geometry::mass_ball_3d(_mb, 
             _p1 , _p2, _p3);
@@ -472,67 +453,55 @@
         data_type _m1[ +4] ;
         geometry::mass_ball_3d(_m1, 
             _p1 , _p2) ;
-            
         data_type _m2[ +4] ;
         geometry::mass_ball_3d(_m2, 
             _p2 , _p3) ;
-            
         data_type _m3[ +4] ;
         geometry::mass_ball_3d(_m3, 
             _p3 , _p1) ;
-
 
         data_type _lb = 
         geometry::lensqr_3d(_ob, _mb) ;
         
         data_type _l1 = 
-        geometry::lensqr_3d(_o1, _m1) ;
-        
+        geometry::lensqr_3d(_o1, _m1) ;        
         data_type _l2 = 
         geometry::lensqr_3d(_o2, _m2) ;
-        
         data_type _l3 = 
         geometry::lensqr_3d(_o3, _m3) ;
         
+        data_type _r1 = _m1[3] ;
+        data_type _r2 = _m2[3] ;
+        data_type _r3 = _m3[3] ;
         
-        data_type _rb = 
-        geometry::lensqr_3d(_ob, _p1) +
-        geometry::lensqr_3d(_ob, _p2) +
-        geometry::lensqr_3d(_ob, _p3) ;
-        
-        _rb /= (real_type) +3. ;
-        
-        
+        data_type _rb =             // chara.-length
+       (_r1+_r2+_r3) / (data_type)+3. ;
+              
         data_type _qb = 
        (data_type)+1. - _lb / _rb ;
        
         data_type _q1 = 
-       (data_type)+1. - _l1 / _rb ;
-       
+       (data_type)+1. - _l1 / _r1 ;
         data_type _q2 = 
-       (data_type)+1. - _l2 / _rb ;
-       
+       (data_type)+1. - _l2 / _r2 ;
         data_type _q3 = 
-       (data_type)+1. - _l3 / _rb ;
+       (data_type)+1. - _l3 / _r3 ;
        
-    
-        /*
         data_type _qe =             // straight mean
-       (_q1+_q2+_q3) / (real_type)+3. ;
-        */
+       (_q1+_q2+_q3) / (data_type)+3. ;
          
+        /*
         data_type _qe =             // harmonic mean
             (data_type) +1. / _q1 + 
             (data_type) +1. / _q2 + 
             (data_type) +1. / _q3 ;
         _qe = 
             (data_type) +3. / _qe ;
-        
-
+         */
+         
         data_type _qq = 
-            (data_type)+.50 * _qb + 
-                (data_type)+.50 * _qe ;
-
+            (data_type)+.67 * _qb + 
+                (data_type)+.33 * _qe ;
 
 		return    _qq ;
 	}
