@@ -1,4 +1,4 @@
-## `JIGSAW(GEO): Grid-generation for geophysical modelling`
+## `JIGSAW(GEO): Mesh generation for geoscientific modelling`
 
 <p align="center">
   <img src = "../master/jigsaw/img/JIGSAW-southern-ocean-voronoi.jpg">
@@ -19,14 +19,14 @@ construction of new meshes, as well as optimisation driven methods for the impro
 
 `JIGSAW(GEO)` is a multi-part library, consisting of a `MATLAB` / `OCTAVE` front-end, and a core `c++` back-end. All of the heavy-lifting is done in the `c++` layer - the interface contains additional scripts for `file I/O`, `visualisation` and general `data processing`:
 
-	JIGASW(GEO)::
-	├── mesh-util -- MATLAB/OCTAVE utilities
+	JIGASW(GEO) :: MATLAB/OCTAVE top-level routines
+	├── script  -- MATLAB/OCTAVE utilities
 	└── jigsaw
 	    ├── src -- JIGSAW src code
 	    ├── inc -- JIGSAW header files (for libjigsaw)
 	    ├── bin -- put JIGSAW exe binaries here
 	    ├── lib -- put JIGSAW lib binaries here
-	    ├── geo -- geometry definitions and input data
+	    ├── geo -- default folder for JIGSAW inputs (geometry defn., etc)
 	    ├── out -- default folder for JIGSAW output
 	    └── uni -- unit tests and libjigsaw example programs
 
@@ -45,13 +45,13 @@ The first step is to compile the code! The `JIGSAW` src can be found in <a href=
 
 `JIGSAW` has been successfully built using various versions of the `g++` and `llvm` compilers. Since the build process is a simple one-liner, there's no `make` script - instead:
 
-	g++ -std=c++11 -pedantic -Wall -s -O3 -flto -D NDEBUG -I libcpp 
-	-static-libstdc++ jigsaw.cpp -o jigsaw64r
+	g++ -std=c++11 -pedantic -Wall -s -O3 -flto -D NDEBUG -static-libstdc++ 
+	jigsaw.cpp -o jigsaw64r
 	
 can be used to build a `JIGSAW` executable, while:
 
-	g++ -std=c++11 -pedantic -Wall -O3 -flto -fPIC -D NDEBUG -I libcpp 
-	-static-libstdc++ jigsaw.cpp -shared -o libjigsaw64r.so
+	g++ -std=c++11 -pedantic -Wall -O3 -flto -fPIC -D NDEBUG -static-libstdc++ 
+	jigsaw.cpp -shared -o libjigsaw64r.so
 
 can be used to build a `JIGSAW` shared library. See the headers in <a href="../master/jigsaw/inc/">`../jigsaw/inc/`</a> for details on the `API`. The `#define __lib_jigsaw` directive in `jigsaw.cpp` toggles the source between executable and shared-library modes.
 
@@ -61,7 +61,7 @@ can be used to build a `JIGSAW` shared library. See the headers in <a href="../m
 
 	* Create a new, empty MSVC project.
 	* Import the jigsaw.cpp file, this contains the main() entry-point.
-	* Modify the MSVC project settings to include the "../src/" and "../src/libcpp/" directories.
+	* Modify the MSVC project settings to include the "../src/" directory.
 
 #### `Folder Structure`
 
@@ -90,11 +90,13 @@ used at your own risk.
 
 Information and references regarding the formulation of the underlying `JIGSAW` mesh-generator can also be found <a href="https://github.com/dengwirda/jigsaw-matlab">here</a>. Additionally, there are a number of publications that describe the algorithms used in `JIGSAW(GEO)` in detail. Please cite as appropriate:
 
-`[1]` - Darren Engwirda: Generalised primal-dual grids for unstructured co-volume schemes, under review, https://arxiv.org/abs/1712.02657, 2017.
+`[1]` - Darren Engwirda: Generalised primal-dual grids for unstructured co-volume schemes, to appear: J. Comp. Phys., https://arxiv.org/abs/1712.02657, 2017.
 
 `[2]` - Darren Engwirda: JIGSAW-GEO (1.0): locally orthogonal staggered unstructured grid generation for general circulation modelling on the sphere, Geosci. Model Dev., 10, 2117-2140, https://doi.org/10.5194/gmd-10-2117-2017, 2017.
 
-`[3]` - Darren Engwirda: Multi-resolution unstructured grid-generation for geophysical applications on the sphere, Research note, Proceedings of the 24th International Meshing Roundtable, https://arxiv.org/abs/1512.00307, 2015.
+`[3]` - Darren Engwirda, David Ivers, Off-centre Steiner points for Delaunay-refinement on curved surfaces, Computer-Aided Design, Volume 72, Pages 157-171, ISSN 0010-4485, http://dx.doi.org/10.1016/j.cad.2015.10.007, 2016.
 
-`[4]` - Darren Engwirda, Locally-optimal Delaunay-refinement and optimisation-based mesh generation, Ph.D. Thesis, School of Mathematics and Statistics, The University of Sydney, http://hdl.handle.net/2123/13148, 2014.
+`[4]` - Darren Engwirda: Multi-resolution unstructured grid-generation for geophysical applications on the sphere, Research note, Proceedings of the 24th International Meshing Roundtable, https://arxiv.org/abs/1512.00307, 2015.
+
+`[5]` - Darren Engwirda, Locally-optimal Delaunay-refinement and optimisation-based mesh generation, Ph.D. Thesis, School of Mathematics and Statistics, The University of Sydney, http://hdl.handle.net/2123/13148, 2014.
 
