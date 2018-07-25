@@ -19,19 +19,19 @@ construction of new meshes, as well as optimisation driven methods for the impro
 
 `JIGSAW(GEO)` is a multi-part library, consisting of a `MATLAB` / `OCTAVE` front-end, and a core `c++` back-end. All of the heavy-lifting is done in the `c++` layer - the interface contains additional scripts for `file I/O`, `visualisation` and general `data processing`:
 
-	JIGASW(GEO) :: MATLAB/OCTAVE top-level routines
+	JIGASW(GEO) :: MATLAB/OCTAVE top-level functions
 	├── script  -- MATLAB/OCTAVE utilities
 	└── jigsaw
-	    ├── src -- JIGSAW src code
+	    ├── src -- JIGSAW source files
 	    ├── inc -- JIGSAW header files (for libjigsaw)
 	    ├── bin -- put JIGSAW exe binaries here
 	    ├── lib -- put JIGSAW lib binaries here
-	    ├── geo -- default folder for JIGSAW inputs (geometry defn., etc)
+	    ├── geo -- default folder for JIGSAW inputs
 	    ├── out -- default folder for JIGSAW output
-	    └── uni -- unit tests and libjigsaw example programs
+	    └── uni -- unit tests and libjigsaw programs
 
 
-The `MATLAB` / `OCTAVE` interface is provided for convenience - you don't have to use it, but it's probably the easiest way to get started!
+The `MATLAB` / `OCTAVE` interface is provided for convenience - you're not forced to use it, but it's perhaps the easiest way to get started!
 
 It's also possible to interact with the `JIGSAW` back-end directly, either through `(i)` scripting: building text file inputs and calling the `JIGSAW` executable from the command-line, or `(ii)` programmatically: using `JIGSAW` data-structures within your own applications and calling the library via its `API`.
 
@@ -86,7 +86,7 @@ This program may be freely redistributed under the condition that the copyright 
 `DISCLAIMER`:  Neither I nor: Columbia University, the Massachusetts Institute of Technology, the University of Sydney, nor the National Aeronautics and Space Administration warrant this code in any way whatsoever.  This code is provided "as-is" to be 
 used at your own risk.
 
-## `Attribution!`
+## `References`
 
 Information and references regarding the formulation of the underlying `JIGSAW` mesh-generator can also be found <a href="https://github.com/dengwirda/jigsaw-matlab">here</a>. Additionally, there are a number of publications that describe the algorithms used in `JIGSAW(GEO)` in detail. Please cite as appropriate:
 
