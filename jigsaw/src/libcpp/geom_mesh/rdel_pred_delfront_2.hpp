@@ -62,9 +62,9 @@
     
     /*-------------- "frontal" delaunay refinement in R^2 */
     
-    typedef G						    geom_type ;
-    typedef H						    hfun_type ;
-    typedef M						    mesh_type ;
+    typedef G                           geom_type ;
+    typedef H                           hfun_type ;
+    typedef M                           mesh_type ;
 
     typedef typename 
             mesh_type::real_type        real_type ;
@@ -396,8 +396,8 @@
     /*--------------------------------- find edge lengths */
         real_type _llen[3] ;
         iptr_type _enum ;
-	    for(_enum = +3; _enum-- != +0; )
-	    {
+        for(_enum = +3; _enum-- != +0; )
+        {
             iptr_type _enod[ +3] ;
             mesh_type::tria_type::
                 tria_type::
@@ -416,33 +416,33 @@
         }
      
     /*--------------------------------- find min/max edge */
-	    iptr_type _emin = (iptr_type)+0;
-	    iptr_type _emax = (iptr_type)+0;
-	    for(_enum = +3; _enum-- != +1; )
-	    {
-	    if (_llen[_emax] < _llen[_enum]) 
+        iptr_type _emin = (iptr_type)+0;
+        iptr_type _emax = (iptr_type)+0;
+        for(_enum = +3; _enum-- != +1; )
+        {
+        if (_llen[_emax] < _llen[_enum]) 
             _emax = _enum ;
-	    if (_llen[_emin] > _llen[_enum]) 
+        if (_llen[_emin] > _llen[_enum]) 
             _emin = _enum ;
-	    }
+        }
  
     /*--------------------------------- hop to constraint */  
-	    real_type _best = 
-	        std::numeric_limits
-	            <real_type>::infinity () ;
-	    
+        real_type _best = 
+            std::numeric_limits
+                <real_type>::infinity () ;
+        
         for(_enum = +3; _enum-- != +0; )
-	    {
-	        iptr_type  _enod[ +3];
+        {
+            iptr_type  _enod[ +3];
             mesh_type::tria_type::
                 tria_type::
             face_node(_enod, _enum, 2, 1);
-	        _enod[ +0] = _mesh._tria.
+            _enod[ +0] = _mesh._tria.
              tria(_tpos)->node(_enod[ 0]);
             _enod[ +1] = _mesh._tria.
              tria(_tpos)->node(_enod[ 1]);
-	        
-	        algorithms::isort(
+            
+            algorithms::isort(
                 &_enod[0] , &_enod[2] ,
                     std::less<iptr_type>()) ;
                     
@@ -462,9 +462,9 @@
                 
                     _best = _llen[_enum];
                 }
-            }	    
-	    }
-	  
+            }       
+        }
+      
     /*--------------------------------- pop face indexing */
         iptr_type _enod [ +3];
         mesh_type::tria_type::tria_type::

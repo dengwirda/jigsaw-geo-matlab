@@ -57,49 +57,49 @@
     template <
     typename      data_type
              > 
-	__normal_call data_type tria_area_2d (
-	__const_ptr  (data_type) _p1,
-	__const_ptr  (data_type) _p2,
-	__const_ptr  (data_type) _p3
-		)
-	{
-		data_type _ev12[2];
-		vector_2d(_p1, _p2, _ev12);
-		
-		data_type _ev13[2];
-		vector_2d(_p1, _p3, _ev13);
-		
+    __normal_call data_type tria_area_2d (
+    __const_ptr  (data_type) _p1,
+    __const_ptr  (data_type) _p2,
+    __const_ptr  (data_type) _p3
+        )
+    {
+        data_type _ev12[2];
+        vector_2d(_p1, _p2, _ev12);
+        
+        data_type _ev13[2];
+        vector_2d(_p1, _p3, _ev13);
+        
         data_type _aval = 
             _ev12[0] * _ev13[1] - 
             _ev12[1] * _ev13[0] ;
 
         _aval *= (data_type)+.5 ;
 
-		return ( _aval )  ;
-	}
+        return ( _aval )  ;
+    }
 
     template <
     typename      data_type
              > 
-	__normal_call data_type tria_area_3d (
-	__const_ptr  (data_type) _p1,
-	__const_ptr  (data_type) _p2,
-	__const_ptr  (data_type) _p3
-		)
-	{
-		data_type _ev12[3], _ev13[3] ;
-		vector_3d(_p1, _p2, _ev12);
-		vector_3d(_p1, _p3, _ev13);
+    __normal_call data_type tria_area_3d (
+    __const_ptr  (data_type) _p1,
+    __const_ptr  (data_type) _p2,
+    __const_ptr  (data_type) _p3
+        )
+    {
+        data_type _ev12[3], _ev13[3] ;
+        vector_3d(_p1, _p2, _ev12);
+        vector_3d(_p1, _p3, _ev13);
 
         data_type  _avec[3] = {
-		_ev12[1] * _ev13[2] - 
+        _ev12[1] * _ev13[2] - 
         _ev12[2] * _ev13[1] ,
-		_ev12[2] * _ev13[0] - 
+        _ev12[2] * _ev13[0] - 
         _ev12[0] * _ev13[2] ,
-		_ev12[0] * _ev13[1] - 
+        _ev12[0] * _ev13[1] - 
         _ev12[1] * _ev13[0] } ;
 
-		data_type _aval = 
+        data_type _aval = 
             geometry::length_3d(_avec) ;
 
         return (data_type)+.5 * _aval  ;
@@ -108,51 +108,51 @@
     template <
     typename      data_type
              >
-	__inline_call void_type tria_norm_3d (
-	__const_ptr  (data_type) _p1,
-	__const_ptr  (data_type) _p2,
-	__const_ptr  (data_type) _p3,
-	__write_ptr  (data_type) _nv
-		 )
-	{
-		data_type _ev12[3], _ev13[3] ;
-		vector_3d(_p1, _p2, _ev12);
-		vector_3d(_p1, _p3, _ev13);
+    __inline_call void_type tria_norm_3d (
+    __const_ptr  (data_type) _p1,
+    __const_ptr  (data_type) _p2,
+    __const_ptr  (data_type) _p3,
+    __write_ptr  (data_type) _nv
+         )
+    {
+        data_type _ev12[3], _ev13[3] ;
+        vector_3d(_p1, _p2, _ev12);
+        vector_3d(_p1, _p3, _ev13);
 
-		_nv[0] = _ev12[1] * _ev13[2] - 
-			     _ev12[2] * _ev13[1] ;
-		_nv[1] = _ev12[2] * _ev13[0] - 
-			     _ev12[0] * _ev13[2] ;
-		_nv[2] = _ev12[0] * _ev13[1] - 
-			     _ev12[1] * _ev13[0] ;
-	}
+        _nv[0] = _ev12[1] * _ev13[2] - 
+                 _ev12[2] * _ev13[1] ;
+        _nv[1] = _ev12[2] * _ev13[0] - 
+                 _ev12[0] * _ev13[2] ;
+        _nv[2] = _ev12[0] * _ev13[1] - 
+                 _ev12[1] * _ev13[0] ;
+    }
 
     template <
     typename      data_type
              >
-	__inline_call data_type tetra_vol_3d (
-	__const_ptr  (data_type) _p1,
-	__const_ptr  (data_type) _p2,
-	__const_ptr  (data_type) _p3,
-	__const_ptr  (data_type) _p4    // +ve if CCW from _p4
-		)
-	{
-		data_type _v14[3], _v24[3], 
+    __inline_call data_type tetra_vol_3d (
+    __const_ptr  (data_type) _p1,
+    __const_ptr  (data_type) _p2,
+    __const_ptr  (data_type) _p3,
+    __const_ptr  (data_type) _p4    // +ve if CCW from _p4
+        )
+    {
+        data_type _v14[3], _v24[3], 
                   _v34[3];
-		vector_3d(_p1, _p4, _v14);
-		vector_3d(_p2, _p4, _v24);
-		vector_3d(_p3, _p4, _v34);
-		
-		data_type _vdet = 
+        vector_3d(_p1, _p4, _v14);
+        vector_3d(_p2, _p4, _v24);
+        vector_3d(_p3, _p4, _v34);
+        
+        data_type _vdet = 
       + _v14[0] * (_v24[1] * _v34[2] - 
-			       _v24[2] * _v34[1] )
+                   _v24[2] * _v34[1] )
       - _v14[1] * (_v24[0] * _v34[2] - 
-		           _v24[2] * _v34[0] )
+                   _v24[2] * _v34[0] )
       + _v14[2] * (_v24[0] * _v34[1] - 
-		           _v24[1] * _v34[0]);
-		           
-		return _vdet / (data_type)6. ;
-	}
+                   _v24[1] * _v34[0]);
+                   
+        return _vdet / (data_type)6. ;
+    }
 
     /*
     --------------------------------------------------------
@@ -163,32 +163,32 @@
     template <
     typename      data_type
              > 
-	__normal_call 
-	    data_type tria_quality_2d (
-	__const_ptr  (data_type) _p1,
-	__const_ptr  (data_type) _p2,
-	__const_ptr  (data_type) _p3
-		)
-	{
-	    // mean of condition no. + gradient-error metrics
-	    // see Shewchuk
-	
-	    // 4. * std::sqrt(3.)
-	    data_type static 
-		    constexpr _mulA = 
-	   (data_type)+6.928203230275509 ;
-	    
-	    // 4. / std::sqrt(3.)
-		data_type static 
-		    constexpr _mulB = 
-	   (data_type)+2.309401076758503 ;
-	   
-		data_type _len1 = 
-		    lensqr_2d(_p1, _p2) ;
+    __normal_call 
+        data_type tria_quality_2d (
+    __const_ptr  (data_type) _p1,
+    __const_ptr  (data_type) _p2,
+    __const_ptr  (data_type) _p3
+        )
+    {
+        // mean of condition no. + gradient-error metrics
+        // see Shewchuk
+    
+        // 4. * std::sqrt(3.)
+        data_type static 
+            constexpr _mulA = 
+       (data_type)+6.928203230275509 ;
+        
+        // 4. / std::sqrt(3.)
+        data_type static 
+            constexpr _mulB = 
+       (data_type)+2.309401076758503 ;
+       
+        data_type _len1 = 
+            lensqr_2d(_p1, _p2) ;
         data_type _len2 = 
-		    lensqr_2d(_p2, _p3) ;
-	    data_type _len3 =  
-		    lensqr_2d(_p3, _p1) ;
+            lensqr_2d(_p2, _p3) ;
+        data_type _len3 =  
+            lensqr_2d(_p3, _p1) ;
 
         data_type _barA = 
             _len1+_len2+_len3 ;
@@ -199,8 +199,8 @@
         _barB = std::pow(
             _barB, (data_type)+1./3.);
 
-		data_type _area = 
-		tria_area_2d(_p1, _p2, _p3);
+        data_type _area = 
+        tria_area_2d(_p1, _p2, _p3);
 
         data_type _scrA = 
             _mulA * _area / _barA ;
@@ -208,57 +208,57 @@
         data_type _scrB = 
             _mulB * _area / _barB ;
 
-		return (data_type).67* _scrA +
-		       (data_type).33* _scrB ;
-				
-	    /*
-	    // 4. * std::sqrt(3.)
-		data_type static 
-		    constexpr _scal = 
-	   (data_type)+6.928203230275509 ;
-	
-		data_type _elen = 
-		    lensqr_2d(_p1, _p2) + 
-		    lensqr_2d(_p2, _p3) + 
-		    lensqr_2d(_p3, _p1) ;
+        return (data_type).67* _scrA +
+               (data_type).33* _scrB ;
+                
+        /*
+        // 4. * std::sqrt(3.)
+        data_type static 
+            constexpr _scal = 
+       (data_type)+6.928203230275509 ;
+    
+        data_type _elen = 
+            lensqr_2d(_p1, _p2) + 
+            lensqr_2d(_p2, _p3) + 
+            lensqr_2d(_p3, _p1) ;
 
-		data_type _area = 
-		tria_area_2d(_p1, _p2, _p3);
+        data_type _area = 
+        tria_area_2d(_p1, _p2, _p3);
 
-		return _scal * _area / _elen ;
-		*/
-	}
+        return _scal * _area / _elen ;
+        */
+    }
 
     template <
     typename      data_type
              > 
-	__normal_call 
-	    data_type tria_quality_3d (
-	__const_ptr  (data_type) _p1,
-	__const_ptr  (data_type) _p2,
-	__const_ptr  (data_type) _p3
-		)
-	{
-	    // mean of condition no. + gradient-error metrics
-	    // see Shewchuk
-	
-	    // 4. * std::sqrt(3.)
-	    data_type static 
-		    constexpr _mulA = 
-	   (data_type)+6.928203230275509 ;
-	    
-	    // 4. / std::sqrt(3.)
-		data_type static 
-		    constexpr _mulB = 
-	   (data_type)+2.309401076758503 ;
-	   
-		data_type _len1 = 
-		    lensqr_3d(_p1, _p2) ;
+    __normal_call 
+        data_type tria_quality_3d (
+    __const_ptr  (data_type) _p1,
+    __const_ptr  (data_type) _p2,
+    __const_ptr  (data_type) _p3
+        )
+    {
+        // mean of condition no. + gradient-error metrics
+        // see Shewchuk
+    
+        // 4. * std::sqrt(3.)
+        data_type static 
+            constexpr _mulA = 
+       (data_type)+6.928203230275509 ;
+        
+        // 4. / std::sqrt(3.)
+        data_type static 
+            constexpr _mulB = 
+       (data_type)+2.309401076758503 ;
+       
+        data_type _len1 = 
+            lensqr_3d(_p1, _p2) ;
         data_type _len2 = 
-		    lensqr_3d(_p2, _p3) ;
-	    data_type _len3 =  
-		    lensqr_3d(_p3, _p1) ;
-		    
+            lensqr_3d(_p2, _p3) ;
+        data_type _len3 =  
+            lensqr_3d(_p3, _p1) ;
+            
         data_type _barA = 
             _len1+_len2+_len3 ;
             
@@ -268,87 +268,87 @@
         _barB = std::pow(
             _barB, (data_type)+1./3.);
 
-		data_type _area = 
-		tria_area_3d(_p1, _p2, _p3);
-		
+        data_type _area = 
+        tria_area_3d(_p1, _p2, _p3);
+        
         data_type _scrA = 
             _mulA * _area / _barA ;
         
         data_type _scrB = 
             _mulB * _area / _barB ;
 
-		return (data_type).67* _scrA +
-		       (data_type).33* _scrB ;
-		       
-	    /*
-	    // 4. * std::sqrt(3.)
-		data_type static 
-		    constexpr _scal = 
-	   (data_type)+6.928203230275509 ;
-	
-		data_type _elen = 
-		    lensqr_3d(_p1, _p2) + 
-		    lensqr_3d(_p2, _p3) + 
-		    lensqr_3d(_p3, _p1) ;
+        return (data_type).67* _scrA +
+               (data_type).33* _scrB ;
+               
+        /*
+        // 4. * std::sqrt(3.)
+        data_type static 
+            constexpr _scal = 
+       (data_type)+6.928203230275509 ;
+    
+        data_type _elen = 
+            lensqr_3d(_p1, _p2) + 
+            lensqr_3d(_p2, _p3) + 
+            lensqr_3d(_p3, _p1) ;
 
-		data_type _area = 
-		tria_area_3d(_p1, _p2, _p3);
+        data_type _area = 
+        tria_area_3d(_p1, _p2, _p3);
 
-		return _scal * _area / _elen ;
-		*/
-	}
+        return _scal * _area / _elen ;
+        */
+    }
 
     template <
     typename      data_type
              > 
-	__normal_call 
-	    data_type tria_quality_3d (
-	__const_ptr  (data_type) _p1,
-	__const_ptr  (data_type) _p2,
-	__const_ptr  (data_type) _p3,
-	__const_ptr  (data_type) _p4
-		)
-	{
-		// 6. * std::sqrt(2.)
-		data_type static 
-		    constexpr _scal = 
-	   (data_type)+8.485281374238571 ;
+    __normal_call 
+        data_type tria_quality_3d (
+    __const_ptr  (data_type) _p1,
+    __const_ptr  (data_type) _p2,
+    __const_ptr  (data_type) _p3,
+    __const_ptr  (data_type) _p4
+        )
+    {
+        // 6. * std::sqrt(2.)
+        data_type static 
+            constexpr _scal = 
+       (data_type)+8.485281374238571 ;
 
-		data_type _tvol = tetra_vol_3d (
-			_p1, _p2, _p3, _p4);
+        data_type _tvol = tetra_vol_3d (
+            _p1, _p2, _p3, _p4);
 
-		data_type _lrms = 
-		    lensqr_3d(_p1, _p2) +
-		    lensqr_3d(_p2, _p3) +
-		    lensqr_3d(_p3, _p1) +
-		    lensqr_3d(_p1, _p4) +
-		    lensqr_3d(_p2, _p4) +
-		    lensqr_3d(_p3, _p4) ;
+        data_type _lrms = 
+            lensqr_3d(_p1, _p2) +
+            lensqr_3d(_p2, _p3) +
+            lensqr_3d(_p3, _p1) +
+            lensqr_3d(_p1, _p4) +
+            lensqr_3d(_p2, _p4) +
+            lensqr_3d(_p3, _p4) ;
 
         _lrms =  _lrms/ (data_type)6.0 ;
-	    _lrms = 
+        _lrms = 
         std::pow(_lrms, (data_type)1.5);
 
-		return _scal * _tvol / _lrms ;
-	}
+        return _scal * _tvol / _lrms ;
+    }
 
     /*
     --------------------------------------------------------
      * voro. "quality" scores. 
     --------------------------------------------------------
      */
-	
-	template <
+    
+    template <
     typename      data_type
              > 
-	__normal_call 
-	    data_type dual_quality_2d (
-	__const_ptr  (data_type) _p1,
-	__const_ptr  (data_type) _p2,
-	__const_ptr  (data_type) _p3
-		)
-	{
-	    data_type _ob[ +3] ;
+    __normal_call 
+        data_type dual_quality_2d (
+    __const_ptr  (data_type) _p1,
+    __const_ptr  (data_type) _p2,
+    __const_ptr  (data_type) _p3
+        )
+    {
+        data_type _ob[ +3] ;
         geometry::perp_ball_2d(_ob, 
             _p1 , _p2, _p3);
             
@@ -419,20 +419,20 @@
             (data_type)+.67 * _qb + 
                 (data_type)+.33 * _qe ;
 
-		return    _qq ;
-	}
-	
-	template <
+        return    _qq ;
+    }
+    
+    template <
     typename      data_type
              > 
-	__normal_call 
-	    data_type dual_quality_3d (
-	__const_ptr  (data_type) _p1,
-	__const_ptr  (data_type) _p2,
-	__const_ptr  (data_type) _p3
-		)
-	{
-	    data_type _ob[ +4] ;
+    __normal_call 
+        data_type dual_quality_3d (
+    __const_ptr  (data_type) _p1,
+    __const_ptr  (data_type) _p2,
+    __const_ptr  (data_type) _p3
+        )
+    {
+        data_type _ob[ +4] ;
         geometry::perp_ball_3d(_ob, 
             _p1 , _p2, _p3);
             
@@ -503,26 +503,26 @@
             (data_type)+.67 * _qb + 
                 (data_type)+.33 * _qe ;
 
-		return    _qq ;
-	}
-	
-	/*
-	template <
+        return    _qq ;
+    }
+    
+    /*
+    template <
     typename      data_type
              > 
-	__normal_call 
-	    data_type dual_quality_3d (
-	__const_ptr  (data_type) _p1,
-	__const_ptr  (data_type) _p2,
-	__const_ptr  (data_type) _p3,
-	__const_ptr  (data_type) _p4
-		)
-	{
-	    //!! to-do...
+    __normal_call 
+        data_type dual_quality_3d (
+    __const_ptr  (data_type) _p1,
+    __const_ptr  (data_type) _p2,
+    __const_ptr  (data_type) _p3,
+    __const_ptr  (data_type) _p4
+        )
+    {
+        //!! to-do...
 
-		return    _qq ;
-	}
-	*/
+        return    _qq ;
+    }
+    */
 
     }
 

@@ -364,9 +364,9 @@
             _edat._node[1] = _enod[1] ;
             
             _edat._tadj = 
-				(iptr_type) _fpos ; //!! no ??
+                (iptr_type) _fpos ; //!! no ??
             _edat._eadj = 
-				(char_type) _epos ;
+                (char_type) _epos ;
              
             typename mesh_type::
                      edge_list::

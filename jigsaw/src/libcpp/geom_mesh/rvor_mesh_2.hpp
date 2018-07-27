@@ -343,8 +343,8 @@
         rdel_opts &_opts
         )
     {
-		__unreferenced(_init) ;
-		__unreferenced(_hfun) ;
+        __unreferenced(_init) ;
+        __unreferenced(_hfun) ;
 
     /*------------------------------ initialise mesh bbox */
         real_type _plen[ +2];
@@ -418,7 +418,7 @@
         rdel_opts &_opts
         )
     {
-		__unreferenced(_hfun) ;
+        __unreferenced(_hfun) ;
 
     /*------------------------------ initialise mesh bbox */
         real_type _plen[ +2];

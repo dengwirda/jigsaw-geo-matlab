@@ -60,7 +60,7 @@
     template <
     typename I,
     typename R
-	         >
+             >
     class delaunay_tri_euclidean_2
     {
 /*----------- predicate for delaunay triangulation in R^2 */
@@ -90,94 +90,94 @@
     }
     
     template <typename mesh_type> class walk_pred
-		{ 
+        { 
 /*------------------------------------ walk--simplex test */
-		public  :
-		__inline_call bool_type operator() (
-			mesh_type    &_mesh,
+        public  :
+        __inline_call bool_type operator() (
+            mesh_type    &_mesh,
         __const_ptr ( real_type) _ppos,
-			iptr_type     _tpos,
-			iptr_type    &_fpos
-			) const
-		{	
-		    double     _xpos[2];
-		    _xpos[0] = _ppos[0];
-		    _xpos[1] = _ppos[1];
-		
-		    for(_fpos = 3; _fpos-- != 0; )
-		    {
-        /*--------------- test orientation wrt. k-th face */		    
-	        iptr_type  _fnod[3];
-	        mesh_type::tria_type::
-	        face_node(_fnod, _fpos, 2, 1) ;
-	        _fnod[0] = _mesh.
-	         tria(_tpos)->node(_fnod[0]);
-	        _fnod[1] = _mesh.
-	         tria(_tpos)->node(_fnod[1]);
-	         
-	        double _ipos[2] = {
-	        _mesh.node(_fnod[0])->pval(0) ,
-	        _mesh.node(_fnod[0])->pval(1)
-	            } ;
-	        double _jpos[2] = {
-	        _mesh.node(_fnod[1])->pval(0) ,
-	        _mesh.node(_fnod[1])->pval(1)
-	            } ;
-	         
-	        double _sign; 
-	        _sign = geompred::orient2d (
+            iptr_type     _tpos,
+            iptr_type    &_fpos
+            ) const
+        {   
+            double     _xpos[2];
+            _xpos[0] = _ppos[0];
+            _xpos[1] = _ppos[1];
+        
+            for(_fpos = 3; _fpos-- != 0; )
+            {
+        /*--------------- test orientation wrt. k-th face */            
+            iptr_type  _fnod[3];
+            mesh_type::tria_type::
+            face_node(_fnod, _fpos, 2, 1) ;
+            _fnod[0] = _mesh.
+             tria(_tpos)->node(_fnod[0]);
+            _fnod[1] = _mesh.
+             tria(_tpos)->node(_fnod[1]);
+             
+            double _ipos[2] = {
+            _mesh.node(_fnod[0])->pval(0) ,
+            _mesh.node(_fnod[0])->pval(1)
+                } ;
+            double _jpos[2] = {
+            _mesh.node(_fnod[1])->pval(0) ,
+            _mesh.node(_fnod[1])->pval(1)
+                } ;
+             
+            double _sign; 
+            _sign = geompred::orient2d (
                 &_ipos[ 0] ,
                 &_jpos[ 0] ,
                 &_xpos[ 0] ) ;
-	         
-	        if (_sign < (double) +0.00 )
-	            return false ;            
-		    }
-		    
-		    return  true ;
-		}
-		} ;
-		
+             
+            if (_sign < (double) +0.00 )
+                return false ;            
+            }
+            
+            return  true ;
+        }
+        } ;
+        
     template <typename mesh_type> class circ_pred
-		{ 
+        { 
 /*------------------------------------ in-circumball test */
-		public	:
-		__write_ptr ( real_type)    _ppos ;
+        public  :
+        __write_ptr ( real_type)    _ppos ;
 
         public  :
-		__inline_call circ_pred (
-			real_type *_psrc
-			) : _ppos( _psrc){}
-			
-		__inline_call bool_type operator()(
-			mesh_type &_mesh,
-			iptr_type  _tpos,
-			iptr_type//_fpos
-			) const
-		{
-		    iptr_type _tnod[3] = {
-		    _mesh.tria(_tpos   )->node(0) ,
-		    _mesh.tria(_tpos   )->node(1) ,
-		    _mesh.tria(_tpos   )->node(2)
-		        } ;
-		        
-		    double _xpos[2] ;
-		    _xpos[0] = this->_ppos[0] ;
-		    _xpos[1] = this->_ppos[1] ;
-		
-		    double _ipos[2] = {
-	        _mesh.node(_tnod[0])->pval(0) ,
-	        _mesh.node(_tnod[0])->pval(1)
-	            } ;
-	        double _jpos[2] = {
-	        _mesh.node(_tnod[1])->pval(0) ,
-	        _mesh.node(_tnod[1])->pval(1)
-	            } ;
-	        double _kpos[2] = {
-	        _mesh.node(_tnod[2])->pval(0) ,
-	        _mesh.node(_tnod[2])->pval(1)
-	            } ;
-		
+        __inline_call circ_pred (
+            real_type *_psrc
+            ) : _ppos( _psrc){}
+            
+        __inline_call bool_type operator()(
+            mesh_type &_mesh,
+            iptr_type  _tpos,
+            iptr_type//_fpos
+            ) const
+        {
+            iptr_type _tnod[3] = {
+            _mesh.tria(_tpos   )->node(0) ,
+            _mesh.tria(_tpos   )->node(1) ,
+            _mesh.tria(_tpos   )->node(2)
+                } ;
+                
+            double _xpos[2] ;
+            _xpos[0] = this->_ppos[0] ;
+            _xpos[1] = this->_ppos[1] ;
+        
+            double _ipos[2] = {
+            _mesh.node(_tnod[0])->pval(0) ,
+            _mesh.node(_tnod[0])->pval(1)
+                } ;
+            double _jpos[2] = {
+            _mesh.node(_tnod[1])->pval(0) ,
+            _mesh.node(_tnod[1])->pval(1)
+                } ;
+            double _kpos[2] = {
+            _mesh.node(_tnod[2])->pval(0) ,
+            _mesh.node(_tnod[2])->pval(1)
+                } ;
+        
             double _sign; 
             _sign = geompred::incircle  (
                 &_ipos[ 0] ,
@@ -186,8 +186,8 @@
                 &_xpos[ 0] ) ;
                 
             return (_sign >= (double)+0.) ;
-		}
-		} ; 
+        }
+        } ; 
 
     class face_ptrs
         {
@@ -236,7 +236,7 @@
 
     }
     
-#   endif  //__DELAUNAY_TRI_EUCLIDEAN_2__	
+#   endif  //__DELAUNAY_TRI_EUCLIDEAN_2__   
 
 
 

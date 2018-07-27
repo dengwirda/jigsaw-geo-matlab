@@ -55,26 +55,26 @@
     typename A = allocators::basic_alloc
              >
     class aabb_tree
-	{ 
+    { 
 /*---------------------- a static d-dimensional AABB-tree */
-	public	:
-	
-	typedef I				            item_type ;
-	typedef N				            node_user ;
-	typedef A				            allocator ;
-	
-    typedef typename 
-            item_type::real_type	    real_type ;
-	typedef typename 
-            item_type::iptr_type	    iptr_type ;
+    public  :
     
-	iptr_type static constexpr         _dims =  K * +1 ;
+    typedef I                           item_type ;
+    typedef N                           node_user ;
+    typedef A                           allocator ;
+    
+    typedef typename 
+            item_type::real_type        real_type ;
+    typedef typename 
+            item_type::iptr_type        iptr_type ;
+    
+    iptr_type static constexpr         _dims =  K * +1 ;
 
-	typedef geom_tree::aabb_tree  <
+    typedef geom_tree::aabb_tree  <
                 item_type ,
-				    _dims ,
-			    node_user ,
-                allocator >	            tree_type ;
+                    _dims ,
+                node_user ,
+                allocator >             tree_type ;
 
     typedef containers::single_item <
                 item_type >             item_data ;
@@ -140,49 +140,49 @@
                 node_ptrt,
                 allocator>              work_list ;
 
-    public	:
+    public  :
 /*------------------------------------- tree root pointer */
-	node_type				    _rdat ;
-	node_type                  *_root ;
-	iptr_type                   _size ;
+    node_type                   _rdat ;
+    node_type                  *_root ;
+    iptr_type                   _size ;
 
     work_list                   _work ;
 
 /*------------------------------------- pool'd allocators */
-	base_pool	           _node_base ;
-    base_pool		       _item_base ;
-	
-	node_pool	           _node_pool ;
-    item_pool		       _item_pool ;
+    base_pool              _node_base ;
+    base_pool              _item_base ;
+    
+    node_pool              _node_pool ;
+    item_pool              _item_pool ;
 
 /*------------------------------------- tree shape params */
-	iptr_type				    _imax ;
-	real_type				    _long ;
+    iptr_type                   _imax ;
+    real_type                   _long ;
     real_type                   _vtol ;
-    	
-	private	:
+        
+    private :
 /*---------------------- helper - delete a block of nodes */
-	__inline_call void_type free_node (
-		node_data*&_data
-		)
-	{
-		this->
-	   _node_pool._destruct (_data) ;
-		this->
-	   _node_pool.deallocate(_data,1) ;
-	   _data = nullptr ;
-	}
-	
+    __inline_call void_type free_node (
+        node_data*&_data
+        )
+    {
+        this->
+       _node_pool._destruct (_data) ;
+        this->
+       _node_pool.deallocate(_data,1) ;
+       _data = nullptr ;
+    }
+    
 /*---------------------- helper - create a block of nodes */
-	__inline_call void_type make_node (
-		node_data*&_data
-		)
-	{
+    __inline_call void_type make_node (
+        node_data*&_data
+        )
+    {
        _data = 
         this->_node_pool.allocate (1) ;
-		this->
-	   _node_pool.construct (_data) ;
-	}
+        this->
+       _node_pool.construct (_data) ;
+    }
 
 /*------------------------------- helper - delete an item */
     __inline_call void_type free_item (
@@ -191,8 +191,8 @@
     {
         this->
        _item_pool._destruct (_idat) ;
-		this->
-	   _item_pool.deallocate(_idat,1) ;
+        this->
+       _item_pool.deallocate(_idat,1) ;
        _idat = nullptr ;
     }
     
@@ -203,8 +203,8 @@
         )
     {
        _idat = 
-        this->_item_pool.allocate (1) ;	
-		this->_item_pool.construct(
+        this->_item_pool.allocate (1) ; 
+        this->_item_pool.construct(
        _idat, nullptr, _item);
     }
 
@@ -243,8 +243,8 @@
     public  :
 /*----------------------------------------- default c'tor */
     __inline_call  aabb_tree  (
-		allocator const&_asrc = allocator()
-		) : _root(nullptr) , 
+        allocator const&_asrc = allocator()
+        ) : _root(nullptr) , 
             _work(  _asrc) ,
     /*-------------------------------------- "base" pools */
            _node_base (
@@ -252,7 +252,7 @@
            _item_base (
         sizeof(item_data), _asrc),
     /*-------------------------------------- "obj." pools */
-		   _node_pool (
+           _node_pool (
         wrap_pool(&_node_base))  ,
            _item_pool (
         wrap_pool(&_item_base)) {}
@@ -416,13 +416,13 @@
         this->_size = +1 ;
 
     /*------------------------------ set node fill params */
-		this->_imax = _imax ;
-		this->_long = _long ;
-		this->_vtol = _vtol ;
+        this->_imax = _imax ;
+        this->_long = _long ;
+        this->_vtol = _vtol ;
 
-	/*------------------------------ set null "tree" ptrs */
-		this->_root->_pptr = nullptr;
-		this->_root->_lptr = nullptr;
+    /*------------------------------ set null "tree" ptrs */
+        this->_root->_pptr = nullptr;
+        this->_root->_lptr = nullptr;
         this->_root->_hptr = nullptr;
 
     /*------------------------------ push items onto root */
@@ -646,45 +646,45 @@
         item_pred &_fout
         )
     {
-		if (this->_root == nullptr) return false ;
+        if (this->_root == nullptr) return false ;
 
     /*----------------- maintain stack of unvisited nodes */
         this->_work.set_count( +0);
-		this->_work.
+        this->_work.
             push_tail(this->_root);
 
     /*------------ traverse tree while _pred remains true */
-		bool_type _find =  false ;
+        bool_type _find =  false ;
         for ( ; !this->_work.empty() ; )
-		{
-			node_type *_node = nullptr ;
-			this->_work.
+        {
+            node_type *_node = nullptr ;
+            this->_work.
                 _pop_tail(_node) ;
 
         /*------------- eval. node intersection predicate */
-			if (_pred(_node->_pmin, _node->_pmax))
-			{
-			    if (_node->_hptr    != nullptr)
-			    {
+            if (_pred(_node->_pmin, _node->_pmax))
+            {
+                if (_node->_hptr    != nullptr)
+                {
             /*-------------------- leaf: push onto output */
-				    _fout( _node->_hptr) ;
+                    _fout( _node->_hptr) ;
 
                     _find = true ;
-			    }
+                }
 
-			    if (_node->lower(0) != nullptr)
-			    {
+                if (_node->lower(0) != nullptr)
+                {
             /*-------------------- traverse into children */
-				this->_work.push_tail (
-				        _node->lower(0)) ;
                 this->_work.push_tail (
-				        _node->lower(1)) ;
-			    }
-			}
-		}
-		
+                        _node->lower(0)) ;
+                this->_work.push_tail (
+                        _node->lower(1)) ;
+                }
+            }
+        }
+        
         return ( _find ) ;
-	}
+    }
     
 /*-------- check for nearsest in collection via traversal */
     __normal_call bool_type near (
@@ -752,10 +752,10 @@
             
             if (_ndat.
                 _node->_hptr  != nullptr )
-		    {
+            {
         /*------------------------ leaf: update item-dist */
-			    for (item_data  *_iptr = 
-	                _ndat._node->_hptr ; 
+                for (item_data  *_iptr = 
+                    _ndat._node->_hptr ; 
                         _iptr != nullptr ; 
                     _iptr = _iptr->_next )
                 {
@@ -771,21 +771,21 @@
                         _dist = _dloc;
                         _near = _iptr;
                     }
-			    }
+                }
 
                 _find =  true ;
-		    }
+            }
 
-		    if (_ndat.
-		        _node->lower(0) != nullptr)
-		    {
+            if (_ndat.
+                _node->lower(0) != nullptr)
+            {
         /*------------------------ traverse into children */
-		        node_type*_inod = 
-		            _ndat._node->lower(0) ;
-		            
-		        node_type*_jnod = 
-		            _ndat._node->lower(1) ;
-		        
+                node_type*_inod = 
+                    _ndat._node->lower(0) ;
+                    
+                node_type*_jnod = 
+                    _ndat._node->lower(1) ;
+                
                 _ndat._node =  _inod ;
                 _ndat._dist = 
                 calc_rect_dist(_ppos ,
@@ -799,9 +799,9 @@
                    &_jnod->_pmin[ 0],
                        &_jnod->_pmax[ 0]) ;
                 _nnpq.push(_ndat)  ;
-		    }
-		    
-		    }
+            }
+            
+            }
         }
 
     /*---------------------------- must have found a node */

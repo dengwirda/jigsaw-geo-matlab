@@ -60,13 +60,13 @@
     template <
     typename I,
     typename R
-		     >
+             >
     class delaunay_tri_node_2
-	{
+    {
 /*----------- node-type for delaunay triangulation in R^2 */
-	public  :
-	typedef R               real_type ;
-	typedef I               iptr_type ;
+    public  :
+    typedef R               real_type ;
+    typedef I               iptr_type ;
 
     iptr_type static constexpr  _dims = +2 ;
 
@@ -77,39 +77,39 @@
     containers::
     fixed_array<char_type, +4>  _flag ;  // kind, mark
     
-    iptr_type			        _next ;
+    iptr_type                   _next ;
 
 /*---------------------------------------- "write access" */
-	__inline_call real_type &pval (
-		iptr_type  _ipos
-		)
-	{   return this->_pval [_ipos];
-	}
-	__inline_call iptr_type &next (
-		)
-	{   return this->_next;
-	}
+    __inline_call real_type &pval (
+        iptr_type  _ipos
+        )
+    {   return this->_pval [_ipos];
+    }
+    __inline_call iptr_type &next (
+        )
+    {   return this->_next;
+    }
     __inline_call char_type &mark (
         )
     {   return this->_flag [   +0];
     }
 
 /*---------------------------------------- "const" access */
-	__inline_call real_type const& pval (
-		iptr_type _ipos
-		) const
-	{   return this->_pval [_ipos];
-	}
-	__inline_call iptr_type const& next (
-		) const
-	{   return this->_next;
-	}
+    __inline_call real_type const& pval (
+        iptr_type _ipos
+        ) const
+    {   return this->_pval [_ipos];
+    }
+    __inline_call iptr_type const& next (
+        ) const
+    {   return this->_next;
+    }
     __inline_call char_type const& mark (
         ) const
     {   return this->_flag [   +0];
     }
 
-	} ;
+    } ;
 
 /*
 ------------------------------------------------------------
@@ -123,13 +123,13 @@
     template <
     typename I,
     typename R
-		     >
+             >
     class delaunay_tri_tria_2
-	{
+    {
 /*----------- tria-type for delaunay triangulation in R^2 */
-	public  :
-	typedef R	            real_type ;
-	typedef I	            iptr_type ;
+    public  :
+    typedef R               real_type ;
+    typedef I               iptr_type ;
 
     iptr_type static constexpr  _dims = +2 ;
 
@@ -147,52 +147,52 @@
     fixed_array<char_type, +4>  _flag ;  // kind, mark
 
 /*---------------------------------------- "write" access */
-	__inline_call iptr_type &node (
-		iptr_type  _ipos
-		)
-	{   return this->_ndat [_ipos];
-	}
-	__inline_call iptr_type &next (
-		iptr_type  _ipos
-		)
-	{   return this->_edat [_ipos];
-	}
-	__inline_call char_type &fpos (
-		iptr_type  _ipos
-		)
-	{   return this->_epos [_ipos];
-	}
+    __inline_call iptr_type &node (
+        iptr_type  _ipos
+        )
+    {   return this->_ndat [_ipos];
+    }
+    __inline_call iptr_type &next (
+        iptr_type  _ipos
+        )
+    {   return this->_edat [_ipos];
+    }
+    __inline_call char_type &fpos (
+        iptr_type  _ipos
+        )
+    {   return this->_epos [_ipos];
+    }
     __inline_call char_type &mark (
-		)
-	{   return this->_flag [   +0];
-	}
+        )
+    {   return this->_flag [   +0];
+    }
 
 /*---------------------------------------- "const" access */
-	__inline_call iptr_type const& node (
-		iptr_type  _ipos
-		) const
-	{   return this->_ndat[_ipos];
-	}
-	__inline_call iptr_type const& next (
-		iptr_type  _ipos
-		) const
-	{   return this->_edat[_ipos];
-	}
-	__inline_call char_type const& fpos (
-		iptr_type  _ipos
-		) const
-	{   return this->_epos[_ipos];
-	}
+    __inline_call iptr_type const& node (
+        iptr_type  _ipos
+        ) const
+    {   return this->_ndat[_ipos];
+    }
+    __inline_call iptr_type const& next (
+        iptr_type  _ipos
+        ) const
+    {   return this->_edat[_ipos];
+    }
+    __inline_call char_type const& fpos (
+        iptr_type  _ipos
+        ) const
+    {   return this->_epos[_ipos];
+    }
     __inline_call char_type const& mark (
-		) const
-	{   return this->_flag[   +0];
-	}
+        ) const
+    {   return this->_flag[   +0];
+    }
 
 /*---------------------------------------- local indexing */
     __static_call
     __inline_call void_type faceind22 (
         iptr_type *_fnod,
-		iptr_type//_fpos
+        iptr_type//_fpos
         )
     {
         _fnod[0] = 0 ;
@@ -202,7 +202,7 @@
     __static_call
     __inline_call void_type faceind11 (
         iptr_type *_fnod,
-		iptr_type//_fpos
+        iptr_type//_fpos
         )
     {
         _fnod[0] = 0 ;
@@ -211,7 +211,7 @@
     __static_call
     __inline_call void_type faceind21 (
         iptr_type *_fnod,
-		iptr_type  _fpos
+        iptr_type  _fpos
         )
     {
         switch (_fpos)
@@ -236,14 +236,14 @@
             }
             }
     }
-	__static_call
-	__inline_call void_type face_node  (
-		iptr_type *_fnod,
-		iptr_type  _fpos,
+    __static_call
+    __inline_call void_type face_node  (
+        iptr_type *_fnod,
+        iptr_type  _fpos,
         iptr_type  _from,
         iptr_type  _into
-		)
-	{
+        )
+    {
     /* index FROM 2-dim faces */
         if (_from == +2)
             {
@@ -269,14 +269,14 @@
         faceind11(_fnod, _fpos);
             }
             }
-	}
+    }
 
-	} ;
+    } ;
 
 
     }
     
-#   endif//__DELAUNAY_TRI_TYPE_2__	
-	
-	
-	
+#   endif//__DELAUNAY_TRI_TYPE_2__  
+    
+    
+    

@@ -53,6 +53,8 @@ function [ffun] = limgrad(varargin)
     error('limmesh:incorrectMeshObject', ...
         'Incorrect mesh object.') ;
     end
+    
+   [flag] = certify (ffun) ;
    
     switch (upper(ffun.mshID) )
 %--------------------------------- setup EUCLIDEAN-MESH obj.
@@ -128,9 +130,9 @@ function [ffun] = limgrad(varargin)
             
             end
             
-            xx = rx*cos(ax).*sin(ay) ;
-            yy = ry*sin(ax).*sin(ay) ;
-            zz = rz*cos(ay);
+            xx = rx*cos(ax).*cos(ay) ;
+            yy = ry*sin(ax).*cos(ay) ;
+            zz = rz*sin(ay);
             
             pp = [xx(:),yy(:),zz(:)] ;
         end  
@@ -269,16 +271,16 @@ function [ffun] = limgrad(varargin)
                 
                 end
                 
-                xx = rx*cos(ax).*sin(ay) ;
-                yy = ry*sin(ax).*sin(ay) ;
-                zz = rz*cos(ay);
+                xx = rx*cos(ax).*cos(ay) ;
+                yy = ry*sin(ax).*cos(ay) ;
+                zz = rz*sin(ay);
                 
                 pp = [xx(:),yy(:),zz(:)] ;
                 
     %--------------------------- build mesh topology
                 n1 = size(xx,1);
                 n2 = size(xx,2);
-                nt = (n1-0)*(n2-1) ;
+                nt = (n1-1)*(n2-0) ;
                 q4 = ones(nt,4);
                 
                 for jj = +1:n2-1
@@ -300,7 +302,7 @@ function [ffun] = limgrad(varargin)
                 (2:n1-0)'+(n2-1)*n1, ...
                 (2:n1-0)'+(   0)*n1, ...
                 (1:n1-1)'+(   0)*n1] ;
-        
+                
             end          
         end
     
@@ -333,26 +335,34 @@ function [ff] =  ...
     setedge(pp,e2,t3,q4,t4,h8,ff,DF,OP)
 %SETEDGE build the mesh adj.-graph for the edge-based solver
 
+    IT = OP.iter;
+
 %------------------------------- build the edge list
     if (~isempty(t3))
         e2 = [e2; ...
-        t3(:,[1,2]); t3(:,[2,3]); ...
+        t3(:,[1,2]); ...
+        t3(:,[2,3]); ...
         t3(:,[3,1]); ...
              ];
         t3 = [] ;
     end
     if (~isempty(q4))
         e2 = [e2; ...
-        q4(:,[1,2]); q4(:,[2,3]); ...
-        q4(:,[3,4]); q4(:,[4,1]); ...
+        q4(:,[1,2]); ...
+        q4(:,[2,3]); ...
+        q4(:,[3,4]); ...
+        q4(:,[4,1]); ...
              ];
         q4 = [] ;
     end   
     if (~isempty(t4))
         e2 = [e2; ...
-        t4(:,[1,2]); t4(:,[2,3]); ...
-        t4(:,[3,1]); t4(:,[1,4]); ...
-        t4(:,[2,4]); t4(:,[3,4]); ...
+        t4(:,[1,2]); ...
+        t4(:,[2,3]); ...
+        t4(:,[3,1]); ...
+        t4(:,[1,4]); ...
+        t4(:,[2,4]); ...
+        t4(:,[3,4]); ...
              ];
         t4 = [] ;
     end
@@ -360,11 +370,9 @@ function [ff] =  ...
     e2 = unique2(e2) ;
     
 %------------------------------- call eikonal solver
-    el = sqrt(sum((pp(e2(:,2),:)  ...
-                 - pp(e2(:,1),:)  ...
+    el = sqrt(sum((pp(e2(:,2),:) ...
+                 - pp(e2(:,1),:) ...
          ) .^ 2, 2)) ;
-    
-    IT = OP.iter;
     
     ff = limedge(e2,el,ff,DF,IT) ;
 

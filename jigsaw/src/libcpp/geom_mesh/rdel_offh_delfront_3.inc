@@ -267,7 +267,7 @@
             real_type _elen = _evec[ 3] ;
             real_type _dist ;
             real_type _dsqr = _hmin * _hmin - 
-	       (real_type)+.25  * _elen * _elen ;
+           (real_type)+.25  * _elen * _elen ;
 
             real_type _frad = 
            (real_type)+.25  * _elen * _elen ;

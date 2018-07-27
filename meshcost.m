@@ -4,7 +4,7 @@ function [cost] = meshcost(varargin)
 %-----------------------------------------------------------
 %   Darren Engwirda
 %   github.com/dengwirda/jigsaw-matlab
-%   14-Jul-2018
+%   26-Jul-2018
 %   de2363@columbia.edu
 %-----------------------------------------------------------
 %
@@ -16,21 +16,17 @@ function [cost] = meshcost(varargin)
 
     if (isempty(hfun)), hfun = struct(); end
 
-    if (~isstruct(mesh))
-        error ( ...
-        'MESH must be a valid structure!') ;
-    end
-    if (~isstruct(hfun))
-        error ( ...
-        'HFUN must be a valid structure!') ;
-    end
-    
     if (~isfield(mesh,'mshID'))
         mesh.mshID = 'EUCLIDEAN-MESH';
     end
+    
+   [pass] = certify(mesh) ;
+    
     if (~isfield(hfun,'mshID'))
         hfun.mshID = 'EUCLIDEAN-MESH';
     end
+
+   [pass] = certify(hfun) ;
 
 %-- eval. mesh-spacing function via interpolation
     
@@ -124,9 +120,9 @@ function [hvrt] = interp_hfun(mesh,hfun)
     %-- eval. an unstructured euclidean HFUN mesh
         
             if (size( ...
-                mesh.point.coord,2)==3&& ...
+            mesh.point.coord,2) == +3 && ...
                 size( ...
-                hfun.point.coord,2)==3 )
+            hfun.point.coord,2) == +3 )
                 
             tree = idxtri2( ...
                 hfun.point.coord(:,1:2), ...
@@ -141,9 +137,9 @@ function [hvrt] = interp_hfun(mesh,hfun)
             end
             
             if (size( ...
-                mesh.point.coord,2)==4&& ...
+            mesh.point.coord,2) == +4 && ...
                 size( ...
-                hfun.point.coord,2)==4 )
+            hfun.point.coord,2) == +4 )
                 
             tree = idxtri3( ...
                 hfun.point.coord(:,1:3), ...

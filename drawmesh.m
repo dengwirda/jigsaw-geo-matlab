@@ -5,7 +5,7 @@ function drawmesh(mesh,varargin)
 %   JIGSAW-0.9.6.x
 %   Darren Engwirda
 %   github.com/dengwirda/jigsaw-matlab
-%   10-Jul-2018
+%   26-Jul-2018
 %   darren.engwirda@columbia.edu
 %-----------------------------------------------------------
 %
@@ -14,6 +14,14 @@ function drawmesh(mesh,varargin)
 
     if (nargin>=+2), mask = varargin{1}; end
     if (nargin>=+3), cuts = varargin{2}; end
+
+    if (isfield(mesh,'mshID'))
+        mshID =  mesh.mshID ;  
+    else
+        mshID = 'EUCLIDEAN-MESH' ;
+    end
+
+   [pass] = certify(mesh) ;
 
     if (isempty(mask))
  
@@ -44,12 +52,6 @@ function drawmesh(mesh,varargin)
     
     end
 
-    if (isfield(mesh,'mshID'))
-        mshID =  mesh.mshID ;  
-    else
-        mshID = 'EUCLIDEAN-MESH' ;
-    end
-    
     switch (upper(mshID))
     
     case 'EUCLIDEAN-MESH'

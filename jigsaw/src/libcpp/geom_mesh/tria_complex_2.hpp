@@ -58,7 +58,7 @@
      * ALLOCATOR - memory allocator
     --------------------------------------------------------
      */
-     	
+        
     template <
     typename NN ,
     typename E2 ,
@@ -69,14 +69,14 @@
     {
 /*----------------------------------- tria-complex in R^2 */
     public  :
-	typedef NN                          node_type ;
-	typedef E2	                        edge_type ;
-	typedef T3	                        tri3_type ;
+    typedef NN                          node_type ;
+    typedef E2                          edge_type ;
+    typedef T3                          tri3_type ;
     typedef AA                          allocator ;
 
-	typedef typename 
+    typedef typename 
             node_type::real_type        real_type ;
-	typedef typename 
+    typedef typename 
             tri3_type::iptr_type        iptr_type ;           
     typedef typename
             allocator::size_type        size_type ;
@@ -316,7 +316,7 @@
                 pool_byte_size      >   pool_base ;
 
     typedef allocators::_wrap_alloc <
-		        pool_base           >   pool_wrap ;
+                pool_base           >   pool_wrap ;
 
     typedef containers::hash_table  <
                 iptr_type, 
@@ -340,7 +340,7 @@
                 iptr_type,
                 pool_wrap           >   conn_list ;
 
-	public  :
+    public  :
 
     pool_base                   _hsrc ;
     pool_base                   _csrc ;
@@ -353,17 +353,17 @@
     edge_maps                   _map2 ;
     tri3_maps                   _map3 ;
     
-    node_list					_set1 ;
-	edge_list					_set2 ;
-	tri3_list					_set3 ;
+    node_list                   _set1 ;
+    edge_list                   _set2 ;
+    tri3_list                   _set3 ;
    
     iptr_list                   _del1 ;
-    iptr_list					_del2 ;
-    iptr_list					_del3 ;
+    iptr_list                   _del2 ;
+    iptr_list                   _del3 ;
     
-    iptr_list					_tmp1 ;
-    iptr_list					_tmp2 ;
-    iptr_list					_tmp3 ;
+    iptr_list                   _tmp1 ;
+    iptr_list                   _tmp2 ;
+    iptr_list                   _tmp3 ;
 
 
     public  :
@@ -375,27 +375,27 @@
      */
      
     __inline_call iptr_type _get_node (
-		)
-	{
-		iptr_type _ipos = -1;
-		if (this->_del1.count() != +0 )
-		{
+        )
+    {
+        iptr_type _ipos = -1;
+        if (this->_del1.count() != +0 )
+        {
     /*---------------------------- recycle from free list */
-			this->_del1._pop_tail(_ipos) ;
-		}
-		else
-		{
+            this->_del1._pop_tail(_ipos) ;
+        }
+        else
+        {
     /*---------------------------- alloc. from underlying */
-			_ipos = (iptr_type)
+            _ipos = (iptr_type)
                 this->_set1.count() ;
             this->_set1.push_tail() ;
-		}
+        }
 
-		this->_set1[_ipos].mark() = +0 ;
-		this->_set1[_ipos].self() = +0 ;
-		
-		return ( _ipos ) ;
-	}
+        this->_set1[_ipos].mark() = +0 ;
+        this->_set1[_ipos].self() = +0 ;
+        
+        return ( _ipos ) ;
+    }
     
     /*
     --------------------------------------------------------
@@ -404,27 +404,27 @@
      */
      
     __inline_call iptr_type _get_edge (
-		)
-	{
-		iptr_type _ipos = -1;
-		if (this->_del2.count() != +0 )
-		{
+        )
+    {
+        iptr_type _ipos = -1;
+        if (this->_del2.count() != +0 )
+        {
     /*---------------------------- recycle from free list */
-			this->_del2._pop_tail(_ipos) ;
-		}
-		else
-		{
+            this->_del2._pop_tail(_ipos) ;
+        }
+        else
+        {
     /*---------------------------- alloc. from underlying */
-			_ipos = (iptr_type)
+            _ipos = (iptr_type)
                 this->_set2.count() ;
             this->_set2.push_tail() ;
-		}
+        }
 
-		this->_set2[_ipos].mark() = +0 ;
-		this->_set2[_ipos].self() = +0 ;
+        this->_set2[_ipos].mark() = +0 ;
+        this->_set2[_ipos].self() = +0 ;
 
-		return ( _ipos ) ;
-	}
+        return ( _ipos ) ;
+    }
 
     /*
     --------------------------------------------------------
@@ -433,60 +433,60 @@
      */
      
     __inline_call iptr_type _get_tri3 (
-		)
-	{
-		iptr_type _ipos = -1;
-		if (this->_del3.count() != +0 )
-		{
+        )
+    {
+        iptr_type _ipos = -1;
+        if (this->_del3.count() != +0 )
+        {
     /*---------------------------- recycle from free list */
-			this->_del3._pop_tail(_ipos) ;
-		}
-		else
-		{
+            this->_del3._pop_tail(_ipos) ;
+        }
+        else
+        {
     /*---------------------------- alloc. from underlying */
-			_ipos = (iptr_type)
+            _ipos = (iptr_type)
                 this->_set3.count() ;
             this->_set3.push_tail() ;
-		}
+        }
 
-		this->_set3[_ipos].mark() = +0 ;
-		this->_set3[_ipos].self() = +0 ;
+        this->_set3[_ipos].mark() = +0 ;
+        this->_set3[_ipos].self() = +0 ;
 
-		return ( _ipos ) ;
-	}
-	
-	/*
+        return ( _ipos ) ;
+    }
+    
+    /*
     --------------------------------------------------------
      * PUT-ITEM: "delete" old item, _pop from active set.
     --------------------------------------------------------
      */
      
-	__inline_call void_type _put_node (
-		iptr_type _ipos
-		)
-	{
-	    this->_del1.push_tail (_ipos);
+    __inline_call void_type _put_node (
+        iptr_type _ipos
+        )
+    {
+        this->_del1.push_tail (_ipos);
         this->_set1[_ipos].mark() = -1 ;
         this->_set1[_ipos].self() = -1 ;
-	}
-	
-	__inline_call void_type _put_edge (
-		iptr_type _ipos
-		)
-	{
-	    this->_del2.push_tail (_ipos);
+    }
+    
+    __inline_call void_type _put_edge (
+        iptr_type _ipos
+        )
+    {
+        this->_del2.push_tail (_ipos);
         this->_set2[_ipos].mark() = -1 ;
         this->_set2[_ipos].self() = -1 ;
-	}
-	
-	__inline_call void_type _put_tri3 (
-		iptr_type _ipos
-		)
-	{
-	    this->_del3.push_tail (_ipos);
+    }
+    
+    __inline_call void_type _put_tri3 (
+        iptr_type _ipos
+        )
+    {
+        this->_del3.push_tail (_ipos);
         this->_set3[_ipos].mark() = -1 ;
         this->_set3[_ipos].self() = -1 ;
-	}
+    }
     
     public  :
     

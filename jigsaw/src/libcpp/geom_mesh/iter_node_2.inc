@@ -70,13 +70,13 @@
         real_type &_ladj
         )
     {
-		real_type _move[_dims] = {
+        real_type _move[_dims] = {
             (real_type) +0.0 } ;
 
         _ladj = 
             (real_type) +0.0 ;
     
-		__unreferenced (_pred) ; // for MSVC...
+        __unreferenced (_pred) ; // for MSVC...
 
         real_type _wval = 
        +std::numeric_limits<real_type>::epsilon() ;
@@ -196,13 +196,13 @@
         real_type &_ladj
         )
     {
-		real_type _move[_dims] = {
+        real_type _move[_dims] = {
             (real_type) +0.0 } ;
 
         _ladj = 
             (real_type) +0.0 ;
     
-		__unreferenced (_pred) ; // for MSVC...
+        __unreferenced (_pred) ; // for MSVC...
 
         real_type _wsum = 
        +std::numeric_limits<real_type>::epsilon() ;

@@ -83,30 +83,30 @@
        
         public  :
         
-	    __inline_call iptr_type      & hidx (
-	        )
-	    {   return  this->_hidx ;
-	    }
-	    __inline_call iptr_type const& hidx (
-	        ) const
-	    {   return  this->_hidx ;
-	    }
-	    __inline_call char_type      & fdim (
-	        )
-	    {   return  this->_fdim ;
-	    }   
-	    __inline_call char_type const& fdim (
-	        ) const
-	    {   return  this->_fdim ;
-	    }
-	    __inline_call char_type      & feat (
-	        )
-	    {   return  this->_feat ;
-	    }   
-	    __inline_call char_type const& feat (
-	        ) const
-	    {   return  this->_feat ;
-	    }
+        __inline_call iptr_type      & hidx (
+            )
+        {   return  this->_hidx ;
+        }
+        __inline_call iptr_type const& hidx (
+            ) const
+        {   return  this->_hidx ;
+        }
+        __inline_call char_type      & fdim (
+            )
+        {   return  this->_fdim ;
+        }   
+        __inline_call char_type const& fdim (
+            ) const
+        {   return  this->_fdim ;
+        }
+        __inline_call char_type      & feat (
+            )
+        {   return  this->_feat ;
+        }   
+        __inline_call char_type const& feat (
+            ) const
+        {   return  this->_feat ;
+        }
         } ;
     
     typedef mesh::tria_complex_2 <

@@ -79,11 +79,13 @@ function savemsh(name,mesh)
 
 %-----------------------------------------------------------
 %   Darren Engwirda
-%   github.com/dengwirda/jigsaw-geo-matlab
-%   03-Dec-2017
+%   github.com/dengwirda/jigsaw-matlab
+%   26-Jul-2018
 %   darren.engwirda@columbia.edu
 %-----------------------------------------------------------
 %
+
+   [ok] = certify(mesh);
 
     if (~ischar  (name))
         error('NAME must be a valid file-name!') ;

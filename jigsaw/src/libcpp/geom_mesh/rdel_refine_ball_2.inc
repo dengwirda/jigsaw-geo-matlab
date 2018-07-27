@@ -112,10 +112,10 @@
         _kind =  rdel_opts::null_kind ;
      
         __unreferenced( _hfun) ;
-		__unreferenced( _mode) ;
-		__unreferenced( _eold) ; 
-		__unreferenced( _tdim) ;
-		__unreferenced( _pass) ;
+        __unreferenced( _mode) ;
+        __unreferenced( _eold) ; 
+        __unreferenced( _tdim) ;
+        __unreferenced( _pass) ;
         __unreferenced( _args) ;
 
         _nnew.set_count(  +0 ) ;

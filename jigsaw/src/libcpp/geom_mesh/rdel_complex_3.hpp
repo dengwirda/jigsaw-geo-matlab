@@ -400,7 +400,7 @@
             allocators::basic_alloc ,
             pool_byte_size          >   pool_base ;
     typedef allocators::_wrap_alloc <
-			    pool_base>		        pool_wrap ;
+                pool_base>              pool_wrap ;
 
     typedef containers::hash_table  <
                 node_data, 

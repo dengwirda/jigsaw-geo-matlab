@@ -197,15 +197,15 @@
 
     /*--------------------------------- find min/max edge */
         iptr_type _enum ;
-	    iptr_type _emin = (iptr_type)+0;
-	    iptr_type _emax = (iptr_type)+0;
-	    for(_enum = +3; _enum-- != +1; )
-	    {
-	    if (_llen[_emax] < _llen[_enum]) 
+        iptr_type _emin = (iptr_type)+0;
+        iptr_type _emax = (iptr_type)+0;
+        for(_enum = +3; _enum-- != +1; )
+        {
+        if (_llen[_emax] < _llen[_enum]) 
             _emax = _enum ;
-	    if (_llen[_emin] > _llen[_enum])  
+        if (_llen[_emin] > _llen[_enum])  
             _emin = _enum ;
-	    }
+        }
 
     /*------------------------- eval. radius--edge ratios */
         real_type _prat = _pmax[    3] / 
@@ -346,8 +346,8 @@
     /*--------------------------------- find edge lengths */
         real_type  _llen[6] ;
         iptr_type  _enum ;
-	    for(_enum = +6; _enum-- != +0; )
-	    {
+        for(_enum = +6; _enum-- != +0; )
+        {
             iptr_type _enod[ +4] ;
             mesh_type::tria_type::
                 tria_type::
@@ -366,15 +366,15 @@
         }
     
     /*--------------------------------- find min/max edge */
-	    iptr_type _emin = (iptr_type)+0;
-	    iptr_type _emax = (iptr_type)+0;
-	    for(_enum = +6; _enum-- != +1; )
-	    {
-	    if (_llen[_emax] < _llen[_enum]) 
+        iptr_type _emin = (iptr_type)+0;
+        iptr_type _emax = (iptr_type)+0;
+        for(_enum = +6; _enum-- != +1; )
+        {
+        if (_llen[_emax] < _llen[_enum]) 
             _emax = _enum ;
-	    if (_llen[_emin] > _llen[_enum]) 
+        if (_llen[_emin] > _llen[_enum]) 
             _emin = _enum ;
-	    }
+        }
 
     /*------------------------- eval. radius--edge ratios */
         real_type _erat = _tbal[    3] / 

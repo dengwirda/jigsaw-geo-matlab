@@ -220,30 +220,30 @@
 
     /*--------------------------------- find min/max edge */
         iptr_type _enum ;
-	    iptr_type _emin = (iptr_type)+0;
-	    iptr_type _emax = (iptr_type)+0;
-	    for(_enum = +3; _enum-- != +1; )
-	    {
-	    if (_llen[_emax] < _llen[_enum]) 
+        iptr_type _emin = (iptr_type)+0;
+        iptr_type _emax = (iptr_type)+0;
+        for(_enum = +3; _enum-- != +1; )
+        {
+        if (_llen[_emax] < _llen[_enum]) 
             _emax = _enum ;
-	    if (_llen[_emin] > _llen[_enum]) 
+        if (_llen[_emin] > _llen[_enum]) 
             _emin = _enum ;
-	    }
-	
+        }
+    
     /*------------------------- calc. refinement priority */
         _tdat._mark  =  +0 ;
     
     #   ifdef __bias_BNDS      
         for(_enum = +3; _enum-- != +0; )
-	    {
-	        iptr_type  _enod[ +3];
+        {
+            iptr_type  _enod[ +3];
             mesh_type::tria_type::
                 tria_type::
             face_node(_enod, _enum, 2, 1);
             _enod[ +0] = _tnod[_enod[+0]];
             _enod[ +1] = _tnod[_enod[+1]];
 
-	        algorithms::isort(
+            algorithms::isort(
                 &_enod[0] , &_enod[2] ,
                     std::less<iptr_type>()) ;
                     
@@ -258,8 +258,8 @@
             if (_mesh.find_edge(_edat,_eptr))
             {
                 _tdat._mark -= +1 ;
-            }	    
-	    }
+            }       
+        }
     #   endif
 
     /*------------------------- eval. radius--edge ratios */

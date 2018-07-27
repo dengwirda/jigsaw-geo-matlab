@@ -84,12 +84,12 @@
                 this->_fnod[2] = _fsrc[ 2];
             }
 
-			__inline_call bool_type operator() (
-	            tria_type&_tria,
-				iptr_type _tpos,
-				iptr_type _fpos
-				)
-			{
+            __inline_call bool_type operator() (
+                tria_type&_tria,
+                iptr_type _tpos,
+                iptr_type _fpos
+                )
+            {
                 iptr_type _tnod[4] = {
                 _tria.tria(_tpos)->node(0),
                 _tria.tria(_tpos)->node(1),
@@ -99,26 +99,26 @@
 
                 __unreferenced(_fpos) ;
 
-				iptr_type _same = +0;
-				if (_tnod[0] == _fnod[0] ||
-				    _tnod[0] == _fnod[1] ||
-				    _tnod[0] == _fnod[2] )
-					_same += +1 ;
-		        if (_tnod[1] == _fnod[0] ||
-				    _tnod[1] == _fnod[1] ||
-				    _tnod[1] == _fnod[2] )
-					_same += +1 ;
-			    if (_tnod[2] == _fnod[0] ||
-				    _tnod[2] == _fnod[1] ||
-				    _tnod[2] == _fnod[2] )
-					_same += +1 ;
-			    if (_tnod[3] == _fnod[0] ||
-				    _tnod[3] == _fnod[1] ||
-				    _tnod[3] == _fnod[2] )
-					_same += +1 ;
-			
-				return ( _same >= +2 ) ;
-			}
+                iptr_type _same = +0;
+                if (_tnod[0] == _fnod[0] ||
+                    _tnod[0] == _fnod[1] ||
+                    _tnod[0] == _fnod[2] )
+                    _same += +1 ;
+                if (_tnod[1] == _fnod[0] ||
+                    _tnod[1] == _fnod[1] ||
+                    _tnod[1] == _fnod[2] )
+                    _same += +1 ;
+                if (_tnod[2] == _fnod[0] ||
+                    _tnod[2] == _fnod[1] ||
+                    _tnod[2] == _fnod[2] )
+                    _same += +1 ;
+                if (_tnod[3] == _fnod[0] ||
+                    _tnod[3] == _fnod[1] ||
+                    _tnod[3] == _fnod[2] )
+                    _same += +1 ;
+            
+                return ( _same >= +2 ) ;
+            }
             } ;
 
         typename rdel_opts::node_kind 

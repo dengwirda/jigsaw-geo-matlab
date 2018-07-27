@@ -81,16 +81,16 @@
         
         public  :
     /*------------------------------------ "write" access */
-	    __inline_call real_type&       hval (
-		    )
-	    {   return  this->_hval ;
-	    }
+        __inline_call real_type&       hval (
+            )
+        {   return  this->_hval ;
+        }
     /*------------------------------------ "const" access */
         __inline_call real_type const& hval (
-		    ) const
-	    {   return  this->_hval ;
-	    }
-	    
+            ) const
+        {   return  this->_hval ;
+        }
+        
         } ;
         
     typedef tria_complex_edge_2<I>  edge_type ;
@@ -106,13 +106,13 @@
                                     tree_node ;
 
     typedef geom_tree::aabb_item_rect_k <
-		        real_type,
-		        iptr_type,
-	            + 2             >   tree_item ;
-	            
-	typedef geom_tree::aabb_tree<
-		        tree_item,
-		        + 2 ,
+                real_type,
+                iptr_type,
+                + 2             >   tree_item ;
+                
+    typedef geom_tree::aabb_tree<
+                tree_item,
+                + 2 ,
                 tree_node,
                 allocator       >   tree_type ; 
               
@@ -320,7 +320,7 @@
         )
     {
         for (auto _fpos = +3; _fpos-- != +0; )
-	    {
+        {
             iptr_type _fnod[ 3];
             mesh_type::tri3_type::
                 face_node(_fnod, _fpos, 2, 1);
@@ -338,9 +338,9 @@
                _ppos) ;
             
             if (_tvol < -_vtol) return false ;
-	    }
-	    
-	    return  true ;
+        }
+        
+        return  true ;
     }
    
     /*
@@ -416,28 +416,28 @@
 
         for(auto _fpos = 3; _fpos-- != 0; )
         {
-	        iptr_type  _fnod [3] ;
-	        tri3_type::
-	        face_node(_fnod, _fpos, 2, 1) ;
-	        _fnod[0] = this->_mesh.
+            iptr_type  _fnod [3] ;
+            tri3_type::
+            face_node(_fnod, _fpos, 2, 1) ;
+            _fnod[0] = this->_mesh.
             _set3[_hint].node(_fnod[0]);
-	        _fnod[1] = this->_mesh.
+            _fnod[1] = this->_mesh.
             _set3[_hint].node(_fnod[1]);
             _fnod[2] = this->_mesh.
             _set3[_hint].node(_fnod[2]);
             
-	        real_type _tvol = 
-	            geometry::tria_area_2d (
+            real_type _tvol = 
+                geometry::tria_area_2d (
                &this->_mesh.
                _set1[ _fnod[0]].pval(0),
                &this->_mesh.
                _set1[ _fnod[1]].pval(0),
                _ppos) ;
 
-	        _hsum += _tvol * this-> 
+            _hsum += _tvol * this-> 
             _mesh._set1[_fnod[2]].hval() ; 
-	        
-	        _vsum += _tvol ;
+            
+            _vsum += _tvol ;
         }
 
 

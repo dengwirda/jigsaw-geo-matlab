@@ -631,8 +631,8 @@
         _xvec[ 1] =
         _xpos[ 1] - this->_ppos[ 1];
 
-		real_type _vcos = 
-		    geometry::cosine_2d (
+        real_type _vcos = 
+            geometry::cosine_2d (
                &this->_dvec[0], _xvec) ;
 
     /*---------------------------------- keep maximum */
@@ -737,8 +737,8 @@
         _xvec[ 2] =
         _xpos[ 2] - this->_ppos[ 2];
 
-		real_type _vcos = 
-		    geometry::cosine_3d (
+        real_type _vcos = 
+            geometry::cosine_3d (
                &this->_dvec[0], _xvec) ;
 
     /*---------------------------------- keep maximum */

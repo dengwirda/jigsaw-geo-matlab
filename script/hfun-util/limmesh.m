@@ -193,7 +193,7 @@ function [ff] = limmesh( ...
         df = df./ max(abs(ff),opts.atol) ;
         
     %-- mark cells adj. to updates
-        av = df > 0.E+00 ;
+        av = df > opts.rtol;
         
         if (~isempty(e2))
         E2 = any(av(e2),2) ;

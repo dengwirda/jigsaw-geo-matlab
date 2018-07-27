@@ -78,39 +78,39 @@
         
         public  :
     /*------------------------------------ "write" access */
-	    __inline_call iptr_type&       itag (
-		    )
-	    {   return  this->_itag ;
-	    }
-	    __inline_call char_type&       feat (
-	        )
-	    {   return  this->_feat ;
-	    }
-	    __inline_call char_type&       fdim (
-		    )
-	    {   return  this->_fdim ;
-	    }
-	    __inline_call char_type&       topo (
-	        )
-	    {   return  this->_topo ;
-	    }
+        __inline_call iptr_type&       itag (
+            )
+        {   return  this->_itag ;
+        }
+        __inline_call char_type&       feat (
+            )
+        {   return  this->_feat ;
+        }
+        __inline_call char_type&       fdim (
+            )
+        {   return  this->_fdim ;
+        }
+        __inline_call char_type&       topo (
+            )
+        {   return  this->_topo ;
+        }
     /*------------------------------------ "const" access */
-	    __inline_call iptr_type const& itag (
-		    ) const
-	    {   return  this->_itag ;
-	    }
-	    __inline_call char_type const& feat (
-	        ) const
-	    {   return  this->_feat ;
-	    }
-	    __inline_call char_type const& fdim (
-		    ) const
-	    {   return  this->_fdim ;
-	    }
-	    __inline_call char_type const& topo (
-	        ) const
-	    {   return  this->_topo ;
-	    }
+        __inline_call iptr_type const& itag (
+            ) const
+        {   return  this->_itag ;
+        }
+        __inline_call char_type const& feat (
+            ) const
+        {   return  this->_feat ;
+        }
+        __inline_call char_type const& fdim (
+            ) const
+        {   return  this->_fdim ;
+        }
+        __inline_call char_type const& topo (
+            ) const
+        {   return  this->_topo ;
+        }
         
         } ;
         
@@ -125,31 +125,31 @@
         
         public  :
     /*------------------------------------ "write" access */
-	    __inline_call iptr_type&       itag (
-		    )
-	    {   return  this->_itag ;
-	    }
-	    __inline_call char_type&       topo (
-		    )
-	    {   return  this->_topo ;
-	    }
-	    __inline_call char_type&       feat (
-		    )
-	    {   return  this->_feat ;
-	    }
+        __inline_call iptr_type&       itag (
+            )
+        {   return  this->_itag ;
+        }
+        __inline_call char_type&       topo (
+            )
+        {   return  this->_topo ;
+        }
+        __inline_call char_type&       feat (
+            )
+        {   return  this->_feat ;
+        }
     /*------------------------------------ "const" access */
-	    __inline_call iptr_type const& itag (
-		    ) const
-	    {   return  this->_itag ;
-	    }
-	    __inline_call char_type const& topo (
-		    ) const
-	    {   return  this->_topo ;
-	    }
-	    __inline_call char_type const& feat (
-		    ) const
-	    {   return  this->_feat ;
-	    }
+        __inline_call iptr_type const& itag (
+            ) const
+        {   return  this->_itag ;
+        }
+        __inline_call char_type const& topo (
+            ) const
+        {   return  this->_topo ;
+        }
+        __inline_call char_type const& feat (
+            ) const
+        {   return  this->_feat ;
+        }
         
         } ;
         
@@ -164,31 +164,31 @@
         
         public  :
     /*------------------------------------ "write" access */
-	    __inline_call iptr_type&       itag (
-		    )
-	    {   return  this->_itag ;
-	    }
-	    __inline_call char_type&       topo (
-		    )
-	    {   return  this->_topo ;
-	    }
-	    __inline_call char_type&       feat (
-		    )
-	    {   return  this->_feat ;
-	    }
+        __inline_call iptr_type&       itag (
+            )
+        {   return  this->_itag ;
+        }
+        __inline_call char_type&       topo (
+            )
+        {   return  this->_topo ;
+        }
+        __inline_call char_type&       feat (
+            )
+        {   return  this->_feat ;
+        }
     /*------------------------------------ "const" access */
-	    __inline_call iptr_type const& itag (
-		    ) const
-	    {   return  this->_itag ;
-	    }
-	    __inline_call char_type const& topo (
-		    ) const
-	    {   return  this->_topo ;
-	    }
-	    __inline_call char_type const& feat (
-		    ) const
-	    {   return  this->_feat ;
-	    }
+        __inline_call iptr_type const& itag (
+            ) const
+        {   return  this->_itag ;
+        }
+        __inline_call char_type const& topo (
+            ) const
+        {   return  this->_topo ;
+        }
+        __inline_call char_type const& feat (
+            ) const
+        {   return  this->_feat ;
+        }
         
         } ;
     
@@ -202,14 +202,14 @@
                                     tree_node ;
 
     typedef geom_tree::aabb_item_rect_k <
-		        real_type,
-		        iptr_type,
-	            node_type::
-	                _dims       >   tree_item ;
-	typedef geom_tree::aabb_tree<
-		        tree_item,
-		        node_type::
-		            _dims,
+                real_type,
+                iptr_type,
+                node_type::
+                    _dims       >   tree_item ;
+    typedef geom_tree::aabb_tree<
+                tree_item,
+                node_type::
+                    _dims,
                 tree_node,
                 allocator       >   tree_type ;
 
@@ -935,7 +935,7 @@
         geom_opts &_opts
         )
     {
-		__unreferenced(_opts) ;
+        __unreferenced(_opts) ;
 
     /*------------------------- push set of feature nodes */
         for (auto _iter  = 
@@ -1369,15 +1369,15 @@
                 
                 real_type _ipos[3];
                 real_type _jpos[3];
-	            size_t    _nhit = 
-	                geometry::ball_line_3d (
-		             this->_ball, 
+                size_t    _nhit = 
+                    geometry::ball_line_3d (
+                     this->_ball, 
                      this->_rsiz, 
-		           &_geom ._tria.
-		            _set1 [_enod[0]].pval(0) ,
+                   &_geom ._tria.
+                    _set1 [_enod[0]].pval(0) ,
                    &_geom ._tria.
                     _set1 [_enod[1]].pval(0) , 
-		            _ipos, _jpos ) ;
+                    _ipos, _jpos ) ;
 
                 switch (_nhit)
                 {
@@ -1488,26 +1488,26 @@
                     _tria._set3[_tpos].node(2) ;
                 
                 real_type  _apos[3] ;
-	            real_type  _bpos[3] ;
+                real_type  _bpos[3] ;
                 real_type  _ipos[3] ;
-	            real_type  _jpos[3] ;
+                real_type  _jpos[3] ;
                 size_t     _nh = 0;
-	            if (geometry::tria_flat_3d (
-		             this->_cmid , 
+                if (geometry::tria_flat_3d (
+                     this->_cmid , 
                      this->_nvec , 
-		           &_geom ._tria.
-		            _set1 [_tnod[0]].pval(0) ,
+                   &_geom ._tria.
+                    _set1 [_tnod[0]].pval(0) ,
                    &_geom ._tria.
                     _set1 [_tnod[1]].pval(0) ,
                    &_geom ._tria.
                     _set1 [_tnod[2]].pval(0) , 
                     _apos, _bpos))
             /*--------------- circ-tria intersection test */
-	            _nh=geometry::ball_line_3d (
-		             this->_cmid , 
+                _nh=geometry::ball_line_3d (
+                     this->_cmid , 
                      this->_rsiz , 
-		            _apos, _bpos , 
-		            _ipos, _jpos ) ;
+                    _apos, _bpos , 
+                    _ipos, _jpos ) ;
 
                 switch (_nh)
                 {

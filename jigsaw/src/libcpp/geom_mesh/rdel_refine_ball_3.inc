@@ -116,13 +116,13 @@
         typename rdel_opts::node_kind 
         _kind =  rdel_opts::null_kind ;
     
-		__unreferenced( _hfun) ;
-		__unreferenced( _mode) ;
-		__unreferenced( _pfac) ;
-		__unreferenced( _eold) ;
-		__unreferenced( _fold) ; 
-		__unreferenced( _tdim) ;
-		__unreferenced( _pass) ;
+        __unreferenced( _hfun) ;
+        __unreferenced( _mode) ;
+        __unreferenced( _pfac) ;
+        __unreferenced( _eold) ;
+        __unreferenced( _fold) ; 
+        __unreferenced( _tdim) ;
+        __unreferenced( _pass) ;
         __unreferenced( _args) ;
 
         _nnew.set_count(  +0 ) ;

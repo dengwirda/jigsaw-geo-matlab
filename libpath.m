@@ -28,7 +28,6 @@ function libpath
     addpath([filepath,'/script/mesh-pred']) ;
     addpath([filepath,'/script/mesh-util']) ;
     addpath([filepath,'/script/poly-test']) ;
-    addpath([filepath,'/script/proj-util']) ;
 
 end
 

@@ -185,10 +185,10 @@ function [varargout] = jigsaw(opts)
 %       of DUAL grid geometry.
 %
 %   OPTS.OPTM_ZIP_ - {default= true} allow for "merge" oper-
-%       ations on sub-faces.
+%       ations on sub-face topology.
 %
 %   OPTS.OPTM_DIV_ - {default= true} allow for "split" oper-
-%       ations on sub-faces.
+%       ations on sub-face topology.
 %
 %   OPTIONAL fields (MISC):
 %   ----------------------
