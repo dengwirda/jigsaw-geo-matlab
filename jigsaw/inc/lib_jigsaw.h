@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 June, 2018
+     * Last updated: 31 July, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -92,8 +92,8 @@
 #   define JIGSAW_KERN_DELFRONT  +400
 #   define JIGSAW_KERN_DELAUNAY  +401
 
-#   define JIGSAW_KERN_BND_TRIA  +402
-#   define JIGSAW_KERN_BND_DUAL  +403
+#   define JIGSAW_BNDS_TRIACELL  +402
+#   define JIGSAW_BNDS_DUALCELL  +403
 
     /* 
     --------------------------------------------------------
@@ -112,7 +112,7 @@
         jigsaw_msh_t   *_geom,
     
     /* INIT (OPTIONAL): initial tria. definition. 
-     * => NULL for empty INIT. 
+     * => NULL for empty IC's. 
      */
         jigsaw_msh_t   *_init,
         
@@ -205,13 +205,12 @@
         jigsaw_msh_t   *_mesh
         ) ;
 
-    /*
     extern indx_t jigsaw_load_jig_t (
         char *_file,
         jigsaw_jig_t   *_jjig
         ) ;
-     */
-
+     
+     
 #   endif   // __LIB_JIGSAW__
 
 

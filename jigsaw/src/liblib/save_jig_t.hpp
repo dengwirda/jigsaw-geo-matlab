@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 06 June, 2018
+     * Last updated: 30 July, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -98,8 +98,15 @@
                     _jcfg->_geom_eta2 << "\n" ;
    
         /*--------------------------------- HFUN keywords */
-                _file << "HFUN_SCAL = " << 
-                    _jcfg->_hfun_scal << "\n" ;
+                if (_jcfg->_hfun_scal == 
+                        JIGSAW_HFUN_RELATIVE)
+                _file << "HFUN_SCAL = " 
+                      << "RELATIVE\n" ;
+                else
+                if (_jcfg->_hfun_scal == 
+                        JIGSAW_HFUN_ABSOLUTE)
+                _file << "HFUN_SCAL = " 
+                      << "ABSOLUTE\n" ;
                     
                 _file << "HFUN_HMIN = " << 
                     _jcfg->_hfun_hmax << "\n" ;
@@ -108,12 +115,12 @@
         
         /*--------------------------------- BNDS keywords */
                 if (_jcfg->_bnds_kern == 
-                        JIGSAW_KERN_BND_TRIA)
+                        JIGSAW_BNDS_TRIACELL)
                 _file << "BNDS_KERN = " 
                       << "BND-TRIA\n" ;
                 else
                 if (_jcfg->_bnds_kern == 
-                        JIGSAW_KERN_BND_DUAL)
+                        JIGSAW_BNDS_DUALCELL)
                 _file << "BNDS_KERN = " 
                       << "BND-DUAL\n" ;
         
@@ -134,6 +141,13 @@
                 
                 _file << "MESH_ITER = " << 
                     _jcfg->_mesh_iter << "\n" ;
+            
+                _file << "MESH_SIZ1 = " << 
+                    _jcfg->_mesh_siz1 << "\n" ;
+                _file << "MESH_SIZ2 = " << 
+                    _jcfg->_mesh_siz2 << "\n" ;
+                _file << "MESH_SIZ3 = " << 
+                    _jcfg->_mesh_siz3 << "\n" ;
             
                 _file << "MESH_TOP1 = " << 
                     _jcfg->_mesh_top1 << "\n" ;

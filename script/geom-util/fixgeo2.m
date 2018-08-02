@@ -14,17 +14,12 @@ function [node,PSLG,part] = fixgeo2(varargin)
 %-----------------------------------------------------------
 %   Darren Engwirda : 2017 --
 %   Email           : de2363@columbia.edu
-%   Last updated    : 10/10/2017
+%   Last updated    : 27/07/2018
 %-----------------------------------------------------------
-    
-    filename = mfilename('fullpath') ;
-    filepath = fileparts( filename ) ;
-    
-    addpath([filepath,'/aabb-tree']) ;
 
-%---------------------------------------------- extract ARGS
     node = []; PSLG = []; part = {};
 
+%---------------------------------------------- extract ARGS
     if (nargin>=+1), node = varargin{1}; end
     if (nargin>=+2), PSLG = varargin{2}; end
     if (nargin>=+3), part = varargin{3}; end
@@ -116,6 +111,10 @@ function [node,PSLG,part] = fixgeo2(varargin)
     %--------------------------------- iterate if any change
             break ;
         end
+        
+        
+        break ;
+        
     
     end
         
@@ -295,7 +294,7 @@ function [node,PSLG,part,done] ...
             = splitedge(node,PSLG,part)
 %SPLITEDGE "split" PSLG about intersecting edges.
 
-    done = true ;
+    done = true ; nn = +0 ;
 
     mark = zeros(size(PSLG,1),2); 
     pair = zeros(size(PSLG,1),2); 
@@ -310,8 +309,6 @@ function [node,PSLG,part,done] ...
         node(PSLG(:,2),1:2)) ;
     
 %------------------------------------- edge//edge splitting!
-    nn = +0 ;
-%---------------------------------- parse NaN delimited data
     for ii = +1 : +1 : size(lp,1)
         
         flag(PSLG(ii,1)) = ii ;

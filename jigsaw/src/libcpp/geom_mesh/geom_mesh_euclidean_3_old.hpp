@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 31 July, 2018
+     * Last updated: 14 March, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -78,39 +78,39 @@
         
         public  :
     /*------------------------------------ "write" access */
-        __inline_call iptr_type&       itag (
-            )
-        {   return  this->_itag ;
-        }
-        __inline_call char_type&       feat (
-            )
-        {   return  this->_feat ;
-        }
-        __inline_call char_type&       fdim (
-            )
-        {   return  this->_fdim ;
-        }
-        __inline_call char_type&       topo (
-            )
-        {   return  this->_topo ;
-        }
+	    __inline_call iptr_type&       itag (
+		    )
+	    {   return  this->_itag ;
+	    }
+	    __inline_call char_type&       feat (
+	        )
+	    {   return  this->_feat ;
+	    }
+	    __inline_call char_type&       fdim (
+		    )
+	    {   return  this->_fdim ;
+	    }
+	    __inline_call char_type&       topo (
+	        )
+	    {   return  this->_topo ;
+	    }
     /*------------------------------------ "const" access */
-        __inline_call iptr_type const& itag (
-            ) const
-        {   return  this->_itag ;
-        }
-        __inline_call char_type const& feat (
-            ) const
-        {   return  this->_feat ;
-        }
-        __inline_call char_type const& fdim (
-            ) const
-        {   return  this->_fdim ;
-        }
-        __inline_call char_type const& topo (
-            ) const
-        {   return  this->_topo ;
-        }
+	    __inline_call iptr_type const& itag (
+		    ) const
+	    {   return  this->_itag ;
+	    }
+	    __inline_call char_type const& feat (
+	        ) const
+	    {   return  this->_feat ;
+	    }
+	    __inline_call char_type const& fdim (
+		    ) const
+	    {   return  this->_fdim ;
+	    }
+	    __inline_call char_type const& topo (
+	        ) const
+	    {   return  this->_topo ;
+	    }
         
         } ;
         
@@ -125,31 +125,31 @@
         
         public  :
     /*------------------------------------ "write" access */
-        __inline_call iptr_type&       itag (
-            )
-        {   return  this->_itag ;
-        }
-        __inline_call char_type&       topo (
-            )
-        {   return  this->_topo ;
-        }
-        __inline_call char_type&       feat (
-            )
-        {   return  this->_feat ;
-        }
+	    __inline_call iptr_type&       itag (
+		    )
+	    {   return  this->_itag ;
+	    }
+	    __inline_call char_type&       topo (
+		    )
+	    {   return  this->_topo ;
+	    }
+	    __inline_call char_type&       feat (
+		    )
+	    {   return  this->_feat ;
+	    }
     /*------------------------------------ "const" access */
-        __inline_call iptr_type const& itag (
-            ) const
-        {   return  this->_itag ;
-        }
-        __inline_call char_type const& topo (
-            ) const
-        {   return  this->_topo ;
-        }
-        __inline_call char_type const& feat (
-            ) const
-        {   return  this->_feat ;
-        }
+	    __inline_call iptr_type const& itag (
+		    ) const
+	    {   return  this->_itag ;
+	    }
+	    __inline_call char_type const& topo (
+		    ) const
+	    {   return  this->_topo ;
+	    }
+	    __inline_call char_type const& feat (
+		    ) const
+	    {   return  this->_feat ;
+	    }
         
         } ;
         
@@ -164,31 +164,31 @@
         
         public  :
     /*------------------------------------ "write" access */
-        __inline_call iptr_type&       itag (
-            )
-        {   return  this->_itag ;
-        }
-        __inline_call char_type&       topo (
-            )
-        {   return  this->_topo ;
-        }
-        __inline_call char_type&       feat (
-            )
-        {   return  this->_feat ;
-        }
+	    __inline_call iptr_type&       itag (
+		    )
+	    {   return  this->_itag ;
+	    }
+	    __inline_call char_type&       topo (
+		    )
+	    {   return  this->_topo ;
+	    }
+	    __inline_call char_type&       feat (
+		    )
+	    {   return  this->_feat ;
+	    }
     /*------------------------------------ "const" access */
-        __inline_call iptr_type const& itag (
-            ) const
-        {   return  this->_itag ;
-        }
-        __inline_call char_type const& topo (
-            ) const
-        {   return  this->_topo ;
-        }
-        __inline_call char_type const& feat (
-            ) const
-        {   return  this->_feat ;
-        }
+	    __inline_call iptr_type const& itag (
+		    ) const
+	    {   return  this->_itag ;
+	    }
+	    __inline_call char_type const& topo (
+		    ) const
+	    {   return  this->_topo ;
+	    }
+	    __inline_call char_type const& feat (
+		    ) const
+	    {   return  this->_feat ;
+	    }
         
         } ;
     
@@ -202,14 +202,14 @@
                                     tree_node ;
 
     typedef geom_tree::aabb_item_rect_k <
-                real_type,
-                iptr_type,
-                node_type::
-                    _dims       >   tree_item ;
-    typedef geom_tree::aabb_tree<
-                tree_item,
-                node_type::
-                    _dims,
+		        real_type,
+		        iptr_type,
+	            node_type::
+	                _dims       >   tree_item ;
+	typedef geom_tree::aabb_tree<
+		        tree_item,
+		        node_type::
+		            _dims,
                 tree_node,
                 allocator       >   tree_type ;
 
@@ -442,8 +442,10 @@
             real_type _fvec[3] ;
             
             
-    //!! actually, need to project edge onto tria
-   
+            
+            //!! actually, need to project edge onto tria
+            
+            
                   
             real_type _acos = 
                 geometry::cosine_3d(
@@ -619,85 +621,24 @@
 
     /*
     --------------------------------------------------------
-     * FIND-FEAT: scan geometry and find features.
+     * SCAN-NODE: scan nodes and find features.
     --------------------------------------------------------
      */
      
     template <
         typename  geom_opts
              >
-    __normal_call void_type find_feat (
+    __normal_call void_type scan_node (
         geom_opts &_opts
         )
     {
-        containers::array<iptr_type> _eadj ;
-        containers::array<iptr_type> _fadj ;
-        containers::array<iptr_type> _set2 ;
-    
-    /*---------------------------------- init. geom feat. */
-        for (auto _iter  = 
-             this->_tria._set1.head() ;
-                  _iter != 
-             this->_tria._set1.tend() ;
-                ++_iter  )
-        {
-            if (_iter->mark() >= +0)
-            {
-                _iter->fdim () = +0  ;
-                _iter->feat () = null_feat ;
-                _iter->topo () = +2  ;
-            }
-        }
-        for (auto _iter  = 
-             this->_tria._set2.head() ;
-                  _iter != 
-             this->_tria._set2.tend() ;
-                ++_iter  )
-        {
-            if (_iter->mark() >= +0)
-            {
-                _iter->feat () = null_feat ;
-                _iter->topo () = +2  ;
-            }
-        }
-        for (auto _iter  = 
-             this->_tria._set3.head() ;
-                  _iter != 
-             this->_tria._set3.tend() ;
-                ++_iter  )
-        {
-            if (_iter->mark() >= +0)
-            {
-                _iter->feat () = null_feat ;
-                _iter->topo () = +2  ;
-            }
-        }
-  
-        if (_opts.feat() )
-        {
-    /*---------------------------------- find sharp feat. */
-        for (auto _epos  = 
-             this->_tria._set2.head() ;
-                  _epos != 
-             this->_tria._set2.tend() ;
-                ++_epos  )
-        {
-    /*---------------------------------- find sharp 0-dim */
-            if (_epos->mark() >= +0)
-            {
-            _fadj.set_count (0);
-            
-             this->_tria.edge_tri3 (
-                &_epos->node(0), _fadj) ;
-                
-            _epos->topo () =  
-               (char_type)_fadj.count() ;
+        containers::
+            array<iptr_type>  _eadj ;
+        containers::
+            array<iptr_type>  _fadj ;
 
-            _epos->feat () = edge_feat(
-                &_epos->node(0), _fadj, 
-                    _opts) ;        
-            }
-        }
+        containers::
+            array<iptr_type>  _set2 ;
         
         for (auto _npos  = 
              this->_tria._set1.head() ;
@@ -705,7 +646,6 @@
              this->_tria._set1.tend() ;
                 ++_npos  )
         {
-    /*---------------------------------- find sharp 1-dim */
             if (_npos->mark() >= +0)
             {
             _eadj.set_count (0);
@@ -725,13 +665,101 @@
                (char_type)_set2.count() ;
             
             _npos->feat () = node_feat(
-                &_npos->node(0), _set2, 
+                &_npos->node(0), _set2  , 
                     _opts) ;
             }
         }
+    }
+
+    /*
+    --------------------------------------------------------
+     * SCAN-EDGE: scan edges and find features.
+    --------------------------------------------------------
+     */
+     
+    template <
+        typename  geom_opts
+             >
+    __normal_call void_type scan_edge (
+        geom_opts &_opts
+        )
+    {
+        containers::
+            array<iptr_type>  _fadj ;
         
+        for (auto _epos  = 
+             this->_tria._set2.head() ;
+                  _epos != 
+             this->_tria._set2.tend() ;
+                ++_epos  )
+        {
+            if (_epos->mark() >= +0)
+            {
+            _fadj.set_count (0);
+            
+             this->_tria.edge_tri3 (
+                &_epos->node(0), _fadj) ;
+                
+            _epos->topo () =  
+               (char_type)_fadj.count() ;
+
+            _epos->feat () = edge_feat(
+                &_epos->node(0), _fadj  , 
+                    _opts) ;        
+            }
+        }
+    }
+
+    /*
+    --------------------------------------------------------
+     * FIND-FEAT: scan geometry and find features.
+    --------------------------------------------------------
+     */
+     
+    template <
+        typename  geom_opts
+             >
+    __normal_call void_type find_feat (
+        geom_opts &_opts
+        )
+    {
+    /*---------------------------------- init. geom feat. */
+        for (auto _iter  = 
+             this->_tria._set1.head() ;
+                  _iter != 
+             this->_tria._set1.tend() ;
+                ++_iter  )
+        {
+            _iter->fdim () = +0  ;
+            _iter->feat () = null_feat ;
+            _iter->topo () = +2  ;
+        }
+        for (auto _iter  = 
+             this->_tria._set2.head() ;
+                  _iter != 
+             this->_tria._set2.tend() ;
+                ++_iter  )
+        {
+            _iter->feat () = null_feat ;
+            _iter->topo () = +2  ;
+        }
+        for (auto _iter  = 
+             this->_tria._set3.head() ;
+                  _iter != 
+             this->_tria._set3.tend() ;
+                ++_iter  )
+        {
+            _iter->feat () = null_feat ;
+            _iter->topo () = +2  ;
         }
   
+        if (_opts.feat ())
+        {
+    /*---------------------------------- find sharp feat. */
+            scan_edge(_opts) ;
+            scan_node(_opts) ;
+        }
+        
         for (auto _iter  = 
              this->_tria._set3.head() ;
                   _iter != 
@@ -739,15 +767,12 @@
                 ++_iter  )
         {
     /*----------------------------- assign nodes to trias */
-            if (_iter->mark() >= +0)
-            {
-            this->_tria._set1[
-                _iter->node(0)].fdim() = 2;
-            this->_tria._set1[
-                _iter->node(1)].fdim() = 2;
-            this->_tria._set1[
-                _iter->node(2)].fdim() = 2;
-            }
+            this->_tria.
+           _set1[_iter->node(0)].fdim() = 2;
+            this->_tria.
+           _set1[_iter->node(1)].fdim() = 2;
+            this->_tria.
+           _set1[_iter->node(2)].fdim() = 2;
         }
         
         for (auto _iter  = 
@@ -757,15 +782,12 @@
                 ++_iter  )
         {
     /*----------------------------- assign nodes to edges */
-            if (_iter->mark() >= +0)
+            if (_iter->feat() !=  null_feat)
             {
-            if (_iter->feat() != null_feat)
-            {
-            this->_tria._set1[
-                _iter->node(0)].fdim() = 1;
-            this->_tria._set1[
-                _iter->node(1)].fdim() = 1;
-            }
+            this->_tria.
+           _set1[_iter->node(0)].fdim() = 1;
+            this->_tria.
+           _set1[_iter->node(1)].fdim() = 1;
             }
         }
         
@@ -775,13 +797,10 @@
              this->_tria._set1.tend() ;
                 ++_iter  )
         {
-            if (_iter->mark() >= +0)
-            {
-            if (_iter->feat() != null_feat)
+            if (_iter->feat() !=  null_feat)
             {
     /*----------------------------- assign nodes to feat. */
                 _iter->fdim()  = 0 ;
-            }
             }
         }
     }
@@ -823,45 +842,6 @@
             {   return _tdat.mark() >= 0 ;
             }
             } ;
-    
-    
-    /*----------------------------- setup user-feat. face */
-        for (auto _iter  = 
-             this->_tria._set2.head() ;
-                  _iter != 
-             this->_tria._set2.tend() ;
-                ++_iter  )
-        {
-            if (_iter->mark() >= +0 &&
-                _iter->itag() <= -1 )
-            {
-                this->_tria._set1[
-            _iter->node(0)].itag() =  -1 ;
-                
-                this->_tria._set1[
-            _iter->node(1)].itag() =  -1 ;
-            }
-        }
-        
-        for (auto _iter  = 
-             this->_tria._set3.head() ;
-                  _iter != 
-             this->_tria._set3.tend() ;
-                ++_iter  )
-        {
-            if (_iter->mark() >= +0 &&
-                _iter->itag() <= -1 )
-            {
-                this->_tria._set1[
-            _iter->node(0)].itag() =  -1 ;
-                
-                this->_tria._set1[
-            _iter->node(1)].itag() =  -1 ;
-            
-                this->_tria._set1[
-            _iter->node(2)].itag() =  -1 ;
-            }
-        }
     
     /*----------------------------- init. aabb at -+ inf. */
         for(auto _idim = 3; _idim-- != 0 ; )
@@ -911,31 +891,32 @@
         std::numeric_limits<real_type>
             ::epsilon(),(real_type).8) ;
   
-        real_type  _BTOL[3] ;
-        _BTOL[0] =( this->_bmax[ 0] - 
-                    this->_bmin[ 0] )
-                 * _RTOL ;
-        _BTOL[1] =( this->_bmax[ 1] - 
-                    this->_bmin[ 1] )
-                 * _RTOL ;
-        _BTOL[2] =( this->_bmax[ 2] - 
-                    this->_bmin[ 2] )
-                 * _RTOL ;
-      
+        real_type _BTOL[3] ;
+        _BTOL[0] = this->_bmax[ 0] - 
+                   this->_bmin[ 0] ;
+        _BTOL[1] = this->_bmax[ 1] - 
+                   this->_bmin[ 1] ;
+        _BTOL[2] = this->_bmax[ 2] - 
+                   this->_bmin[ 2] ;
+  
+        _BTOL[0]*= _RTOL ;
+        _BTOL[1]*= _RTOL ;
+        _BTOL[2]*= _RTOL ;
+  
     /*-------------------- find sharp "features" in geom. */    
         find_feat (_opts);
-      
+        
     /*-------------------- make aabb-tree and init. bbox. */
         aabb_mesh(this->_tria._set1, 
                   this->_tria._set2, 
-                  this->_ebox,
-       _BTOL,this->_nbox,edge_pred () 
+                  this->_ebox,_BTOL,
+                  this->_nbox,edge_pred() 
                  ) ;
                   
         aabb_mesh(this->_tria._set1, 
                   this->_tria._set3, 
-                  this->_tbox,
-       _BTOL,this->_nbox,tri3_pred () 
+                  this->_tbox,_BTOL,
+                  this->_nbox,tri3_pred() 
                  ) ;
     }
 
@@ -954,7 +935,7 @@
         geom_opts &_opts
         )
     {
-        __unreferenced(_opts) ;
+		__unreferenced(_opts) ;
 
     /*------------------------- push set of feature nodes */
         for (auto _iter  = 
@@ -965,10 +946,9 @@
         {
             if (_iter->mark() >= +0 )
             {
-            if (_opts .feat() && 
-                _iter->feat() != null_feat)
+            if (_iter->feat() != null_feat ||
+                _iter->itag() <= -1 )
             {
-    /*----------------------------- push any 'real' feat. */
             iptr_type _node = -1 ;
             if (_mesh._tria.push_node (
                &_iter->pval(0), _node))
@@ -983,28 +963,7 @@
                         
                 _mesh._tria.node
                     (_node)->topo() 
-                        = _iter->topo() ;
-            }
-            }
-            else
-            if (_iter->itag() <= -1 )
-            {
-    /*----------------------------- push any 'user' feat. */
-            iptr_type _node = -1 ;
-            if (_mesh._tria.push_node (
-               &_iter->pval(0), _node))
-            {
-                _mesh._tria.node
-                    (_node)->fdim() 
-                        = _iter->fdim() ;
-                        
-                _mesh._tria.node
-                    (_node)->feat() 
-                        = _iter->feat() ;
-                        
-                _mesh._tria.node
-                    (_node)->topo() 
-                        = _iter->topo() ;
+                        = _iter->topo() ;          
             }
             }
             }
@@ -1410,15 +1369,15 @@
                 
                 real_type _ipos[3];
                 real_type _jpos[3];
-                size_t    _nhit = 
-                    geometry::ball_line_3d (
-                     this->_ball, 
+	            size_t    _nhit = 
+	                geometry::ball_line_3d (
+		             this->_ball, 
                      this->_rsiz, 
-                   &_geom ._tria.
-                    _set1 [_enod[0]].pval(0) ,
+		           &_geom ._tria.
+		            _set1 [_enod[0]].pval(0) ,
                    &_geom ._tria.
                     _set1 [_enod[1]].pval(0) , 
-                    _ipos, _jpos ) ;
+		            _ipos, _jpos ) ;
 
                 switch (_nhit)
                 {
@@ -1529,26 +1488,26 @@
                     _tria._set3[_tpos].node(2) ;
                 
                 real_type  _apos[3] ;
-                real_type  _bpos[3] ;
+	            real_type  _bpos[3] ;
                 real_type  _ipos[3] ;
-                real_type  _jpos[3] ;
+	            real_type  _jpos[3] ;
                 size_t     _nh = 0;
-                if (geometry::tria_flat_3d (
-                     this->_cmid , 
+	            if (geometry::tria_flat_3d (
+		             this->_cmid , 
                      this->_nvec , 
-                   &_geom ._tria.
-                    _set1 [_tnod[0]].pval(0) ,
+		           &_geom ._tria.
+		            _set1 [_tnod[0]].pval(0) ,
                    &_geom ._tria.
                     _set1 [_tnod[1]].pval(0) ,
                    &_geom ._tria.
                     _set1 [_tnod[2]].pval(0) , 
                     _apos, _bpos))
             /*--------------- circ-tria intersection test */
-                _nh=geometry::ball_line_3d (
-                     this->_cmid , 
+	            _nh=geometry::ball_line_3d (
+		             this->_cmid , 
                      this->_rsiz , 
-                    _apos, _bpos , 
-                    _ipos, _jpos ) ;
+		            _apos, _bpos , 
+		            _ipos, _jpos ) ;
 
                 switch (_nh)
                 {

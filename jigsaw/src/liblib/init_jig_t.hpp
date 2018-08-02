@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 12 April, 2018
+     * Last updated: 31 July, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -64,7 +64,7 @@
         _jcfg->_verbosity = (indx_t) +0 ;
     
     /*------------------------------------- BNDS keywords */
-        _jcfg->_bnds_kern = JIGSAW_KERN_BND_TRIA ;
+        _jcfg->_bnds_kern = JIGSAW_BNDS_TRIACELL ;
     
     /*------------------------------------- GEOM keywords */
         _jcfg->_geom_seed = (indx_t) +8 ;
@@ -91,6 +91,16 @@
         _jcfg->_mesh_rad3 = (real_t) +2.05 ;
         _jcfg->_mesh_off2 = (real_t) +0.90 ;
         _jcfg->_mesh_off3 = (real_t) +1.10 ;
+     
+        real_t _SIZ1 = +1. *   4./3. ;
+        real_t _SIZ2 = +.5 *  (4./3. +
+            2. / (1.+std::sqrt(1./3.))) ;
+        real_t _SIZ3 = +.5 *  (4./3. +
+            2. / (1.+std::sqrt(3./8.))) ;
+        
+        _jcfg->_mesh_siz1 = (real_t) _SIZ1 ;
+        _jcfg->_mesh_siz2 = (real_t) _SIZ2 ;
+        _jcfg->_mesh_siz3 = (real_t) _SIZ3 ;
         
         _jcfg->_mesh_snk2 = (real_t) +0.20 ;
         _jcfg->_mesh_snk3 = (real_t) +0.33 ;
@@ -113,6 +123,10 @@
     }
     
 #   endif//__lib_jigsaw
+
+#   undef  SIZ1
+#   undef  SIZ2
+#   undef  SIZ3
 
 #   endif
     

@@ -28,8 +28,8 @@
      * JIGSAW: an unstructured mesh generation package.
     --------------------------------------------------------
      *
-     * JIGSAW release 0.9.6.x
-     * Last updated: 10 June, 2018
+     * JIGSAW release 0.9.7.x
+     * Last updated: 31 July, 2018
      *
      * Copyright 2013 -- 2018
      * Darren Engwirda
@@ -101,7 +101,7 @@
      */
 
 
-#   define __JGSWVSTR "JIGSAW VERSION 0.9.6"
+#   define __JGSWVSTR "JIGSAW VERSION 0.9.7"
 
 
     /*---------------------------------- for i/o on files */
@@ -175,16 +175,6 @@
     iptr_type static constexpr 
         __invalid_argument      = +4 ;
 
-    /*---------------------------------- jigsaw lib util. */
-
-#   include "liblib/init_jig_t.hpp"
-#   include "liblib/init_msh_t.hpp"
-
-#   include "liblib/load_jig_t.hpp"
-#   include "liblib/load_msh_t.hpp"
-
-#   include "liblib/save_jig_t.hpp"
-#   include "liblib/save_msh_t.hpp"
  
     /*
     --------------------------------------------------------
@@ -212,9 +202,9 @@
     /*--------------------------------- geom-bnd. kernels */
         struct bnds_pred {
             enum enum_data {
-                nullkern ,    
-                bnd_tria ,
-                bnd_dual
+            nullkern ,    
+            bnd_tria = JIGSAW_BNDS_TRIACELL,
+            bnd_dual = JIGSAW_BNDS_DUALCELL
             } ;
             } ;
 
@@ -224,9 +214,9 @@
     /*--------------------------------- mesh-gen. kernels */
         struct mesh_pred {
             enum enum_data {
-                nullkern ,    
-                delfront ,
-                delaunay
+            nullkern ,    
+            delfront = JIGSAW_KERN_DELFRONT,
+            delaunay = JIGSAW_KERN_DELAUNAY
             } ;
             } ;
 
@@ -236,9 +226,9 @@
     /*--------------------------------- H(x) fun. scaling */
         struct hfun_scal { 
             enum enum_data {
-                nullscal ,
-                absolute ,
-                relative
+            nullscal ,
+            absolute = JIGSAW_HFUN_ABSOLUTE,
+            relative = JIGSAW_HFUN_RELATIVE
             } ;
             } ;
         
@@ -699,6 +689,15 @@
  
 #   ifdef __lib_jigsaw
 
+#   include "liblib/init_jig_t.hpp"
+#   include "liblib/init_msh_t.hpp"
+
+#   include "liblib/load_jig_t.hpp"
+#   include "liblib/load_msh_t.hpp"
+
+#   include "liblib/save_jig_t.hpp"
+#   include "liblib/save_msh_t.hpp"
+ 
     __normal_call
         iptr_type jigsaw_make_mesh (    // lib-jigsaw
         jigsaw_jig_t *_jjig ,
@@ -985,6 +984,8 @@
         
         if (_gmsh != nullptr )
         {
+            if(_jcfg._rdel_opts.iter() != +0 )
+            {
     /*--------------------------------- call mesh routine */
             _jlog.push (  __jloglndv    "\n" ) ;
             _jlog.push (
@@ -1006,6 +1007,7 @@
             _ttoc   = _time.now();
             _jlog.push(dump_time(_ttic, _ttoc));
 #           endif//__use_timers
+            }
         }
         
         if (_gmsh != nullptr )

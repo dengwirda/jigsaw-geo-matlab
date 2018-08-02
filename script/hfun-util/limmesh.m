@@ -25,7 +25,7 @@ function [ff] = limmesh( ...
 %-----------------------------------------------------------
 %   Darren Engwirda
 %   github.com/dengwirda/jigsaw-matlab
-%   23-Jul-2018
+%   30-Jul-2018
 %   de2363@columbia.edu
 %-----------------------------------------------------------
 %
@@ -228,12 +228,8 @@ function [ff] = limit_edge_2(pp,e2,ff,DFDX,opts)
     
     up = f0<ff(e2(:,2),:);
 
-    fb = local_edge_2(  ...
-        pp(e2(up,1),:), ...
-        pp(e2(up,2),:), ...
-        ff(e2(up,1),:), ...
-        ff(e2(up,2),:), ...
-        DFDX) ;
+    fb = local_edge_2( ...
+        pp,e2(up,:),ff,  [1,2],DFDX) ;
         
     Fb = accumarray(e2(up,2), ...
         fb,[size(pp,1),1],@min,+inf) ;
@@ -242,12 +238,8 @@ function [ff] = limit_edge_2(pp,e2,ff,DFDX,opts)
     
     up = f0<ff(e2(:,1),:);
     
-    fb = local_edge_2(  ...
-        pp(e2(up,2),:), ...
-        pp(e2(up,1),:), ...
-        ff(e2(up,2),:), ...
-        ff(e2(up,1),:), ...
-        DFDX) ;
+    fb = local_edge_2( ...
+        pp,e2(up,:),ff,  [2,1],DFDX) ;
         
     Fb = accumarray(e2(up,1), ...
         fb,[size(pp,1),1],@min,+inf) ;
@@ -263,14 +255,8 @@ function [ff] = limit_tria_3(pp,t3,ff,DFDX,opts)
     
     up = f0<ff(t3(:,3),:); 
 
-    fb = local_tria_3(  ...
-        pp(t3(up,1),:), ...
-        pp(t3(up,2),:), ...
-        pp(t3(up,3),:), ...
-        ff(t3(up,1),:), ...
-        ff(t3(up,2),:), ...
-        ff(t3(up,3),:), ...
-        DFDX) ;
+    fb = local_tria_3( ...
+        pp,t3(up,:),ff,[1,2,3],DFDX) ;
         
     Fb = accumarray(t3(up,3), ...
         fb,[size(pp,1),1],@min,+inf) ;
@@ -280,13 +266,7 @@ function [ff] = limit_tria_3(pp,t3,ff,DFDX,opts)
     up = f0<ff(t3(:,2),:);
                  
     fb = local_tria_3(  ...
-        pp(t3(up,3),:), ...
-        pp(t3(up,1),:), ...
-        pp(t3(up,2),:), ...
-        ff(t3(up,3),:), ...
-        ff(t3(up,1),:), ...
-        ff(t3(up,2),:), ...
-        DFDX) ;
+        pp,t3(up,:),ff,[3,1,2],DFDX) ;
                  
     Fb = accumarray(t3(up,2), ...
         fb,[size(pp,1),1],@min,+inf) ;
@@ -296,13 +276,7 @@ function [ff] = limit_tria_3(pp,t3,ff,DFDX,opts)
     up = f0<ff(t3(:,1),:);
     
     fb = local_tria_3(  ...
-        pp(t3(up,2),:), ...
-        pp(t3(up,3),:), ...
-        pp(t3(up,1),:), ...
-        ff(t3(up,2),:), ...
-        ff(t3(up,3),:), ...
-        ff(t3(up,1),:), ...
-        DFDX) ;
+        pp,t3(up,:),ff,[2,3,1],DFDX) ;
                  
     Fb = accumarray(t3(up,1), ...
         fb,[size(pp,1),1],@min,+inf) ;
@@ -326,6 +300,86 @@ function [ff] = limit_quad_4(pp,q4,ff,DFDX,opts)
     ff = limit_tria_3(pp, ...
         q4(:,[2,3,4]),ff,DFDX,opts);
      
+end
+
+function [fb] = local_edge_2(pp,e2,ff,ix,gmax)
+%DFDXEDGE-2 single-element eikonal solver for EDGE-2 cells
+%embedded in R^d. 
+
+%---------------------- find 'limited' extrap. to f2
+    p1 = pp(e2(:,ix(1)),:);
+    p2 = pp(e2(:,ix(2)),:);
+
+    f1 = ff(e2(:,ix(1)),:);
+
+    fb = f1 + gmax .* ...
+        sqrt( sum( (p2-p1).^2, +2) ) ;
+
+end
+
+function [fb] = local_tria_3(pp,t3,ff,ix,gmax)
+%LOCAL-TRIA-3 single-element eikonal solver for TRIA-3 cells
+%embedded in R^d. 
+
+%---------------------- find 'limited' extrap. to f3
+    p1 = pp(t3(:,ix(1)),:);
+    p2 = pp(t3(:,ix(2)),:);
+    p3 = pp(t3(:,ix(3)),:);
+
+    f1 = ff(t3(:,ix(1)),:);
+    f2 = ff(t3(:,ix(2)),:);
+
+    pp21 = p2-p1;   
+    pp13 = p1-p3;
+    
+    AA = sum(pp13.*pp21,2);
+    BB = sum(pp21.^2,2);
+    CC = sum(pp13.^2,2);
+    
+    ff21 = f2-f1;
+    
+    At = BB.^2-(ff21./gmax).^2 .* BB;
+    Bt = 2.*AA.*(BB-(ff21./gmax).^2);
+    Ct = AA.^2-(ff21./gmax).^2 .* CC;
+    
+    tp = ones (size(f1));
+    tm = zeros(size(f1));
+    
+    sq = Bt.^2 - 4.*At.*Ct;
+    ok = sq >= 0. ;
+
+    tp(ok) = (-Bt(ok)+sqrt(sq(ok))) ...
+        ./ (2. * At(ok));
+    tm(ok) = (-Bt(ok)-sqrt(sq(ok))) ...
+        ./ (2. * At(ok));
+    
+    tp = max(0.,min(1.,tp));
+    tm = max(0.,min(1.,tm));
+    
+    Tp = tp(:,ones(1,size(p1,2))) ;
+    Tm = tm(:,ones(1,size(p1,2))) ;
+    
+    dp = sqrt(sum( ...
+        (pp13+Tp.*pp21).^2,2)) ;
+    dm = sqrt(sum( ...
+        (pp13+Tm.*pp21).^2,2)) ;
+        
+    fp = f1 + tp.*ff21 + gmax .* dp ;
+    fm = f1 + tm.*ff21 + gmax .* dm ;
+   
+    fb = min(fp,fm) ;
+    
+end
+
+function [fb] = local_tria_4(pp,t4,ff,ix,gmax)
+%LOCAL-TRIA-4 single-element eikonal solver for TRIA-4 cells
+%embedded in R^d. 
+
+%---------------------- find 'limited' extrap. to f4
+
+    %%!! TODO...
+
+
 end
 
 function [op] = setopts (op)

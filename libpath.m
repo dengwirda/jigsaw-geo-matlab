@@ -19,6 +19,7 @@ function libpath
     filepath = fileparts( filename ) ;
     
     addpath([filepath,'/script/aabb-tree']) ;
+    addpath([filepath,'/script/draw-util']) ;
     addpath([filepath,'/script/geom-util']) ;
     addpath([filepath,'/script/hfun-util']) ;
     addpath([filepath,'/script/math-util']) ;

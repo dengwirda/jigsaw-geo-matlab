@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 June, 2018
+     * Last updated: 31 July, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -54,7 +54,7 @@
 
 #   ifdef  __lib_jigsaw
 
-    #include "../msh_read.hpp"
+#   include  "../msh_read.hpp"
 
     indx_t jigsaw_load_msh_t (              // load msh_t
         char *_fchr,
@@ -454,7 +454,7 @@
                 _ival< this->_nval; ++_ival)
             {
                 this->_jmsh->_value.
-                _data[_ival*_ipos] = _vdat[_ival];
+            _data[_ipos*(_ival+1)] = _vdat[_ival];
             }
             
             }

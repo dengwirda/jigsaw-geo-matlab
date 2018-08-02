@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 12 April, 2018
+     * Last updated: 31 July, 2018
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -691,6 +691,9 @@
     "#    |ITER.|      |DEL-1|      |DEL-2|      |DEL-3| \n"
     "#------------------------------------------------------------\n"
             ) ;
+
+    /*------------------------------ ensure deterministic */  
+        std::srand( +0 ) ;
 
     /*------------------------------ init. list workspace */
         iptr_list _nnew, _nold ;

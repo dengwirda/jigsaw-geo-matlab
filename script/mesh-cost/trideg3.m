@@ -14,7 +14,7 @@ function [vdeg] = trideg3(pp,t3)
 
 %   Darren Engwirda : 2017 --
 %   Email           : de2363@columbia.edu
-%   Last updated    : 10/07/2018
+%   Last updated    : 29/07/2018
 
 %---------------------------------------------- basic checks    
     if (~isnumeric(pp) || ~isnumeric(t3) )
@@ -46,6 +46,8 @@ function [vdeg] = trideg3(pp,t3)
     vdeg = sum(sparse( ...
         t3(:,1:4),repmat( ...
             (1:ntri)',1,4),+1,nvrt,ntri),2) ;
+            
+    vdeg = full(vdeg);
     
 end
 

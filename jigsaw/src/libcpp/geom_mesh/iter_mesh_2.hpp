@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 02 May, 2018
+     * Last updated: 31 July, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -835,9 +835,7 @@
                   _iter != _aset.tend();
                 ++_iter  )
         {
-            size_t _long = std::max (
-               (size_t)+1024, 
-               (size_t)_aset.count()/4 ) ;
+            size_t _long =  +1024 ;
         
             auto _sift = std::min (
                  _long , 
@@ -908,11 +906,10 @@
                     _TMIN, _TLIM,
                     _DMIN, _DLIM ) ;
             }           
-            if (_okay) 
+            if (_okay || _TMIN <= _TLIM)
             {
         /*---------------- update when state is improving */
-                _hval[*_apos] = 
-                    (real_type)-1. ;
+                _hval[*_apos] = (real_type)-1. ;
             
                 if (std::abs(
                    _nmrk[*_apos]) != _iout)
@@ -951,7 +948,7 @@
                     _dold, _dnew, 
                     _DMIN, _DLIM ) ;
             }           
-            if (_okay) 
+            if (_okay || _DMIN <= _DLIM) 
             {
         /*---------------- update when state is improving */
                 if (std::abs(
@@ -1430,6 +1427,9 @@
         __unreferenced(_time) ; // why does MSVC need this??
     #   endif//__use_timers
     
+    /*------------------------------ ensure deterministic */  
+        std::srand( +0 ) ;
+    
     /*------------------------------ push boundary marker */    
         iptr_list _nmrk, _emrk, _tmrk, 
                   _nset, _tset;
@@ -1534,9 +1534,7 @@
                     _Qmin + _iter * _Qinc
                         ) ;
             
-            real_type _DLIM = + 0.99250 ;            
-        //!!real_type _DLIM = + 0.98750 ;
-        //!!real_type _DLIM = + 1.00000 ;
+            real_type _DLIM = + 0.99250 ;
     
     /*------------------------------ update mesh geometry */
     #       ifdef  __use_timers
