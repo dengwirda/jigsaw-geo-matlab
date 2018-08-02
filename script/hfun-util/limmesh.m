@@ -25,7 +25,7 @@ function [ff] = limmesh( ...
 %-----------------------------------------------------------
 %   Darren Engwirda
 %   github.com/dengwirda/jigsaw-matlab
-%   30-Jul-2018
+%   02-Aug-2018
 %   de2363@columbia.edu
 %-----------------------------------------------------------
 %
@@ -257,32 +257,23 @@ function [ff] = limit_tria_3(pp,t3,ff,DFDX,opts)
 
     fb = local_tria_3( ...
         pp,t3(up,:),ff,[1,2,3],DFDX) ;
-        
-    Fb = accumarray(t3(up,3), ...
-        fb,[size(pp,1),1],@min,+inf) ;
-    
-    ff = min(Fb,ff) ;
+      
+    ff = limit_vals_k(ff,fb,t3(up,3));
                  
     up = f0<ff(t3(:,2),:);
                  
     fb = local_tria_3(  ...
         pp,t3(up,:),ff,[3,1,2],DFDX) ;
                  
-    Fb = accumarray(t3(up,2), ...
-        fb,[size(pp,1),1],@min,+inf) ;
-    
-    ff = min(Fb,ff) ;
+    ff = limit_vals_k(ff,fb,t3(up,2));
     
     up = f0<ff(t3(:,1),:);
     
     fb = local_tria_3(  ...
         pp,t3(up,:),ff,[2,3,1],DFDX) ;
-                 
-    Fb = accumarray(t3(up,1), ...
-        fb,[size(pp,1),1],@min,+inf) ;
+        
+    ff = limit_vals_k(ff,fb,t3(up,1));
     
-    ff = min(Fb,ff) ;
-
 end
 
 function [ff] = limit_quad_4(pp,q4,ff,DFDX,opts)
@@ -300,6 +291,29 @@ function [ff] = limit_quad_4(pp,q4,ff,DFDX,opts)
     ff = limit_tria_3(pp, ...
         q4(:,[2,3,4]),ff,DFDX,opts);
      
+end
+
+function [ff] = limit_vals_k(ff,fb,ip)
+%LIMIT-VALS-K 'gather' gradient-limiter at vertices.
+ 
+    if ( exist( ...
+        'OCTAVE_VERSION','builtin') <= +0)
+        
+        for ii = +1:length(ip)
+            if (fb(ii) < ff(ip(ii)))
+                ff(ip(ii)) = fb(ii);
+            end
+        end
+        
+    else
+ 
+        Fb = accumarray(ip, ...
+            fb,[size(ff,1),1],@min,+inf) ;
+    
+        ff = min(Fb, ff) ;
+    
+    end
+    
 end
 
 function [fb] = local_edge_2(pp,e2,ff,ix,gmax)
