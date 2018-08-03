@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 22 March, 2018
+     * Last updated: 22 April, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -56,13 +56,15 @@
         mesh_type &_mesh , 
         size_type &_hfun ,
         pred_type &_pred ,
+        real_list &_hval ,
+        iter_opts &_opts ,
         iptr_type  _enum ,
         bool_type &_okay ,
         iptr_list &_tset ,
         real_list &_csrc ,
         real_list &_cdst ,
         real_type  _lmin
-            = (real_type) +7.50E-01,
+            = (real_type) +0.50E+00,
         real_type  _good 
             = (real_type) +9.75E-01,
         real_type  _qinc 
@@ -70,6 +72,7 @@
         )
     {    
         __unreferenced(_pred) ;         // for MSVC...
+        __unreferenced(_opts) ;
 
     /*--------------------------------- get edge indexing */
          auto _edge = 
@@ -166,15 +169,6 @@
             _itri->node(2)].pval(0),
             true) ;
 
-        real_type _ipwr = (real_type)+0.;
-        _ipwr += _mesh._set1[
-            _itri->node(0)].pval(_dims) ;
-        _ipwr += _mesh._set1[
-            _itri->node(1)].pval(_dims) ;
-        _ipwr += _mesh._set1[
-            _itri->node(2)].pval(_dims) ;
-        _ipwr /= (real_type) +3. ;
-
         real_type _jbal[_dims+1] ;
         _pred.perp_ball(_jbal ,
            &_mesh._set1[
@@ -184,15 +178,6 @@
            &_mesh._set1[
             _jtri->node(2)].pval(0),
             true) ;
-        
-        real_type _jpwr = (real_type)+0.;
-        _jpwr += _mesh._set1[
-            _jtri->node(0)].pval(_dims) ;
-        _jpwr += _mesh._set1[
-            _jtri->node(1)].pval(_dims) ;
-        _jpwr += _mesh._set1[
-            _jtri->node(2)].pval(_dims) ;
-        _jpwr /= (real_type) +3. ;
         
     /*--------------------------------- get adjacent apex */
         iptr_type _inod [3] ;
@@ -237,9 +222,7 @@
         iptr_type static 
             constexpr _INUM = (iptr_type)+16 ;
         
-        _ball[_dims+0] = 
-        (real_type)+.5 * _ipwr +
-        (real_type)+.5 * _jpwr ;
+        _ball[_dims+0] = (real_type)+0. ;
         
         for (auto _iloc = +0; _iloc != _INUM ; 
                 ++_iloc )
@@ -310,8 +293,7 @@
         _ndat.hidx() = 
             size_type::null_hint() ;
             
-        _ndat.fdim() =   +2;
-               
+        _ndat.fdim() =   +2;             
         _ndat.feat() = 
             mesh::null_feat;
                
@@ -323,7 +305,13 @@
          
         iptr_type _nnew = 
             _mesh.push_node(_ndat) ;
-   
+            
+        _hval.set_count(std::max (
+            _nnew + 1, 
+        (iptr_type)_hval.count())) ;
+        
+        _hval[_nnew] = (real_type)-1. ;
+        
     /*--------------------------------- redo mesh indexes */            
         _mesh._pop_tri3(_tset[0]);
         _mesh._pop_tri3(_tset[1]);

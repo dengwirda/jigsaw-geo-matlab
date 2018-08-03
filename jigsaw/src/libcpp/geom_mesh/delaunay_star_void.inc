@@ -52,22 +52,22 @@
     
     template <
     typename      list_type 
-			 >
-	__normal_call void_type star_tria_void (
-		iptr_list &_tset ,
-		iptr_type  _npos ,
-		char_type  _flag ,
-	    list_type *_tnew = nullptr ,
+             >
+    __normal_call void_type star_tria_void (
+        iptr_list &_tset ,
+        iptr_type  _npos ,
+        char_type  _flag ,
+        list_type *_tnew = nullptr ,
         list_type *_told = nullptr
-		)
+        )
     {
     /*---------------------- mark list of trias in cavity */
         for(auto _iter  = _tset.head(); 
                  _iter != _tset.tend(); 
                ++_iter  )
-		{
-			__mark(*_iter) += _flag ;
-		}
+        {
+            __mark(*_iter) += _flag ;
+        }
 
     /*---------------------- scan list of trias in cavity */
         iptr_type static constexpr
@@ -80,28 +80,28 @@
         for(auto _iter  = _tset.head() ; 
                     _iter != _tset.tend() ; 
                         ++_iter  )
-		{
+        {
             if (__mark(*_iter)<_flag) continue ;
 
         /*-------------------------- scan for cavity face */
-			for(iptr_type _fpos = tria_dims +1 ; 
+            for(iptr_type _fpos = tria_dims +1 ; 
                           _fpos-- != +0 ; )
-			{
-				iptr_type  _tadj, _fadj, _fmrk ;
-				find_pair(*_iter, _tadj, 
-					_fpos, _fadj, _fmrk) ;
+            {
+                iptr_type  _tadj, _fadj, _fmrk ;
+                find_pair(*_iter, _tadj, 
+                    _fpos, _fadj, _fmrk) ;
 
             /*--------------- continue if cavity face */
-				if (_tadj == this->null_flag() || 
-					__mark(_tadj) <    _flag )
-				{
+                if (_tadj == this->null_flag() || 
+                    __mark(_tadj) <    _flag )
+                {
 
                 iptr_type _tria = _get_tria () ;
 
             /*--------------- push new tria onto list */
-				if (_tnew != nullptr)
+                if (_tnew != nullptr)
                 {
-				    _tnew->push_tail(_tria) ;
+                    _tnew->push_tail(_tria) ;
                 }
             /*------------------------- face indexing */
                 iptr_type _tnod[FACE_SIZE];
@@ -116,30 +116,30 @@
                         tria( *_iter)->
                             node(_tnod[ _inod]);
                 }
-				_tnod[ tria_dims] = _npos ;
+                _tnod[ tria_dims] = _npos ;
 
             /*------------------------- node indexing */
                 for(_inod = tria_dims + 1 ;
-				    _inod-- != +0 ; )
-				{
-					node(
+                    _inod-- != +0 ; )
+                {
+                    node(
                    _tnod[_inod])->next()=_tria ;
-				}
+                }
                 for(_inod = tria_dims + 1 ; 
                     _inod-- != +0 ; )
                 {
-					tria(_tria)->
+                    tria(_tria)->
                     node(_inod) =  _tnod[_inod];
                 }
                 
             /*---------------- push about cavity boundary */
-				push_pair(_tria, _tadj, 0 , 
-					      _fadj, _fmrk) ;
+                push_pair(_tria, _tadj, 0 , 
+                          _fadj, _fmrk) ;
 
             /*---------------- face indexing for new tria */
-				for(iptr_type _posf = tria_dims + 1; 
+                for(iptr_type _posf = tria_dims + 1; 
                               _posf-- != +1 ; )
-				{
+                {
                     iptr_type _fnod[FACE_SIZE];
                     tria_type::face_node(
                         _fnod,_posf ,
@@ -170,26 +170,26 @@
                         push_pair(_fdat._tadj ,
                             _same._tadj, 
                             _fdat._fadj, 
-					        _same._fadj, +1 ) ;
+                            _same._fadj, +1 ) ;
                     }
-				}
-				}
-			}
-		}
+                }
+                }
+            }
+        }
 
     /*------------------------------ un-mark cavity trias */
-		for(auto _iter  = _tset.head() ; 
+        for(auto _iter  = _tset.head() ; 
                  _iter != _tset.tend() ; 
                ++_iter  )
-		{
+        {
             if (__mark(*_iter) >= _flag)
             {
-	            __mark(*_iter) -= _flag;
+                __mark(*_iter) -= _flag;
     
                 if (_told != nullptr)
                 {
             /*------------------ push "old" tria list */
-			        _told->push_tail(*_iter) ;
+                    _told->push_tail(*_iter) ;
                 }
                 else
                 {
@@ -197,10 +197,10 @@
                     _put_tria(*_iter)  ;
                 }
             }
-		}
+        }
 
     /*------------------------------ mesh is now delaunay */
-	}
-	
-	
-	
+    }
+    
+    
+    

@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 09 September, 2017
+     * Last updated: 13 April, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -54,7 +54,7 @@
     __normal_call 
     typename rdel_opts::node_kind _bad_edge (
         geom_type &_geom ,
-        size_type &_size ,
+        hfun_type &_hfun ,
         mesh_type &_mesh ,
         mode_type  _mode ,
         typename 
@@ -74,8 +74,8 @@
         fscr_list &_fscr ,
         tdat_list &_tcav ,
         tscr_list &_tscr ,
-        nbal_list &_nbal ,
-        ebal_list &_ebal ,
+        ball_list &_bcav ,
+        ball_list &_bscr ,
         char_type &_tdim ,
         iptr_type  _pass ,
         rdel_opts &_args
@@ -98,8 +98,8 @@
         _tscr.set_count( +0) ;
         _tcav.set_count( +0) ;
         
-        _nbal.set_count( +0) ;
-        _ebal.set_count( +0) ;
+        _bscr.set_count( +0) ;
+        _bcav.set_count( +0) ;
 
     /*--------------------- pop() leading element from PQ */
         iptr_type _hint= -1;
@@ -125,7 +125,7 @@
             /*----------------- new steiner vertex coords */
                 _kind = 
                  mesh_pred::edge_node (
-                    _geom, _size , 
+                    _geom, _hfun , 
                     _mesh, _qdat , 
                     _eptr->_data._tadj , 
                     _eptr->_data._eadj , 
@@ -159,7 +159,7 @@
  
     /*------------------------- push node via constraints */
         _kind = push_node( _geom , 
-            _size , _mesh, _mode , 
+            _hfun , _mesh, _mode , 
             +1    , _ppos, _kind ,
             _pedg , _pfac,
             _nnew , _nold,
@@ -167,7 +167,7 @@
             _eold , _ecav, _escr , 
             _fold , _fcav, _fscr , 
             _tcav , _tscr,
-            _nbal , _ebal, _hint ,
+            _bcav , _bscr, _hint ,
             _tdim , _pass, _args ) ;
             
         if (_kind != rdel_opts::null_kind)
@@ -192,7 +192,7 @@
     __normal_call 
     typename rdel_opts::node_kind _bad_face (
         geom_type &_geom ,
-        size_type &_size ,
+        hfun_type &_hfun ,
         mesh_type &_mesh ,
         mode_type  _mode ,
         typename 
@@ -212,8 +212,8 @@
         fscr_list &_fscr ,
         tdat_list &_tcav ,
         tscr_list &_tscr ,
-        nbal_list &_nbal ,
-        ebal_list &_ebal ,
+        ball_list &_bcav ,
+        ball_list &_bscr ,
         char_type &_tdim ,
         iptr_type  _pass ,
         rdel_opts &_args
@@ -236,8 +236,8 @@
         _tscr.set_count( +0) ;
         _tcav.set_count( +0) ;
         
-        _nbal.set_count( +0) ;
-        _ebal.set_count( +0) ;
+        _bscr.set_count( +0) ;
+        _bcav.set_count( +0) ;
 
     /*--------------------- pop() leading element from PQ */
         iptr_type _hint= -1;
@@ -264,7 +264,7 @@
             /*----------------- new steiner vertex coords */
                 _kind = 
                  mesh_pred::face_node (
-                    _geom, _size , 
+                    _geom, _hfun , 
                     _mesh, _qdat , 
                     _fptr->_data._tadj , 
                     _fptr->_data._fadj , 
@@ -297,7 +297,7 @@
  
     /*------------------------- push node via constraints */
         _kind = push_node( _geom , 
-            _size , _mesh, _mode , 
+            _hfun , _mesh, _mode , 
             +2    , _ppos, _kind ,
             _pedg , _pfac,
             _nnew , _nold,
@@ -305,7 +305,7 @@
             _eold , _ecav, _escr , 
             _fold , _fcav, _fscr , 
             _tcav , _tscr,
-            _nbal , _ebal, _hint ,
+            _bcav , _bscr, _hint ,
             _tdim , _pass, _args ) ;
             
         if (_kind != rdel_opts::null_kind)
@@ -330,7 +330,7 @@
     __normal_call 
     typename rdel_opts::node_kind _bad_tria (
         geom_type &_geom ,
-        size_type &_size ,
+        hfun_type &_hfun ,
         mesh_type &_mesh ,
         mode_type  _mode ,
         typename 
@@ -350,8 +350,8 @@
         fscr_list &_fscr ,
         tdat_list &_tcav ,
         tscr_list &_tscr ,
-        nbal_list &_nbal ,
-        ebal_list &_ebal ,
+        ball_list &_bcav ,
+        ball_list &_bscr ,
         char_type &_tdim ,
         iptr_type  _pass ,
         rdel_opts &_args
@@ -374,8 +374,8 @@
         _tscr.set_count( +0) ;
         _tcav.set_count( +0) ;
 
-        _nbal.set_count( +0) ;
-        _ebal.set_count( +0) ;
+        _bscr.set_count( +0) ;
+        _bcav.set_count( +0) ;
 
     /*--------------------- pop() leading element from PQ */
         iptr_type _hint= -1;
@@ -403,7 +403,7 @@
             /*----------------- new steiner vertex coords */
                 _kind = 
                  mesh_pred::tria_node (
-                    _geom, _size , 
+                    _geom, _hfun , 
                     _mesh, _qdat ,
                     _tptr->_data._tadj , 
                     _ppos, _args ) ;
@@ -435,7 +435,7 @@
  
     /*------------------------- push node via constraints */
         _kind = push_node( _geom , 
-            _size , _mesh, _mode , 
+            _hfun , _mesh, _mode , 
             +3    , _ppos, _kind ,
             _pedg , _pfac,
             _nnew , _nold,
@@ -443,7 +443,7 @@
             _eold , _ecav, _escr , 
             _fold , _fcav, _fscr , 
             _tcav , _tscr,
-            _nbal , _ebal, _hint ,
+            _bcav , _bscr, _hint ,
             _tdim , _pass, _args ) ;
             
         if (_kind != rdel_opts::null_kind)

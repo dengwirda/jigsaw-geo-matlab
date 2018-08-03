@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 07 September, 2017
+     * Last updated: 08 April, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -138,7 +138,6 @@
     __normal_call 
     typename rdel_opts::node_kind topo_node (
         geom_type &_geom,
-        size_type & ,
         mesh_type &_mesh,
         edat_list &_eset,
         real_type *_pmax,
@@ -198,7 +197,7 @@
     __normal_call 
     typename rdel_opts::node_kind _bad_etop (
         geom_type &_geom ,
-        size_type &_size ,
+        hfun_type &_hfun ,
         mesh_type &_mesh ,
         mode_type  _mode ,
         typename 
@@ -215,7 +214,8 @@
         escr_list &_escr ,
         tdat_list &_tcav ,
         tscr_list &_tscr ,
-        nbal_list &_nbal ,
+        ball_list &_bcav ,
+        ball_list &_bscr ,
         char_type &_tdim ,
         iptr_type  _pass ,
         rdel_opts &_args
@@ -257,23 +257,23 @@
         _kind =  rdel_opts::null_kind ;
 
     /*--------------------- pop() leading element from PQ */
-        _nnew.set_count(   +0) ;
-        _nold.set_count(   +0) ;
-        _tnew.set_count(   +0) ;
-        _told.set_count(   +0) ;
+        _nnew.set_count( +0) ;
+        _nold.set_count( +0) ;
+        _tnew.set_count( +0) ;
+        _told.set_count( +0) ;
 
-        _etmp.set_count(   +0) ;
-        _escr.set_count(   +0) ;
-        _ecav.set_count(   +0) ;
-        _tscr.set_count(   +0) ;
-        _tcav.set_count(   +0) ;
-
-        _nbal.set_count(   +0) ;
+        _etmp.set_count( +0) ;
+        _escr.set_count( +0) ;
+        _ecav.set_count( +0) ;
+        _tscr.set_count( +0) ;
+        _tcav.set_count( +0) ;
+        _bscr.set_count( +0) ;
+        _bcav.set_count( +0) ;
         
         iptr_list _tset;
-        _tset.set_alloc(  +16) ;
+        _tset.set_alloc(+16) ;
         edat_list _eset;
-        _eset.set_alloc(  +16) ;
+        _eset.set_alloc(+16) ;
 
     /*--------------------- cycles until a bad disk found */
         bool_type _find = false;
@@ -307,19 +307,18 @@
         iptr_type _hint = -1;
       
         _kind = topo_node( _geom,
-            _size , _mesh ,
-            _eset , _pmax , 
-            _tmax , _hint ) ;
+            _mesh , _eset, 
+            _pmax , _tmax, _hint) ;
       
     /*------------------------- push node via constraints */
         _kind = push_node( _geom, 
-            _size , _mesh, _mode,
+            _hfun , _mesh, _mode,
             _tmax , _pmax, _kind,
             _pedg , _nnew, _nold,
             _tnew , _told, _etmp, 
             _ecav , _escr, 
             _tcav , _tscr,
-            _nbal , _hint,
+            _bcav , _bscr, _hint,
             _tdim , _pass, _args) ;
         
         return ( _kind ) ;

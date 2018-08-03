@@ -58,8 +58,8 @@
     
     /*------------ base-class for refinement kern. in R^2 */
     
-    typedef G						    geom_type ;
-    typedef M						    mesh_type ;
+    typedef G                           geom_type ;
+    typedef M                           mesh_type ;
 
     typedef typename 
             mesh_type::real_type        real_type ;
@@ -196,7 +196,7 @@
         _part=_pred._pmax.itag ();
    
     /*------------------------- eval. surface ball radius */
-	    _sbal[ 2]+= 
+        _sbal[ 2]+= 
         geometry::lensqr_2d (_sbal, 
        &_mesh._tria.
             node(_enod[0])->pval(0)) ;

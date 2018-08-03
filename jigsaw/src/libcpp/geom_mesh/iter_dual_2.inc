@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 18 November, 2017
+     * Last updated: 18 April, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -86,8 +86,8 @@
             +std::numeric_limits
                 <real_type>::infinity() ;
         
-		__unreferenced(_geom);
-		__unreferenced(_hfun);
+        __unreferenced(_geom);
+        __unreferenced(_hfun);
 
         real_type _dqdw = (real_type)0. ;
         
@@ -208,7 +208,8 @@
                     {
                         _wdel *= 
                             (real_type) +.10 ;
-                    }    
+                    }  
+                    else  
                     if (_sabs < _RMIN * _sbar)
                     {
                         _wdel *= 
@@ -225,11 +226,11 @@
                               
                 _dqdw += _DQDW;
                               
-                _qlow += _qtri; _lnum += +1;
+                _qlow += _qtri; _lnum += 1 ;
             }
             else
             {
-                _qbar += _qtri; _hnum += +1;
+                _qbar += _qtri; _hnum += 1 ;
             }
         }
     

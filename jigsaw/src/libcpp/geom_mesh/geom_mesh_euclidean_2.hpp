@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 14 March, 2018
+     * Last updated: 31 July, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -80,39 +80,39 @@
         
         public  :
     /*------------------------------------ "write" access */
-	    __inline_call iptr_type&       itag (
-		    )
-	    {   return  this->_itag ;
-	    }
-	    __inline_call char_type&       feat (
-	        )
-	    {   return  this->_feat ;
-	    }
-	    __inline_call char_type&       fdim (
-		    )
-	    {   return  this->_fdim ;
-	    }
-	    __inline_call char_type&       topo (
-	        )
-	    {   return  this->_topo ;
-	    }
+        __inline_call iptr_type&       itag (
+            )
+        {   return  this->_itag ;
+        }
+        __inline_call char_type&       feat (
+            )
+        {   return  this->_feat ;
+        }
+        __inline_call char_type&       fdim (
+            )
+        {   return  this->_fdim ;
+        }
+        __inline_call char_type&       topo (
+            )
+        {   return  this->_topo ;
+        }
     /*------------------------------------ "const" access */
-	    __inline_call iptr_type const& itag (
-		    ) const
-	    {   return  this->_itag ;
-	    }
-	    __inline_call char_type const& feat (
-	        ) const
-	    {   return  this->_feat ;
-	    }
-	    __inline_call char_type const& fdim (
-		    ) const
-	    {   return  this->_fdim ;
-	    }
-	    __inline_call char_type const& topo (
-	        ) const
-	    {   return  this->_topo ;
-	    }
+        __inline_call iptr_type const& itag (
+            ) const
+        {   return  this->_itag ;
+        }
+        __inline_call char_type const& feat (
+            ) const
+        {   return  this->_feat ;
+        }
+        __inline_call char_type const& fdim (
+            ) const
+        {   return  this->_fdim ;
+        }
+        __inline_call char_type const& topo (
+            ) const
+        {   return  this->_topo ;
+        }
         
         } ;
         
@@ -127,31 +127,31 @@
         
         public  :
     /*------------------------------------ "write" access */
-	    __inline_call iptr_type&       itag (
-		    )
-	    {   return  this->_itag ;
-	    }
-	    __inline_call char_type&       topo (
-		    )
-	    {   return  this->_topo ;
-	    }
-	    __inline_call char_type&       feat (
-		    )
-	    {   return  this->_feat ;
-	    }
+        __inline_call iptr_type&       itag (
+            )
+        {   return  this->_itag ;
+        }
+        __inline_call char_type&       topo (
+            )
+        {   return  this->_topo ;
+        }
+        __inline_call char_type&       feat (
+            )
+        {   return  this->_feat ;
+        }
     /*------------------------------------ "const" access */
-	    __inline_call iptr_type const& itag (
-		    ) const
-	    {   return  this->_itag ;
-	    }
-	    __inline_call char_type const& topo (
-		    ) const
-	    {   return  this->_topo ;
-	    }
-	    __inline_call char_type const& feat (
-		    ) const
-	    {   return  this->_feat ;
-	    }
+        __inline_call iptr_type const& itag (
+            ) const
+        {   return  this->_itag ;
+        }
+        __inline_call char_type const& topo (
+            ) const
+        {   return  this->_topo ;
+        }
+        __inline_call char_type const& feat (
+            ) const
+        {   return  this->_feat ;
+        }
         
         } ;
     
@@ -164,14 +164,14 @@
                                     tree_node ;
 
     typedef geom_tree::aabb_item_rect_k <
-		        real_type,
-		        iptr_type,
-	            node_type::
-	                _dims       >   tree_item ;
-	typedef geom_tree::aabb_tree<
-		        tree_item,
-		        node_type::
-		            _dims,
+                real_type,
+                iptr_type,
+                node_type::
+                    _dims       >   tree_item ;
+    typedef geom_tree::aabb_tree<
+                tree_item,
+                node_type::
+                    _dims,
                 tree_node,
                 allocator       >   tree_type ;
 
@@ -224,7 +224,7 @@
                 ? null_feat : soft_feat ;
     
         real_type _DtoR = 
-       (real_type) +3.1415926536 / 180.0;
+       (real_type) +3.1415926536 / 180. ;
     
         real_type _phi1 = 
        (real_type)+180. - _opts.phi1();
@@ -304,45 +304,6 @@
 
     /*
     --------------------------------------------------------
-     * SCAN-NODE: scan nodes and find features.
-    --------------------------------------------------------
-     */
-     
-    template <
-        typename  geom_opts
-             >
-    __normal_call void_type scan_node (
-        geom_opts &_opts
-        )
-    {
-        containers::
-            array<iptr_type>  _eadj ;
-        
-        for (auto _npos  = 
-             this->_tria._set1.head() ;
-                  _npos != 
-             this->_tria._set1.tend() ;
-                ++_npos  )
-        {
-            if (_npos->mark() >= +0)
-            {
-            _eadj.set_count (0);
-            
-             this->_tria.node_edge (
-                &_npos->node(0), _eadj) ;
-                
-            _npos->topo () =  
-               (char_type)_eadj.count() ;
-
-            _npos->feat () = node_feat(
-                &_npos->node(0), _eadj  , 
-                    _opts) ;        
-            }
-        }
-    }
-
-    /*
-    --------------------------------------------------------
      * FIND-FEAT: scan geometry and find features.
     --------------------------------------------------------
      */
@@ -354,6 +315,8 @@
         geom_opts &_opts
         )
     {
+        containers::array<iptr_type> _eadj ;
+    
     /*---------------------------------- init. geom feat. */
         for (auto _iter  = 
              this->_tria._set1.head() ;
@@ -361,24 +324,53 @@
              this->_tria._set1.tend() ;
                 ++_iter  )
         {
-            _iter->fdim () = +0  ;
-            _iter->feat () = null_feat ;
-            _iter->topo () = +2  ;
+            if (_iter->mark() >= +0)
+            {
+                _iter->fdim () = +0  ;
+                _iter->feat () = null_feat ;
+                _iter->topo () = +2  ;
+            }
         }
+        
         for (auto _iter  = 
              this->_tria._set2.head() ;
                   _iter != 
              this->_tria._set2.tend() ;
                 ++_iter  )
         {
-            _iter->feat () = null_feat ;
-            _iter->topo () = +2  ;
+            if (_iter->mark() >= +0)
+            {
+                _iter->feat () = null_feat ;
+                _iter->topo () = +2  ;
+            }
         }
-        
-        if (_opts.feat ())
+    
+        if (_opts.feat() )
         {
     /*---------------------------------- find sharp feat. */
-            scan_node(_opts) ;
+        for (auto _iter  = 
+             this->_tria._set1.head() ;
+                  _iter != 
+             this->_tria._set1.tend() ;
+                ++_iter  )
+        {
+    /*---------------------------------- find sharp 0-dim */
+            if (_iter->mark() >= +0)
+            {
+            _eadj.set_count (0);
+            
+             this->_tria.node_edge (
+                &_iter->node(0), _eadj) ;
+                
+            _iter->topo () =  
+               (char_type)_eadj.count() ;
+
+            _iter->feat () = node_feat(
+                &_iter->node(0), _eadj, 
+                    _opts) ;
+            }
+        }
+        
         }
         
         for (auto _iter  = 
@@ -387,11 +379,14 @@
              this->_tria._set2.tend() ;
                 ++_iter  )
         {
+            if (_iter->mark() >= +0)
+            {
     /*----------------------------- assign nodes to edges */
-            this->_tria.
-           _set1[_iter->node(0)].fdim() = 1;
-            this->_tria.
-           _set1[_iter->node(1)].fdim() = 1;
+            this->_tria._set1[
+                _iter->node(0)].fdim() = 1 ;
+            this->_tria._set1[
+                _iter->node(1)].fdim() = 1 ;
+           }
         }
         
         for (auto _iter  = 
@@ -400,10 +395,13 @@
              this->_tria._set1.tend() ;
                 ++_iter  )
         {
-            if (_iter->feat() !=  null_feat)
+            if (_iter->mark() >= +0)
+            {
+            if (_iter->feat() != null_feat )
             {
     /*----------------------------- assign nodes to feat. */
-                _iter->fdim()  = 0 ;
+                _iter->fdim()  = +0;
+            }
             }
         }
     }
@@ -433,6 +431,24 @@
             }
             } ;
             
+    /*----------------------------- setup user-feat. face */
+        for (auto _iter  = 
+             this->_tria._set2.head() ;
+                  _iter != 
+             this->_tria._set2.tend() ;
+                ++_iter  )
+        {
+            if (_iter->mark() >= +0 &&
+                _iter->itag() <= -1 )
+            {
+                this->_tria._set1[
+            _iter->node(0)].itag() =  -1 ;
+                
+                this->_tria._set1[
+            _iter->node(1)].itag() =  -1 ;
+            }
+        }
+            
     /*----------------------------- init. aabb at -+ inf. */
         for(auto _idim = 2; _idim-- != 0 ; )
         {
@@ -452,7 +468,7 @@
              this->_tria._set1.tend() ;
                  ++_iter  )
         {
-            if (_iter->mark() >= +0)
+            if (_iter->mark() >= +0 )
             {
             this->_bmin[0] = std::min (
             this->_bmin[0] , 
@@ -475,24 +491,24 @@
         std::numeric_limits<real_type>
             ::epsilon(),(real_type).8) ;
   
-        real_type _BTOL[2] ;
-        _BTOL[0] = this->_bmax[ 0] - 
-                   this->_bmin[ 0] ;
-        _BTOL[1] = this->_bmax[ 1] - 
-                   this->_bmin[ 1] ;
-  
-        _BTOL[0]*= _RTOL ;
-        _BTOL[1]*= _RTOL ;
-  
+        real_type  _BTOL[2] ;
+        _BTOL[0] =( this->_bmax[ 0] - 
+                    this->_bmin[ 0] )
+                 * _RTOL ;
+        _BTOL[1] =( this->_bmax[ 1] - 
+                    this->_bmin[ 1] ) 
+                 * _RTOL ;
+    
     /*-------------------- find sharp "features" in geom. */    
         find_feat (_opts);
-        
+      
     /*-------------------- make aabb-tree and init. bbox. */
         aabb_mesh(this->_tria._set1, 
                   this->_tria._set2, 
-                  this->_ebox,_BTOL,
-                  this->_nbox,edge_pred() 
+                  this->_ebox,
+       _BTOL,this->_nbox, edge_pred () 
                  ) ;
+    
     }
 
     /*
@@ -510,7 +526,7 @@
         geom_opts &_opts
         )
     {
-		__unreferenced(_opts) ;
+        __unreferenced(_opts) ;
 
     /*------------------------- push set of feature nodes */
         for (auto _iter  = 
@@ -521,9 +537,31 @@
         {
             if (_iter->mark() >= +0 )
             {
-            if (_iter->feat() != null_feat ||
-                _iter->itag() <= -1 )
+            if (_opts .feat() && 
+                _iter->feat() != null_feat)
             {
+    /*----------------------------- push any 'real' feat. */
+            iptr_type _node = -1 ;
+            if (_mesh._tria.push_node (
+               &_iter->pval(0), _node))
+            {
+                _mesh._tria.node
+                    (_node)->fdim() 
+                        = _iter->fdim() ;
+                        
+                _mesh._tria.node
+                    (_node)->feat() 
+                        = _iter->feat() ;
+                        
+                _mesh._tria.node
+                    (_node)->topo() 
+                        = _iter->topo() ;
+            }
+            }
+            else
+            if (_iter->itag() <= -1 )
+            {
+    /*----------------------------- push any 'user' feat. */
             iptr_type _node = -1 ;
             if (_mesh._tria.push_node (
                &_iter->pval(0), _node))
@@ -661,7 +699,7 @@
         hits_type      _hits ;
         
         public  :
-        
+
         line_line_pred operator = (
             line_line_pred & 
             )                   =     delete ;
@@ -823,15 +861,15 @@
                 
                 real_type _ipos[2];
                 real_type _jpos[2];
-	            size_t    _nhit = 
-	                geometry::ball_line_2d (
-		             this->_ball, 
+                size_t    _nhit = 
+                    geometry::ball_line_2d (
+                     this->_ball, 
                      this->_rsiz, 
-		           &_geom ._tria.
-		            _set1 [_enod[0]].pval(0) ,
+                   &_geom ._tria.
+                    _set1 [_enod[0]].pval(0) ,
                    &_geom ._tria.
                     _set1 [_enod[1]].pval(0) , 
-		            _ipos, _jpos ) ;
+                    _ipos, _jpos ) ;
 
                 switch (_nhit)
                 {

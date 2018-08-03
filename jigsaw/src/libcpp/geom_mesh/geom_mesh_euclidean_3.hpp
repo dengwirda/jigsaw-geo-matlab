@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 14 March, 2018
+     * Last updated: 31 July, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -78,39 +78,39 @@
         
         public  :
     /*------------------------------------ "write" access */
-	    __inline_call iptr_type&       itag (
-		    )
-	    {   return  this->_itag ;
-	    }
-	    __inline_call char_type&       feat (
-	        )
-	    {   return  this->_feat ;
-	    }
-	    __inline_call char_type&       fdim (
-		    )
-	    {   return  this->_fdim ;
-	    }
-	    __inline_call char_type&       topo (
-	        )
-	    {   return  this->_topo ;
-	    }
+        __inline_call iptr_type&       itag (
+            )
+        {   return  this->_itag ;
+        }
+        __inline_call char_type&       feat (
+            )
+        {   return  this->_feat ;
+        }
+        __inline_call char_type&       fdim (
+            )
+        {   return  this->_fdim ;
+        }
+        __inline_call char_type&       topo (
+            )
+        {   return  this->_topo ;
+        }
     /*------------------------------------ "const" access */
-	    __inline_call iptr_type const& itag (
-		    ) const
-	    {   return  this->_itag ;
-	    }
-	    __inline_call char_type const& feat (
-	        ) const
-	    {   return  this->_feat ;
-	    }
-	    __inline_call char_type const& fdim (
-		    ) const
-	    {   return  this->_fdim ;
-	    }
-	    __inline_call char_type const& topo (
-	        ) const
-	    {   return  this->_topo ;
-	    }
+        __inline_call iptr_type const& itag (
+            ) const
+        {   return  this->_itag ;
+        }
+        __inline_call char_type const& feat (
+            ) const
+        {   return  this->_feat ;
+        }
+        __inline_call char_type const& fdim (
+            ) const
+        {   return  this->_fdim ;
+        }
+        __inline_call char_type const& topo (
+            ) const
+        {   return  this->_topo ;
+        }
         
         } ;
         
@@ -125,31 +125,31 @@
         
         public  :
     /*------------------------------------ "write" access */
-	    __inline_call iptr_type&       itag (
-		    )
-	    {   return  this->_itag ;
-	    }
-	    __inline_call char_type&       topo (
-		    )
-	    {   return  this->_topo ;
-	    }
-	    __inline_call char_type&       feat (
-		    )
-	    {   return  this->_feat ;
-	    }
+        __inline_call iptr_type&       itag (
+            )
+        {   return  this->_itag ;
+        }
+        __inline_call char_type&       topo (
+            )
+        {   return  this->_topo ;
+        }
+        __inline_call char_type&       feat (
+            )
+        {   return  this->_feat ;
+        }
     /*------------------------------------ "const" access */
-	    __inline_call iptr_type const& itag (
-		    ) const
-	    {   return  this->_itag ;
-	    }
-	    __inline_call char_type const& topo (
-		    ) const
-	    {   return  this->_topo ;
-	    }
-	    __inline_call char_type const& feat (
-		    ) const
-	    {   return  this->_feat ;
-	    }
+        __inline_call iptr_type const& itag (
+            ) const
+        {   return  this->_itag ;
+        }
+        __inline_call char_type const& topo (
+            ) const
+        {   return  this->_topo ;
+        }
+        __inline_call char_type const& feat (
+            ) const
+        {   return  this->_feat ;
+        }
         
         } ;
         
@@ -164,31 +164,31 @@
         
         public  :
     /*------------------------------------ "write" access */
-	    __inline_call iptr_type&       itag (
-		    )
-	    {   return  this->_itag ;
-	    }
-	    __inline_call char_type&       topo (
-		    )
-	    {   return  this->_topo ;
-	    }
-	    __inline_call char_type&       feat (
-		    )
-	    {   return  this->_feat ;
-	    }
+        __inline_call iptr_type&       itag (
+            )
+        {   return  this->_itag ;
+        }
+        __inline_call char_type&       topo (
+            )
+        {   return  this->_topo ;
+        }
+        __inline_call char_type&       feat (
+            )
+        {   return  this->_feat ;
+        }
     /*------------------------------------ "const" access */
-	    __inline_call iptr_type const& itag (
-		    ) const
-	    {   return  this->_itag ;
-	    }
-	    __inline_call char_type const& topo (
-		    ) const
-	    {   return  this->_topo ;
-	    }
-	    __inline_call char_type const& feat (
-		    ) const
-	    {   return  this->_feat ;
-	    }
+        __inline_call iptr_type const& itag (
+            ) const
+        {   return  this->_itag ;
+        }
+        __inline_call char_type const& topo (
+            ) const
+        {   return  this->_topo ;
+        }
+        __inline_call char_type const& feat (
+            ) const
+        {   return  this->_feat ;
+        }
         
         } ;
     
@@ -202,14 +202,14 @@
                                     tree_node ;
 
     typedef geom_tree::aabb_item_rect_k <
-		        real_type,
-		        iptr_type,
-	            node_type::
-	                _dims       >   tree_item ;
-	typedef geom_tree::aabb_tree<
-		        tree_item,
-		        node_type::
-		            _dims,
+                real_type,
+                iptr_type,
+                node_type::
+                    _dims       >   tree_item ;
+    typedef geom_tree::aabb_tree<
+                tree_item,
+                node_type::
+                    _dims,
                 tree_node,
                 allocator       >   tree_type ;
 
@@ -442,10 +442,8 @@
             real_type _fvec[3] ;
             
             
-            
-            //!! actually, need to project edge onto tria
-            
-            
+    //!! actually, need to project edge onto tria
+   
                   
             real_type _acos = 
                 geometry::cosine_3d(
@@ -621,24 +619,85 @@
 
     /*
     --------------------------------------------------------
-     * SCAN-NODE: scan nodes and find features.
+     * FIND-FEAT: scan geometry and find features.
     --------------------------------------------------------
      */
      
     template <
         typename  geom_opts
              >
-    __normal_call void_type scan_node (
+    __normal_call void_type find_feat (
         geom_opts &_opts
         )
     {
-        containers::
-            array<iptr_type>  _eadj ;
-        containers::
-            array<iptr_type>  _fadj ;
+        containers::array<iptr_type> _eadj ;
+        containers::array<iptr_type> _fadj ;
+        containers::array<iptr_type> _set2 ;
+    
+    /*---------------------------------- init. geom feat. */
+        for (auto _iter  = 
+             this->_tria._set1.head() ;
+                  _iter != 
+             this->_tria._set1.tend() ;
+                ++_iter  )
+        {
+            if (_iter->mark() >= +0)
+            {
+                _iter->fdim () = +0  ;
+                _iter->feat () = null_feat ;
+                _iter->topo () = +2  ;
+            }
+        }
+        for (auto _iter  = 
+             this->_tria._set2.head() ;
+                  _iter != 
+             this->_tria._set2.tend() ;
+                ++_iter  )
+        {
+            if (_iter->mark() >= +0)
+            {
+                _iter->feat () = null_feat ;
+                _iter->topo () = +2  ;
+            }
+        }
+        for (auto _iter  = 
+             this->_tria._set3.head() ;
+                  _iter != 
+             this->_tria._set3.tend() ;
+                ++_iter  )
+        {
+            if (_iter->mark() >= +0)
+            {
+                _iter->feat () = null_feat ;
+                _iter->topo () = +2  ;
+            }
+        }
+  
+        if (_opts.feat() )
+        {
+    /*---------------------------------- find sharp feat. */
+        for (auto _epos  = 
+             this->_tria._set2.head() ;
+                  _epos != 
+             this->_tria._set2.tend() ;
+                ++_epos  )
+        {
+    /*---------------------------------- find sharp 0-dim */
+            if (_epos->mark() >= +0)
+            {
+            _fadj.set_count (0);
+            
+             this->_tria.edge_tri3 (
+                &_epos->node(0), _fadj) ;
+                
+            _epos->topo () =  
+               (char_type)_fadj.count() ;
 
-        containers::
-            array<iptr_type>  _set2 ;
+            _epos->feat () = edge_feat(
+                &_epos->node(0), _fadj, 
+                    _opts) ;        
+            }
+        }
         
         for (auto _npos  = 
              this->_tria._set1.head() ;
@@ -646,6 +705,7 @@
              this->_tria._set1.tend() ;
                 ++_npos  )
         {
+    /*---------------------------------- find sharp 1-dim */
             if (_npos->mark() >= +0)
             {
             _eadj.set_count (0);
@@ -665,101 +725,13 @@
                (char_type)_set2.count() ;
             
             _npos->feat () = node_feat(
-                &_npos->node(0), _set2  , 
+                &_npos->node(0), _set2, 
                     _opts) ;
             }
         }
-    }
-
-    /*
-    --------------------------------------------------------
-     * SCAN-EDGE: scan edges and find features.
-    --------------------------------------------------------
-     */
-     
-    template <
-        typename  geom_opts
-             >
-    __normal_call void_type scan_edge (
-        geom_opts &_opts
-        )
-    {
-        containers::
-            array<iptr_type>  _fadj ;
         
-        for (auto _epos  = 
-             this->_tria._set2.head() ;
-                  _epos != 
-             this->_tria._set2.tend() ;
-                ++_epos  )
-        {
-            if (_epos->mark() >= +0)
-            {
-            _fadj.set_count (0);
-            
-             this->_tria.edge_tri3 (
-                &_epos->node(0), _fadj) ;
-                
-            _epos->topo () =  
-               (char_type)_fadj.count() ;
-
-            _epos->feat () = edge_feat(
-                &_epos->node(0), _fadj  , 
-                    _opts) ;        
-            }
-        }
-    }
-
-    /*
-    --------------------------------------------------------
-     * FIND-FEAT: scan geometry and find features.
-    --------------------------------------------------------
-     */
-     
-    template <
-        typename  geom_opts
-             >
-    __normal_call void_type find_feat (
-        geom_opts &_opts
-        )
-    {
-    /*---------------------------------- init. geom feat. */
-        for (auto _iter  = 
-             this->_tria._set1.head() ;
-                  _iter != 
-             this->_tria._set1.tend() ;
-                ++_iter  )
-        {
-            _iter->fdim () = +0  ;
-            _iter->feat () = null_feat ;
-            _iter->topo () = +2  ;
-        }
-        for (auto _iter  = 
-             this->_tria._set2.head() ;
-                  _iter != 
-             this->_tria._set2.tend() ;
-                ++_iter  )
-        {
-            _iter->feat () = null_feat ;
-            _iter->topo () = +2  ;
-        }
-        for (auto _iter  = 
-             this->_tria._set3.head() ;
-                  _iter != 
-             this->_tria._set3.tend() ;
-                ++_iter  )
-        {
-            _iter->feat () = null_feat ;
-            _iter->topo () = +2  ;
         }
   
-        if (_opts.feat ())
-        {
-    /*---------------------------------- find sharp feat. */
-            scan_edge(_opts) ;
-            scan_node(_opts) ;
-        }
-        
         for (auto _iter  = 
              this->_tria._set3.head() ;
                   _iter != 
@@ -767,12 +739,15 @@
                 ++_iter  )
         {
     /*----------------------------- assign nodes to trias */
-            this->_tria.
-           _set1[_iter->node(0)].fdim() = 2;
-            this->_tria.
-           _set1[_iter->node(1)].fdim() = 2;
-            this->_tria.
-           _set1[_iter->node(2)].fdim() = 2;
+            if (_iter->mark() >= +0)
+            {
+            this->_tria._set1[
+                _iter->node(0)].fdim() = 2;
+            this->_tria._set1[
+                _iter->node(1)].fdim() = 2;
+            this->_tria._set1[
+                _iter->node(2)].fdim() = 2;
+            }
         }
         
         for (auto _iter  = 
@@ -782,12 +757,15 @@
                 ++_iter  )
         {
     /*----------------------------- assign nodes to edges */
-            if (_iter->feat() !=  null_feat)
+            if (_iter->mark() >= +0)
             {
-            this->_tria.
-           _set1[_iter->node(0)].fdim() = 1;
-            this->_tria.
-           _set1[_iter->node(1)].fdim() = 1;
+            if (_iter->feat() != null_feat)
+            {
+            this->_tria._set1[
+                _iter->node(0)].fdim() = 1;
+            this->_tria._set1[
+                _iter->node(1)].fdim() = 1;
+            }
             }
         }
         
@@ -797,10 +775,13 @@
              this->_tria._set1.tend() ;
                 ++_iter  )
         {
-            if (_iter->feat() !=  null_feat)
+            if (_iter->mark() >= +0)
+            {
+            if (_iter->feat() != null_feat)
             {
     /*----------------------------- assign nodes to feat. */
                 _iter->fdim()  = 0 ;
+            }
             }
         }
     }
@@ -842,6 +823,45 @@
             {   return _tdat.mark() >= 0 ;
             }
             } ;
+    
+    
+    /*----------------------------- setup user-feat. face */
+        for (auto _iter  = 
+             this->_tria._set2.head() ;
+                  _iter != 
+             this->_tria._set2.tend() ;
+                ++_iter  )
+        {
+            if (_iter->mark() >= +0 &&
+                _iter->itag() <= -1 )
+            {
+                this->_tria._set1[
+            _iter->node(0)].itag() =  -1 ;
+                
+                this->_tria._set1[
+            _iter->node(1)].itag() =  -1 ;
+            }
+        }
+        
+        for (auto _iter  = 
+             this->_tria._set3.head() ;
+                  _iter != 
+             this->_tria._set3.tend() ;
+                ++_iter  )
+        {
+            if (_iter->mark() >= +0 &&
+                _iter->itag() <= -1 )
+            {
+                this->_tria._set1[
+            _iter->node(0)].itag() =  -1 ;
+                
+                this->_tria._set1[
+            _iter->node(1)].itag() =  -1 ;
+            
+                this->_tria._set1[
+            _iter->node(2)].itag() =  -1 ;
+            }
+        }
     
     /*----------------------------- init. aabb at -+ inf. */
         for(auto _idim = 3; _idim-- != 0 ; )
@@ -891,32 +911,31 @@
         std::numeric_limits<real_type>
             ::epsilon(),(real_type).8) ;
   
-        real_type _BTOL[3] ;
-        _BTOL[0] = this->_bmax[ 0] - 
-                   this->_bmin[ 0] ;
-        _BTOL[1] = this->_bmax[ 1] - 
-                   this->_bmin[ 1] ;
-        _BTOL[2] = this->_bmax[ 2] - 
-                   this->_bmin[ 2] ;
-  
-        _BTOL[0]*= _RTOL ;
-        _BTOL[1]*= _RTOL ;
-        _BTOL[2]*= _RTOL ;
-  
+        real_type  _BTOL[3] ;
+        _BTOL[0] =( this->_bmax[ 0] - 
+                    this->_bmin[ 0] )
+                 * _RTOL ;
+        _BTOL[1] =( this->_bmax[ 1] - 
+                    this->_bmin[ 1] )
+                 * _RTOL ;
+        _BTOL[2] =( this->_bmax[ 2] - 
+                    this->_bmin[ 2] )
+                 * _RTOL ;
+      
     /*-------------------- find sharp "features" in geom. */    
         find_feat (_opts);
-        
+      
     /*-------------------- make aabb-tree and init. bbox. */
         aabb_mesh(this->_tria._set1, 
                   this->_tria._set2, 
-                  this->_ebox,_BTOL,
-                  this->_nbox,edge_pred() 
+                  this->_ebox,
+       _BTOL,this->_nbox,edge_pred () 
                  ) ;
                   
         aabb_mesh(this->_tria._set1, 
                   this->_tria._set3, 
-                  this->_tbox,_BTOL,
-                  this->_nbox,tri3_pred() 
+                  this->_tbox,
+       _BTOL,this->_nbox,tri3_pred () 
                  ) ;
     }
 
@@ -935,7 +954,7 @@
         geom_opts &_opts
         )
     {
-		__unreferenced(_opts) ;
+        __unreferenced(_opts) ;
 
     /*------------------------- push set of feature nodes */
         for (auto _iter  = 
@@ -946,9 +965,10 @@
         {
             if (_iter->mark() >= +0 )
             {
-            if (_iter->feat() != null_feat ||
-                _iter->itag() <= -1 )
+            if (_opts .feat() && 
+                _iter->feat() != null_feat)
             {
+    /*----------------------------- push any 'real' feat. */
             iptr_type _node = -1 ;
             if (_mesh._tria.push_node (
                &_iter->pval(0), _node))
@@ -963,7 +983,28 @@
                         
                 _mesh._tria.node
                     (_node)->topo() 
-                        = _iter->topo() ;          
+                        = _iter->topo() ;
+            }
+            }
+            else
+            if (_iter->itag() <= -1 )
+            {
+    /*----------------------------- push any 'user' feat. */
+            iptr_type _node = -1 ;
+            if (_mesh._tria.push_node (
+               &_iter->pval(0), _node))
+            {
+                _mesh._tria.node
+                    (_node)->fdim() 
+                        = _iter->fdim() ;
+                        
+                _mesh._tria.node
+                    (_node)->feat() 
+                        = _iter->feat() ;
+                        
+                _mesh._tria.node
+                    (_node)->topo() 
+                        = _iter->topo() ;
             }
             }
             }
@@ -1179,123 +1220,7 @@
         }
         
         } ;
-        
-    template <
-    typename   hits_func
-             >
-    class tria_line_pred
-        {
-    /*------------------ tria-line intersection predicate */
-        public  :
-        real_type      _ipos[3] ;
-        real_type      _jpos[3] ;
-        real_type      _kpos[3] ;
-        
-        geom_type&     _geom ;
-        
-        hits_func&     _hfun ;
-        
-        bool_type      _find ;   
-        iptr_type      _hnum ;
-        
-        bool_type      _exct ;
-        
-        geometry::
-        hits_type      _hits ;
-        
-        public  :
-        tria_line_pred operator = (
-            tria_line_pred & 
-            )                   =   delete ;
-        tria_line_pred operator = (
-            tria_line_pred&& 
-            )                   =   delete ;
-
-        public  :
-    /*------------------------------ construct from _src. */
-        __normal_call tria_line_pred (
-            real_type *_isrc ,
-            real_type *_jsrc ,
-            real_type *_ksrc ,
-            geom_type &_gsrc ,
-            hits_func &_hsrc
-            ) : _geom( _gsrc), 
-                _hfun( _hsrc)
-        {
-            this->_hits = geometry::null_hits ;
-  
-            this->_exct = false;
-  
-            this->_hnum =     0;
-            this->_find = false;
-            
-            for (auto _idim = 3; _idim-- != 0; )
-            {
-                this->
-               _ipos[_idim] = _isrc[_idim];
-                this->
-               _jpos[_idim] = _jsrc[_idim];
-                this->
-               _kpos[_idim] = _ksrc[_idim];
-            }
-        }
-    /*----------------------- all intersection about node */
-        __normal_call  void_type operator()  (
-            typename  
-            tree_type::item_data *_iptr
-            )
-        {
-            for ( ; _iptr != nullptr; 
-                        _iptr = _iptr->_next )
-            {
-                geometry::hits_type 
-                    _hits = geometry::null_hits ;
-            
-            /*--------------- line-tria intersection test */
-                iptr_type  _epos = 
-                    _iptr->_data.ipos() ;
-                
-                iptr_type  _enod[2];
-                _enod[0] =_geom.
-                    _tria._set2[_epos].node(0) ;
-                _enod[1] =_geom.
-                    _tria._set2[_epos].node(1) ;
-                
-                real_type  _xpos[3];
-                _hits = geometry::line_tria_3d (
-                   &_geom ._tria.
-                    _set1 [_enod[0]].pval(0),
-                   &_geom ._tria.
-                    _set1 [_enod[1]].pval(0),
-                   & this->_ipos[0], 
-                   & this->_jpos[0],
-                   & this->_kpos[0],
-                    _xpos, true, 1) ;
-  
-                if(_hits != geometry::null_hits)
-                {
-            /*--------------- call output function on hit */
-                    this->_hfun (_xpos, _hits ,
-                        _geom._tria .
-                        _set2[_epos].feat() ,
-                        _geom._tria .
-                        _set2[_epos].topo() ,
-                        _geom._tria .
-                        _set2[_epos].itag() ) ;
-                    
-                    this->_hnum+= +1 ;
-                    
-                    this->_find = true ;
-                    this->_hits =_hits ;
-                    
-                if(_hits != geometry::face_hits)
-                    this->_exct = true ;
-                }
-            }
-        }
-        
-        } ;
-
+    
     template <
     typename   poly_list,
     typename   hits_func
@@ -1304,6 +1229,9 @@
         {
     /*------------------ poly-line intersection predicate */
         public  :
+        real_type      _ppos[3] ;
+        real_type      _nvec[3] ;
+        
         poly_list&     _poly ;
 
         geom_type&     _geom ;
@@ -1327,6 +1255,8 @@
         public  :
     /*------------------------------ construct from _src. */
         __normal_call poly_line_pred (
+            real_type *_qsrc ,
+            real_type *_vsrc ,
             poly_list &_psrc ,
             geom_type &_gsrc ,
             hits_func &_hsrc
@@ -1335,6 +1265,20 @@
                 _hfun( _hsrc)
         {
             this->_hits = geometry::null_hits ;
+
+            this->
+           _ppos[0] = _qsrc[  0];
+            this->
+           _ppos[1] = _qsrc[  1];
+            this->
+           _ppos[2] = _qsrc[  2];
+           
+            this->
+           _nvec[0] = _vsrc[  0];
+            this->
+           _nvec[1] = _vsrc[  1];
+            this->
+           _nvec[2] = _vsrc[  2];
 
             this->_hnum =     0 ;
             this->_find = false ;
@@ -1355,18 +1299,20 @@
                 iptr_type  _epos = 
                     _iptr->_data.ipos() ;
                 
-                iptr_type  _enod[2];
+                iptr_type _enod[2];
                 _enod[0] =_geom.
                     _tria._set2[_epos].node(0) ;
                 _enod[1] =_geom.
                     _tria._set2[_epos].node(1) ;
             
-                real_type  _xpos[3];
+                real_type _xpos[3];
                 _hits = geometry::line_poly_3d (
                    &_geom._tria.
                     _set1[_enod[0]].pval(0) ,
                    &_geom._tria.
                     _set1[_enod[1]].pval(0) ,
+                    this->_ppos,
+                    this->_nvec,
                     this->_poly, _xpos) ;
 
                 if(_hits != geometry::null_hits)
@@ -1464,15 +1410,15 @@
                 
                 real_type _ipos[3];
                 real_type _jpos[3];
-	            size_t    _nhit = 
-	                geometry::ball_line_3d (
-		             this->_ball, 
+                size_t    _nhit = 
+                    geometry::ball_line_3d (
+                     this->_ball, 
                      this->_rsiz, 
-		           &_geom ._tria.
-		            _set1 [_enod[0]].pval(0) ,
+                   &_geom ._tria.
+                    _set1 [_enod[0]].pval(0) ,
                    &_geom ._tria.
                     _set1 [_enod[1]].pval(0) , 
-		            _ipos, _jpos ) ;
+                    _ipos, _jpos ) ;
 
                 switch (_nhit)
                 {
@@ -1583,26 +1529,26 @@
                     _tria._set3[_tpos].node(2) ;
                 
                 real_type  _apos[3] ;
-	            real_type  _bpos[3] ;
+                real_type  _bpos[3] ;
                 real_type  _ipos[3] ;
-	            real_type  _jpos[3] ;
+                real_type  _jpos[3] ;
                 size_t     _nh = 0;
-	            if (geometry::tria_flat_3d (
-		             this->_cmid , 
+                if (geometry::tria_flat_3d (
+                     this->_cmid , 
                      this->_nvec , 
-		           &_geom ._tria.
-		            _set1 [_tnod[0]].pval(0) ,
+                   &_geom ._tria.
+                    _set1 [_tnod[0]].pval(0) ,
                    &_geom ._tria.
                     _set1 [_tnod[1]].pval(0) ,
                    &_geom ._tria.
                     _set1 [_tnod[2]].pval(0) , 
                     _apos, _bpos))
             /*--------------- circ-tria intersection test */
-	            _nh=geometry::ball_line_3d (
-		             this->_cmid , 
+                _nh=geometry::ball_line_3d (
+                     this->_cmid , 
                      this->_rsiz , 
-		            _apos, _bpos , 
-		            _ipos, _jpos ) ;
+                    _apos, _bpos , 
+                    _ipos, _jpos ) ;
 
                 switch (_nh)
                 {
@@ -1641,12 +1587,108 @@
      * INTERSECT: compute poly-edge intersections.
     --------------------------------------------------------
      */
+    
+    
+    template <
+    typename      mesh_type,
+    typename      iptr_list,
+    typename      hits_func
+             >
+    __normal_call bool_type intersect___ (
+        mesh_type &_mesh,
+        iptr_type *_enod,
+        iptr_list &_tset,
+        hits_func &_hfun
+        )
+    {
+    /*------------------ tree-line intersection predicate */
+        typedef 
+        geom_tree::aabb_pred_rect_k <
+             real_type, 
+             iptr_type, 
+             +3        >    tree_pred ; 
+
+    /*------------------ tria-line intersection predicate */
+        /*
+        typedef 
+        poly_line_pred <
+             poly_list ,
+             hits_func >    hits_pred ; 
+        */
+
+    /*------------------ call actual intersection testing */
+        real_type _rmin[3] ;
+        real_type _rmax[3] ;
+        
+        /*
+        _rmin [ +0] = _poly[ +0][ +0];
+        _rmin [ +1] = _poly[ +0][ +1];
+        _rmin [ +2] = _poly[ +0][ +2];
+        
+        _rmax [ +0] = _poly[ +0][ +0];
+        _rmax [ +1] = _poly[ +0][ +1];
+        _rmax [ +2] = _poly[ +0][ +2];
+
+        for(auto _iter  = _poly.head() ;
+                 _iter != _poly.tend() ;
+               ++_iter  )
+        {
+        _rmin [ +0] =  std::min (
+        _rmin [ +0] , (*_iter)[ +0]) ;
+        _rmin [ +1] =  std::min (
+        _rmin [ +1] , (*_iter)[ +1]) ;
+        _rmin [ +2] =  std::min (
+        _rmin [ +2] , (*_iter)[ +2]) ;
+
+        _rmax [ +0] =  std::max (
+        _rmax [ +0] , (*_iter)[ +0]) ;
+        _rmax [ +1] =  std::max (
+        _rmax [ +1] , (*_iter)[ +1]) ;
+        _rmax [ +2] =  std::max (
+        _rmax [ +2] , (*_iter)[ +2]) ;
+        }
+        
+        */
+
+        real_type _rtol = +1.0E-08 ;
+
+        _rmin[0] -= _rtol * 
+       (this->_bmax[0]-this->_bmin[0]);
+        _rmin[1] -= _rtol * 
+       (this->_bmax[1]-this->_bmin[1]);
+        _rmin[2] -= _rtol * 
+       (this->_bmax[2]-this->_bmin[2]);
+       
+        _rmax[0] += _rtol * 
+       (this->_bmax[0]-this->_bmin[0]);
+        _rmax[1] += _rtol * 
+       (this->_bmax[1]-this->_bmin[1]);
+        _rmax[2] += _rtol * 
+       (this->_bmax[2]-this->_bmin[2]);
+
+        tree_pred _pred(_rmin, _rmax) ;     
+        
+        /*
+        hits_pred _func(_ppos, _nvec,
+                        _poly, 
+                        *this, _hfun) ;
+        */
+
+      //this->_ebox.find(_pred,_func) ;
+
+    /*------------------ _TRUE if any intersections found */
+        return false;
+      //return (   _func._find ) ;
+    }
+    
      
     template <
     typename      poly_list,
     typename      hits_func
              >
     __normal_call bool_type intersect (
+        real_type *_ppos,
+        real_type *_nvec,
         poly_list &_poly,
         hits_func &_hfun
         )
@@ -1696,66 +1738,25 @@
         _rmax [ +2] , (*_iter)[ +2]) ;
         }
 
-        tree_pred _pred(_rmin, _rmax) ;     
-        hits_pred _func(_poly, 
-                        *this, _hfun) ;
+        real_type _rtol = +1.0E-08 ;
 
-        this->_ebox.find(_pred,_func) ;
-
-    /*------------------ _TRUE if any intersections found */
-        return (   _func._find ) ;
-    }
-
-    /*
-    --------------------------------------------------------
-     * INTERSECT: compute tria-edge intersections.
-    --------------------------------------------------------
-     */
-     
-    template <
-    typename      hits_func
-             >
-    __normal_call bool_type intersect (
-        real_type *_ipos,
-        real_type *_jpos,
-        real_type *_kpos,
-        hits_func &_hfun
-        )
-    {
-    /*------------------ tree-line intersection predicate */
-        typedef 
-        geom_tree::aabb_pred_rect_k <
-             real_type, 
-             iptr_type, 
-             +3        >    tree_pred ; 
-
-    /*------------------ tria-line intersection predicate */
-        typedef 
-        tria_line_pred <
-             hits_func >    hits_pred ; 
-
-    /*------------------ call actual intersection testing */ 
-        real_type _rmin[3] ;
-        real_type _rmax[3] ;
-        iptr_type _idim;         
-        for (_idim = +3; _idim-- != +0; )
-        {
-        _rmin [_idim] = _ipos[_idim];
-        _rmin [_idim] =  std::min (
-        _rmin [_idim] , _jpos[_idim]) ;
-        _rmin [_idim] =  std::min (
-        _rmin [_idim] , _kpos[_idim]) ;
-        
-        _rmax [_idim] = _ipos[_idim];
-        _rmax [_idim] =  std::max (
-        _rmax [_idim] , _jpos[_idim]) ;
-        _rmax [_idim] =  std::max (
-        _rmax [_idim] , _kpos[_idim]) ;
-        }
+        _rmin[0] -= _rtol * 
+       (this->_bmax[0]-this->_bmin[0]);
+        _rmin[1] -= _rtol * 
+       (this->_bmax[1]-this->_bmin[1]);
+        _rmin[2] -= _rtol * 
+       (this->_bmax[2]-this->_bmin[2]);
+       
+        _rmax[0] += _rtol * 
+       (this->_bmax[0]-this->_bmin[0]);
+        _rmax[1] += _rtol * 
+       (this->_bmax[1]-this->_bmin[1]);
+        _rmax[2] += _rtol * 
+       (this->_bmax[2]-this->_bmin[2]);
 
         tree_pred _pred(_rmin, _rmax) ;     
-        hits_pred _func(_ipos, _jpos, 
-                        _kpos,
+        hits_pred _func(_ppos, _nvec,
+                        _poly, 
                         *this, _hfun) ;
 
         this->_ebox.find(_pred,_func) ;
@@ -1792,18 +1793,18 @@
              hits_func >    hits_pred ;
 
     /*------------------ call actual intersection testing */      
-        real_type _bmin[ 3] = {
+        real_type _rmin[ 3] = {
             _cmid[ 0] - _rsiz ,
             _cmid[ 1] - _rsiz ,
             _cmid[ 2] - _rsiz
             } ;
-        real_type _bmax[ 3] = {
+        real_type _rmax[ 3] = {
             _cmid[ 0] + _rsiz ,
             _cmid[ 1] + _rsiz ,
             _cmid[ 2] + _rsiz
             } ;
       
-        tree_pred _pred(_bmin, _bmax) ;
+        tree_pred _pred(_rmin, _rmax) ;
         hits_pred _func(_cmid, _rsiz,
                         *this, _hfun) ;
 

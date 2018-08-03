@@ -71,12 +71,12 @@
     
     iptr_type static constexpr _dims = K ;
     
-    private	:
+    private :
     
-	iptr_type				   _ipos ;
-	
-	real_type				   _pmin [ K];
-    real_type				   _pmax [ K];
+    iptr_type                  _ipos ;
+    
+    real_type                  _pmin [ K];
+    real_type                  _pmax [ K];
 
     public  :
 /*---------------------------------------- "write" access */
@@ -142,11 +142,11 @@
     
     iptr_type static constexpr _dims = K ;
     
-    private	:
+    private :
     
-	iptr_type				   _ipos ;
+    iptr_type                  _ipos ;
 
-	real_type				   _pval [ K];
+    real_type                  _pval [ K];
 
     public  :
 /*---------------------------------------- "write" access */

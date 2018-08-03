@@ -77,7 +77,7 @@
         __unreferenced(_args) ;
 
         if (_enod[1] < _enod[0])
-        std::swap(_enod[0], _enod[1]);
+        std::swap(_enod[0], _enod[1]) ;
 
         real_type  _nsiz [ 3] ;
         _nsiz[ 0] = _hfun.eval (
@@ -91,9 +91,6 @@
         _mesh._tria.
          node(_enod[1])->idxh()) ;
         
-        _hint = _mesh._tria.
-            node (_enod[0])->idxh() ;
-
         real_type _dvec[3] ;
         real_type _ipos[2] = {
         _mesh._tria.
@@ -102,6 +99,9 @@
          node(_enod[0])->pval(1)
             } ;
         
+        _hint = _mesh._tria.
+            node (_enod[0])->idxh() ;
+
         _dvec[ 0] = 
         _sbal[ 0] - _ipos[ 0] ;
         _dvec[ 1] = 
@@ -114,7 +114,7 @@
 
         _ppos[ 0] = _sbal[ 0] ;
         _ppos[ 1] = _sbal[ 1] ;
-
+        
         real_type static const  _seps = 
             (real_type)std::sqrt(
        +std::numeric_limits<real_type>::epsilon());
@@ -122,7 +122,7 @@
         uint32_t  _hash = hash_ball(_sbal) ;
 
         real_type _pert =
-           ((real_type)(_hash % +65536)) / +65536 ;
+           ((real_type)(_hash % +4096)) / +4096 ;
         _pert  *= _seps ;
 
         for(iptr_type _iter = +0; _iter++ != +8 ; )
@@ -149,8 +149,8 @@
                 _kind = 
                  rdel_opts::offh_kind ;
             }
-
-            _dist -= _pert*_dist ;
+            
+            _dist -= _pert * _dist ;
             
             cosine_intersect _pred(_ipos,_dvec);
             if (!_geom.intersect (
@@ -228,7 +228,7 @@
 
         _ppos[ 0] = _tbal[ 0] ;
         _ppos[ 1] = _tbal[ 1] ;
- 
+        
         real_type static const  _seps = 
             (real_type)std::sqrt(
        +std::numeric_limits<real_type>::epsilon());
@@ -236,9 +236,9 @@
         uint32_t  _hash = hash_ball(_tbal) ;
 
         real_type _pert =
-           ((real_type)(_hash % +65536)) / +65536 ;
+           ((real_type)(_hash % +4096)) / +4096 ;
         _pert  *= _seps ;
-    
+ 
         for(iptr_type _iter = +0; _iter++ != +8 ; )
         {
             _kind    = rdel_opts::offh_kind ;
@@ -289,9 +289,9 @@
                  
                  return  _kind;
             }
-
-            _dist -= _dist*_pert ;
             
+            _dist -= _pert * _dist ;
+
             real_type _proj[2] ;
             _proj[ 0] = 
             _fbal[ 0] + _dist*_dvec[ 0];

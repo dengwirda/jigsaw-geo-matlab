@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 22 March, 2018
+     * Last updated: 10 June, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -42,6 +42,8 @@
      */
 
 #   pragma once
+
+#   include "msh_read.hpp"
 
 #   ifndef __INI_LOAD__
 #   define __INI_LOAD__
@@ -114,7 +116,8 @@
                 _ndat.pval(0) = _pval[0];
                 _ndat.pval(1) = _pval[1];
                 
-                _ndat.pval(2) = +0.;
+                _ndat.pval(2) = 
+                        (real_type) +0. ;
                 
                 _ndat.fdim () = +0 ;
                 
@@ -127,7 +130,7 @@
                 
                 this->_init->
                    _euclidean_mesh_2d.
-                        _mesh.push_node(_ndat) ;
+               _mesh.push_node(_ndat, false) ;
             }
             else
             if (this->_ndim == +3 &&
@@ -141,7 +144,8 @@
                 _ndat.pval(1) = _pval[1];
                 _ndat.pval(2) = _pval[2];
                 
-                _ndat.pval(3) = +0.;
+                _ndat.pval(3) = 
+                        (real_type) +0. ;
                 
                 _ndat.fdim () = +0 ;
                 
@@ -154,7 +158,7 @@
                 
                 this->_init->
                    _euclidean_mesh_3d.
-                        _mesh.push_node(_ndat) ;
+               _mesh.push_node(_ndat, false) ;
             }
         }
     /*---------------------------------- parse EDGE2 data */
@@ -165,7 +169,7 @@
             )
         {
             __unreferenced(_ipos) ;
-			__unreferenced(_itag) ;
+            __unreferenced(_itag) ;
 
             if (this->_ndim == +2 &&
                 this->_kind == 
@@ -179,7 +183,7 @@
                 
                 this->_init->
                    _euclidean_mesh_2d.
-                        _mesh.push_edge(_edat) ;
+               _mesh.push_edge(_edat, false) ;
             }
             else
             if (this->_ndim == +3 &&
@@ -194,7 +198,7 @@
                 
                 this->_init->
                    _euclidean_mesh_3d.
-                        _mesh.push_edge(_edat) ;
+               _mesh.push_edge(_edat, false) ;
             } 
         }
     /*---------------------------------- parse TRIA3 data */
@@ -205,7 +209,7 @@
             )
         {
             __unreferenced(_ipos) ;
-			__unreferenced(_itag) ;
+            __unreferenced(_itag) ;
 
             if (this->_ndim == +2 &&
                 this->_kind == 
@@ -220,7 +224,7 @@
                 
                 this->_init->
                    _euclidean_mesh_2d.
-                        _mesh.push_tri3(_tdat) ;
+               _mesh.push_tri3(_tdat, false) ;
             }
             else
             if (this->_ndim == +3 &&
@@ -236,7 +240,7 @@
                 
                 this->_init->
                    _euclidean_mesh_3d.
-                        _mesh.push_tri3(_tdat) ;
+               _mesh.push_tri3(_tdat, false) ;
             }
         }
     /*---------------------------------- parse TRIA4 data */
@@ -247,7 +251,7 @@
             )
         {
             __unreferenced(_ipos) ;
-			__unreferenced(_itag) ;
+            __unreferenced(_itag) ;
 
             if (this->_ndim == +2 &&
                 this->_kind == 
@@ -270,7 +274,7 @@
                 
                 this->_init->
                    _euclidean_mesh_3d.
-                        _mesh.push_tri4(_tdat) ;
+               _mesh.push_tri4(_tdat, false) ;
             }
         }      
         } ;
@@ -303,8 +307,222 @@
                     ++_iter  )
             {
                 _jlog.push(
-            "  **parse error: " + *_iter + "\n");
+            "**parse error: " + * _iter + "\n") ;
             }
+        }
+        catch (...)
+        {
+            _errv = __unknown_error ;
+        }
+
+        return (  _errv ) ;
+    }
+       
+    /*
+    --------------------------------------------------------
+     * INIT-FROM-MSHT: read MSH_t data into INIT data.
+    --------------------------------------------------------
+     */
+    
+    template <
+    typename      jlog_data
+             >
+    __normal_call iptr_type init_from_msht (
+        jcfg_data &_jcfg ,
+        jlog_data &_jlog ,
+        mesh_data &_init ,
+        jigsaw_msh_t const&_imsh
+        )
+    {
+        iptr_type _errv  = __no_error ;
+        
+        try
+        {
+        
+        if (_imsh._flags == 
+                JIGSAW_EUCLIDEAN_MESH )
+        {
+            if (_imsh._vert2._size > 0)
+            {
+    /*--------------------------------- euclidean-mesh-2d */
+            _init._kind 
+                = jmsh_kind::euclidean_mesh ;
+            _init._ndim = +2;
+    
+            for (auto _ipos = (iptr_type)+0 ;
+                _ipos != _imsh._vert2._size ; 
+                    ++_ipos )
+            {
+                typename 
+                mesh_data::euclidean_mesh_2d
+                    ::node_type _ndat ;
+                _ndat.pval(0) = _imsh.
+                    _vert2._data[_ipos]._ppos[0];
+                _ndat.pval(1) = _imsh.
+                    _vert2._data[_ipos]._ppos[1];
+                
+                _ndat.pval(2) = 
+                        (real_type) +0. ;
+                
+                _ndat.fdim () = +0;
+                
+                if (_imsh._vert2.
+                        _data[_ipos]._itag < +0)
+                    _ndat.feat () = 
+                        mesh::user_feat ;
+                else
+                    _ndat.feat () = 
+                        mesh::null_feat ;
+                
+                _init._euclidean_mesh_2d.
+                    _mesh.push_node(_ndat,false);
+            }
+            
+            for (auto _ipos = (iptr_type)+0 ;
+                _ipos != _imsh._edge2._size ; 
+                    ++_ipos )
+            {
+                typename 
+                mesh_data::euclidean_mesh_2d
+                    ::edge_type _edat ;
+                _edat.node(0) = _imsh.
+                    _edge2._data[_ipos]._node[0];
+                _edat.node(1) = _imsh.
+                    _edge2._data[_ipos]._node[1];
+                
+                _init._euclidean_mesh_2d.
+                    _mesh.push_edge(_edat,false);
+            }
+            
+            for (auto _ipos = (iptr_type)+0 ;
+                _ipos != _imsh._tria3._size ; 
+                    ++_ipos )
+            {
+                typename 
+                mesh_data::euclidean_mesh_2d
+                    ::tria_type _tdat ;
+                _tdat.node(0) = _imsh.
+                    _tria3._data[_ipos]._node[0];
+                _tdat.node(1) = _imsh.
+                    _tria3._data[_ipos]._node[1];
+                _tdat.node(2) = _imsh.
+                    _tria3._data[_ipos]._node[2];
+                
+                _init._euclidean_mesh_2d.
+                    _mesh.push_tri3(_tdat,false);
+            }
+    
+            }
+            else
+            if (_imsh._vert3._size > 0)
+            {
+    /*--------------------------------- euclidean-mesh-3d */
+            _init._kind 
+                = jmsh_kind::euclidean_mesh ;
+            _init._ndim = +3;
+    
+            for (auto _ipos = (iptr_type)+0 ;
+                _ipos != _imsh._vert3._size ; 
+                    ++_ipos )
+            {
+                typename 
+                mesh_data::euclidean_mesh_3d
+                    ::node_type _ndat ;
+                _ndat.pval(0) = _imsh.
+                    _vert3._data[_ipos]._ppos[0];
+                _ndat.pval(1) = _imsh.
+                    _vert3._data[_ipos]._ppos[1];
+                _ndat.pval(2) = _imsh.
+                    _vert3._data[_ipos]._ppos[2];
+                
+                _ndat.pval(3) = 
+                        (real_type) +0. ;
+                
+                _ndat.fdim () = +0;
+                
+                if (_imsh._vert3.
+                        _data[_ipos]._itag < +0)
+                    _ndat.feat () = 
+                        mesh::user_feat ;
+                else
+                    _ndat.feat () = 
+                        mesh::null_feat ;
+                
+                _init._euclidean_mesh_3d.
+                    _mesh.push_node(_ndat,false);
+            }
+            
+            for (auto _ipos = (iptr_type)+0 ;
+                _ipos != _imsh._edge2._size ; 
+                    ++_ipos )
+            {
+                typename 
+                mesh_data::euclidean_mesh_3d
+                    ::edge_type _edat ;
+                _edat.node(0) = _imsh.
+                    _edge2._data[_ipos]._node[0];
+                _edat.node(1) = _imsh.
+                    _edge2._data[_ipos]._node[1];
+                
+                _init._euclidean_mesh_3d.
+                    _mesh.push_edge(_edat,false);
+            }
+            
+            for (auto _ipos = (iptr_type)+0 ;
+                _ipos != _imsh._tria3._size ; 
+                    ++_ipos )
+            {
+                typename 
+                mesh_data::euclidean_mesh_3d
+                    ::face_type _tdat ;
+                _tdat.node(0) = _imsh.
+                    _tria4._data[_ipos]._node[0];
+                _tdat.node(1) = _imsh.
+                    _tria4._data[_ipos]._node[1];
+                _tdat.node(2) = _imsh.
+                    _tria4._data[_ipos]._node[2];
+                
+                _init._euclidean_mesh_3d.
+                    _mesh.push_tri3(_tdat,false);
+            }
+            
+            for (auto _ipos = (iptr_type)+0 ;
+                _ipos != _imsh._tria4._size ; 
+                    ++_ipos )
+            {
+                typename 
+                mesh_data::euclidean_mesh_3d
+                    ::tria_type _tdat ;
+                _tdat.node(0) = _imsh.
+                    _tria4._data[_ipos]._node[0];
+                _tdat.node(1) = _imsh.
+                    _tria4._data[_ipos]._node[1];
+                _tdat.node(2) = _imsh.
+                    _tria4._data[_ipos]._node[2];
+                _tdat.node(3) = _imsh.
+                    _tria4._data[_ipos]._node[3];
+                
+                _init._euclidean_mesh_3d.
+                    _mesh.push_tri4(_tdat,false);
+            }
+    
+            }
+        }
+        else
+        if (_imsh._flags == 
+                JIGSAW_EUCLIDEAN_GRID)
+        {
+            _errv = 
+                 __invalid_argument ;
+        }
+        else
+        if (_imsh._flags == 
+                JIGSAW_ELLIPSOID_GRID)
+        {
+            _errv = 
+                 __invalid_argument ;               
+        }     
+        
         }
         catch (...)
         {
@@ -334,13 +552,14 @@
         std::string _path ;
         std::string _name ;
         std::string _fext ;
-        file_part(_jcfg._init_file, 
-            _path, _name, _fext);
+        file_part (
+            _jcfg._init_file, 
+                _path, _name, _fext ) ;
 
-        if (_fext.find("msh") == +0)
+        if (_fext.find("msh") == +0 )
         {
         return init_from_jmsh (
-                _jcfg, _jlog, _init)  ;
+                _jcfg, _jlog, _init ) ;
         }
         else
         {   
@@ -348,6 +567,26 @@
         }
 
         return ( _errv ) ;
+    }
+    
+    /*
+    --------------------------------------------------------
+     * COPY-INIT: copy INIT input data.
+    --------------------------------------------------------
+     */
+     
+    template <
+    typename      jlog_data
+             >
+    __normal_call iptr_type copy_init (
+        jcfg_data &_jcfg ,
+        jlog_data &_jlog ,
+        mesh_data &_init ,
+        jigsaw_msh_t const&_imsh
+        )
+    {   
+        return init_from_msht (
+           _jcfg, _jlog, _init, _imsh);
     }
     
     /*
@@ -374,21 +613,29 @@
              jmsh_kind::euclidean_mesh)
         {
     /*--------------------------------- euclidean-mesh-2d */
-            iptr_type _nmax = 
-                (iptr_type) _init.
-                    _euclidean_mesh_2d.
-                        _mesh._set1.count();
-        
             iptr_type _imin = 
             std::numeric_limits<iptr_type>::max() ;
             iptr_type _imax = 
             std::numeric_limits<iptr_type>::min() ;
 
+            iptr_type _nmax = +0 ;
+
+            for (auto _iter  = _init.
+            _euclidean_mesh_2d._mesh._set1.head() ;
+                      _iter != _init.
+            _euclidean_mesh_2d._mesh._set1.tend() ;
+                    ++_iter  )
+            {
+                if (_iter->mark() < 0) continue ;
+            
+                _nmax += + 1 ;
+            }
+
             for (auto _iter  = _init.
             _euclidean_mesh_2d._mesh._set2.head() ;
                       _iter != _init.
             _euclidean_mesh_2d._mesh._set2.tend() ;
-                    ++_iter )
+                    ++_iter  )
             {
                 if (_iter->mark() < 0) continue ;
                 
@@ -406,7 +653,7 @@
             _euclidean_mesh_2d._mesh._set3.head() ;
                       _iter != _init.
             _euclidean_mesh_2d._mesh._set3.tend() ;
-                    ++_iter )
+                    ++_iter  )
             {
                 if (_iter->mark() < 0) continue ;
             
@@ -427,7 +674,7 @@
             if (_imin < +0 || _imax>=_nmax)
             {
                 _jlog.push (
-            "  **input error: invalid indexing\n");
+    "**input error: GEOM. tria. indexing is incorrect.\n") ;
         
                 _errv = __invalid_argument ;
             }
@@ -438,15 +685,23 @@
              jmsh_kind::euclidean_mesh)
         {
     /*--------------------------------- euclidean-mesh-3d */
-            iptr_type _nmax = 
-                (iptr_type) _init.
-                    _euclidean_mesh_3d.
-                        _mesh._set1.count();
-        
             iptr_type _imin = 
             std::numeric_limits<iptr_type>::max() ;
             iptr_type _imax = 
             std::numeric_limits<iptr_type>::min() ;
+
+            iptr_type _nmax = +0 ;
+
+            for (auto _iter  = _init.
+            _euclidean_mesh_3d._mesh._set1.head() ;
+                      _iter != _init.
+            _euclidean_mesh_3d._mesh._set1.tend() ;
+                    ++_iter  )
+            {
+                if (_iter->mark() < 0) continue ;
+            
+                _nmax += + 1 ;
+            }
 
             for (auto _iter  = _init.
             _euclidean_mesh_3d._mesh._set2.head() ;
@@ -517,7 +772,7 @@
             if (_imin < +0 || _imax>=_nmax)
             {
                 _jlog.push (
-            "  **input error: invalid indexing\n");
+    "**input error: GEOM. tria. indexing is incorrect.\n") ;
         
                 _errv = __invalid_argument ;
             }

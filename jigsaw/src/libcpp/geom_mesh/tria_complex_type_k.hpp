@@ -60,14 +60,14 @@
     template <
     typename I,
     typename R
-		     >
+             >
     class tria_complex_node_2
-	{
+    {
 /*---------------------------------------- basic-node R^2 */
-	public  :
-	
-	typedef R                 real_type ;
-	typedef I                 iptr_type ;
+    public  :
+    
+    typedef R                 real_type ;
+    typedef I                 iptr_type ;
 
     iptr_type static constexpr _dims = +2 ;
 
@@ -82,48 +82,48 @@
     
     public  :
 /*---------------------------------------- "write" access */
-	__inline_call real_type      & pval (
-		iptr_type  _ipos
-		)
-	{   return this->_pval [_ipos];
-	}
-	__inline_call iptr_type      & node (
-		iptr_type  _ipos
-		)
-	{   return this->_ndat [_ipos];
-	}
+    __inline_call real_type      & pval (
+        iptr_type  _ipos
+        )
+    {   return this->_pval [_ipos];
+    }
+    __inline_call iptr_type      & node (
+        iptr_type  _ipos
+        )
+    {   return this->_ndat [_ipos];
+    }
 
     __inline_call char           & mark (
-	    )   
+        )   
     {   return this->_mark ;
     }
     __inline_call char           & self (
-	    )   
+        )   
     {   return this->_self ;
     }
 
 /*---------------------------------------- "const" access */
-	__inline_call real_type const& pval (
-		iptr_type _ipos
-		) const
-	{   return this->_pval [_ipos];
-	}
-	__inline_call iptr_type const& node (
-		iptr_type  _ipos
-		) const
-	{   return this->_ndat[_ipos];
-	}
+    __inline_call real_type const& pval (
+        iptr_type _ipos
+        ) const
+    {   return this->_pval [_ipos];
+    }
+    __inline_call iptr_type const& node (
+        iptr_type  _ipos
+        ) const
+    {   return this->_ndat[_ipos];
+    }
 
     __inline_call char      const& mark (
-	    ) const
+        ) const
     {   return this->_mark ;
     }
     __inline_call char      const& self (
-	    ) const
+        ) const
     {   return this->_self ;
     }
 
-	} ;
+    } ;
 
 /*
 ------------------------------------------------------------
@@ -137,14 +137,14 @@
     template <
     typename I,
     typename R
-		     >
+             >
     class tria_complex_node_3
-	{
+    {
 /*---------------------------------------- basic-node R^3 */
-	public  :
-	
-	typedef R                 real_type ;
-	typedef I                 iptr_type ;
+    public  :
+    
+    typedef R                 real_type ;
+    typedef I                 iptr_type ;
 
     iptr_type static constexpr _dims = +3 ;
 
@@ -159,48 +159,48 @@
     
     public  :
 /*---------------------------------------- "write" access */
-	__inline_call real_type      & pval (
-		iptr_type  _ipos
-		)
-	{   return this->_pval [_ipos];
-	}
-	__inline_call iptr_type      & node (
-		iptr_type  _ipos
-		)
-	{   return this->_ndat [_ipos];
-	}
+    __inline_call real_type      & pval (
+        iptr_type  _ipos
+        )
+    {   return this->_pval [_ipos];
+    }
+    __inline_call iptr_type      & node (
+        iptr_type  _ipos
+        )
+    {   return this->_ndat [_ipos];
+    }
 
     __inline_call char           & mark (
-	    )   
+        )   
     {   return this->_mark ;
     }
     __inline_call char           & self (
-	    )   
+        )   
     {   return this->_self ;
     }
-	
+    
 /*---------------------------------------- "const" access */
-	__inline_call real_type const& pval (
-		iptr_type _ipos
-		) const
-	{   return this->_pval [_ipos];
-	}
-	__inline_call iptr_type const& node (
-		iptr_type  _ipos
-		) const
-	{   return this->_ndat[_ipos];
-	}
+    __inline_call real_type const& pval (
+        iptr_type _ipos
+        ) const
+    {   return this->_pval [_ipos];
+    }
+    __inline_call iptr_type const& node (
+        iptr_type  _ipos
+        ) const
+    {   return this->_ndat[_ipos];
+    }
 
     __inline_call char      const& mark (
-	    ) const
+        ) const
     {   return this->_mark ;
     }
     __inline_call char      const& self (
-	    ) const
+        ) const
     {   return this->_self ;
     }
 
-	} ;
+    } ;
 
 /*
 ------------------------------------------------------------
@@ -214,14 +214,14 @@
     template <
     typename I,
     typename R
-		     >
+             >
     class tria_complex_node_4
-	{
+    {
 /*---------------------------------------- basic-node R^4 */
-	public  :
-	
-	typedef R                 real_type ;
-	typedef I                 iptr_type ;
+    public  :
+    
+    typedef R                 real_type ;
+    typedef I                 iptr_type ;
 
     iptr_type static constexpr _dims = +4 ;
 
@@ -236,48 +236,48 @@
     
     public  :
 /*---------------------------------------- "write" access */
-	__inline_call real_type      & pval (
-		iptr_type  _ipos
-		)
-	{   return this->_pval [_ipos];
-	}
-	__inline_call iptr_type      & node (
-		iptr_type  _ipos
-		)
-	{   return this->_ndat [_ipos];
-	}
+    __inline_call real_type      & pval (
+        iptr_type  _ipos
+        )
+    {   return this->_pval [_ipos];
+    }
+    __inline_call iptr_type      & node (
+        iptr_type  _ipos
+        )
+    {   return this->_ndat [_ipos];
+    }
 
     __inline_call char           & mark (
-	    )   
+        )   
     {   return this->_mark ;
     }
     __inline_call char           & self (
-	    )   
+        )   
     {   return this->_self ;
     }
-	
+    
 /*---------------------------------------- "const" access */
-	__inline_call real_type const& pval (
-		iptr_type _ipos
-		) const
-	{   return this->_pval [_ipos];
-	}
-	__inline_call iptr_type const& node (
-		iptr_type  _ipos
-		) const
-	{   return this->_ndat[_ipos];
-	}
+    __inline_call real_type const& pval (
+        iptr_type _ipos
+        ) const
+    {   return this->_pval [_ipos];
+    }
+    __inline_call iptr_type const& node (
+        iptr_type  _ipos
+        ) const
+    {   return this->_ndat[_ipos];
+    }
 
     __inline_call char      const& mark (
-	    ) const
+        ) const
     {   return this->_mark ;
     }
     __inline_call char      const& self (
-	    ) const
+        ) const
     {   return this->_self ;
     }
 
-	} ;
+    } ;
 
 /*
 ------------------------------------------------------------
@@ -289,14 +289,14 @@
  
     template <
     typename I
-		     >
+             >
     class tria_complex_edge_2
-	{
+    {
 /*---------------------------------------- base 1-simplex */
-	public  :
-	
-	typedef I	              iptr_type ;
-	
+    public  :
+    
+    typedef I                 iptr_type ;
+    
     iptr_type static constexpr _dims = +1 ;
 
     containers::
@@ -307,34 +307,34 @@
     
     public  :
 /*---------------------------------------- "write" access */
-	__inline_call iptr_type      & node (
-		iptr_type  _ipos
-		)
-	{   return this->_ndat [_ipos];
-	}
+    __inline_call iptr_type      & node (
+        iptr_type  _ipos
+        )
+    {   return this->_ndat [_ipos];
+    }
 
     __inline_call char           & mark (
-	    )   
+        )   
     {   return this->_mark ;
     }
     __inline_call char           & self (
-	    )   
+        )   
     {   return this->_self ;
     }
 
 /*---------------------------------------- "const" access */
-	__inline_call iptr_type const& node (
-		iptr_type  _ipos
-		) const
-	{   return this->_ndat[_ipos];
-	}
+    __inline_call iptr_type const& node (
+        iptr_type  _ipos
+        ) const
+    {   return this->_ndat[_ipos];
+    }
 
     __inline_call char      const& mark (
-	    ) const
+        ) const
     {   return this->_mark ;
     }
     __inline_call char      const& self (
-	    ) const
+        ) const
     {   return this->_self ;
     }
 
@@ -342,7 +342,7 @@
     __static_call
     __inline_call void_type faceind11 (
         iptr_type *_fnod,
-		iptr_type//_fpos
+        iptr_type//_fpos
         )
     {
         _fnod[0] = 0 ;
@@ -350,13 +350,13 @@
     }
     
     __static_call
-	__inline_call void_type face_node (
-		iptr_type *_fnod,
-		iptr_type  _fpos,
+    __inline_call void_type face_node (
+        iptr_type *_fnod,
+        iptr_type  _fpos,
         iptr_type  _from,
         iptr_type  _into
-		)
-	{
+        )
+    {
     /* index FROM 1-dim faces */
         if (_from == +1)
             {
@@ -366,7 +366,7 @@
         faceind11(_fnod, _fpos);
             }
             }
-	}
+    }
 
     __static_call
     __inline_call iptr_type face_size (
@@ -388,7 +388,7 @@
         }
     }
 
-	} ;
+    } ;
 
 /*
 ------------------------------------------------------------
@@ -400,14 +400,14 @@
  
     template <
     typename I
-		     >
+             >
     class tria_complex_tria_3
-	{
+    {
 /*---------------------------------------- base 2-simplex */
-	public  :
-	
-	typedef I	              iptr_type ;
-	
+    public  :
+    
+    typedef I                 iptr_type ;
+    
     iptr_type static constexpr _dims = +2 ;
 
     containers::
@@ -418,34 +418,34 @@
     
     public  :
 /*---------------------------------------- "write" access */
-	__inline_call iptr_type      & node (
-		iptr_type  _ipos
-		)
-	{   return this->_ndat [_ipos];
-	}
-	
-	__inline_call char           & mark (
-	    )   
+    __inline_call iptr_type      & node (
+        iptr_type  _ipos
+        )
+    {   return this->_ndat [_ipos];
+    }
+    
+    __inline_call char           & mark (
+        )   
     {   return this->_mark ;
     }
     __inline_call char           & self (
-	    )   
+        )   
     {   return this->_self ;
     }
 
 /*---------------------------------------- "const" access */
-	__inline_call iptr_type const& node (
-		iptr_type  _ipos
-		) const
-	{   return this->_ndat[_ipos];
-	}
-	
-	__inline_call char      const& mark (
-	    ) const
+    __inline_call iptr_type const& node (
+        iptr_type  _ipos
+        ) const
+    {   return this->_ndat[_ipos];
+    }
+    
+    __inline_call char      const& mark (
+        ) const
     {   return this->_mark ;
     }
     __inline_call char      const& self (
-	    ) const
+        ) const
     {   return this->_self ;
     }
 
@@ -453,7 +453,7 @@
     __static_call
     __inline_call void_type faceind22 (
         iptr_type *_fnod,
-		iptr_type//_fpos
+        iptr_type//_fpos
         )
     {
         _fnod[0] = 0 ;
@@ -463,7 +463,7 @@
     __static_call
     __inline_call void_type faceind11 (
         iptr_type *_fnod,
-		iptr_type//_fpos
+        iptr_type//_fpos
         )
     {
         _fnod[0] = 0 ;
@@ -472,7 +472,7 @@
     __static_call
     __inline_call void_type faceind21 (
         iptr_type *_fnod,
-		iptr_type  _fpos
+        iptr_type  _fpos
         )
     {
         switch (_fpos)
@@ -497,14 +497,14 @@
             }
             }
     }
-	__static_call
-	__inline_call void_type face_node (
-		iptr_type *_fnod,
-		iptr_type  _fpos,
+    __static_call
+    __inline_call void_type face_node (
+        iptr_type *_fnod,
+        iptr_type  _fpos,
         iptr_type  _from,
         iptr_type  _into
-		)
-	{
+        )
+    {
     /* index FROM 2-dim faces */
         if (_from == +2)
             {
@@ -530,7 +530,7 @@
         faceind11(_fnod, _fpos);
             }
             }
-	}
+    }
 
     __static_call
     __inline_call iptr_type face_size (
@@ -557,7 +557,7 @@
         }
     }
 
-	} ;
+    } ;
 
 /*
 ------------------------------------------------------------
@@ -569,13 +569,13 @@
  
     template <
     typename I 
-		     >
+             >
     class tria_complex_tria_4
-	{ 
+    { 
 /*---------------------------------------- base 3-simplex */
-	public  :
-	
-	typedef I                 iptr_type ;
+    public  :
+    
+    typedef I                 iptr_type ;
 
     iptr_type static constexpr _dims = +3 ;
 
@@ -587,34 +587,34 @@
     
     public  :
 /*---------------------------------------- "write" access */
-	__inline_call iptr_type      & node (
-		iptr_type  _ipos
-		)
-	{   return this->_ndat [_ipos];
-	}
+    __inline_call iptr_type      & node (
+        iptr_type  _ipos
+        )
+    {   return this->_ndat [_ipos];
+    }
 
     __inline_call char           & mark (
-	    )   
+        )   
     {   return this->_mark ;
     }
     __inline_call char           & self (
-	    )   
+        )   
     {   return this->_self ;
     }
 
 /*---------------------------------------- "const" access */
-	__inline_call iptr_type const& node (
-		iptr_type  _ipos
-		) const
-	{   return this->_ndat[_ipos];
-	}
+    __inline_call iptr_type const& node (
+        iptr_type  _ipos
+        ) const
+    {   return this->_ndat[_ipos];
+    }
 
     __inline_call char      const& mark (
-	    ) const
+        ) const
     {   return this->_mark ;
     }
     __inline_call char      const& self (
-	    ) const
+        ) const
     {   return this->_self ;
     }
 
@@ -622,7 +622,7 @@
     __static_call
     __inline_call void_type faceind33 (
         iptr_type *_fnod,
-		iptr_type//_fpos
+        iptr_type//_fpos
         )
     {
         _fnod[0] = 0 ;
@@ -633,7 +633,7 @@
     __static_call
     __inline_call void_type faceind22 (
         iptr_type *_fnod,
-		iptr_type//_fpos
+        iptr_type//_fpos
         )
     {
         _fnod[0] = 0 ;
@@ -643,7 +643,7 @@
     __static_call
     __inline_call void_type faceind11 (
         iptr_type *_fnod,
-		iptr_type//_fpos
+        iptr_type//_fpos
         )
     {
         _fnod[0] = 0 ;
@@ -652,85 +652,85 @@
     __static_call
     __inline_call void_type faceind32 (
         iptr_type *_fnod,
-		iptr_type  _fpos
+        iptr_type  _fpos
         )
     {
         switch (_fpos)
-		    {
-		case 0 :
-			{	
-		_fnod[0] = 0 ;
-		_fnod[1] = 1 ;
-		_fnod[2] = 2 ; 
-		_fnod[3] = 3 ; break ;
-			}
-		case 1 :
-			{
-		_fnod[0] = 0 ;
-		_fnod[1] = 3 ;
-		_fnod[2] = 1 ; 
-		_fnod[3] = 2 ; break ;
-			}
-		case 2 :
-			{
-		_fnod[0] = 1 ;
-		_fnod[1] = 3 ;
-		_fnod[2] = 2 ; 
-		_fnod[3] = 0 ; break ;
-			}
-		case 3 :
-			{
-		_fnod[0] = 2 ;
-		_fnod[1] = 3 ;
-		_fnod[2] = 0 ; 
-		_fnod[3] = 1 ; break ;
-			}
-		    }
+            {
+        case 0 :
+            {   
+        _fnod[0] = 0 ;
+        _fnod[1] = 1 ;
+        _fnod[2] = 2 ; 
+        _fnod[3] = 3 ; break ;
+            }
+        case 1 :
+            {
+        _fnod[0] = 0 ;
+        _fnod[1] = 3 ;
+        _fnod[2] = 1 ; 
+        _fnod[3] = 2 ; break ;
+            }
+        case 2 :
+            {
+        _fnod[0] = 1 ;
+        _fnod[1] = 3 ;
+        _fnod[2] = 2 ; 
+        _fnod[3] = 0 ; break ;
+            }
+        case 3 :
+            {
+        _fnod[0] = 2 ;
+        _fnod[1] = 3 ;
+        _fnod[2] = 0 ; 
+        _fnod[3] = 1 ; break ;
+            }
+            }
     }
     __static_call
     __inline_call void_type faceind31 (
         iptr_type *_fnod,
-		iptr_type  _fpos
+        iptr_type  _fpos
         )
     {
         switch (_fpos)
-		    {
-		case 0 :
-			{
-		_fnod[0] = 0 ;
-		_fnod[1] = 1 ; break ;
-			}
-		case 1 :
-			{
-		_fnod[0] = 1 ;
-		_fnod[1] = 2 ; break ;
-			}
-		case 2 :
-			{
-		_fnod[0] = 2 ;
-		_fnod[1] = 0 ; break ;
-			}
-		case 3 :
-			{
-		_fnod[0] = 0 ;
-		_fnod[1] = 3 ; break ;
-			}
-		case 4 :
-			{
-		_fnod[0] = 1 ;
-		_fnod[1] = 3 ; break ;
-			}
-		case 5 :
-			{
-		_fnod[0] = 2 ;
-		_fnod[1] = 3 ; break ;
-			}
-		    }
+            {
+        case 0 :
+            {
+        _fnod[0] = 0 ;
+        _fnod[1] = 1 ; break ;
+            }
+        case 1 :
+            {
+        _fnod[0] = 1 ;
+        _fnod[1] = 2 ; break ;
+            }
+        case 2 :
+            {
+        _fnod[0] = 2 ;
+        _fnod[1] = 0 ; break ;
+            }
+        case 3 :
+            {
+        _fnod[0] = 0 ;
+        _fnod[1] = 3 ; break ;
+            }
+        case 4 :
+            {
+        _fnod[0] = 1 ;
+        _fnod[1] = 3 ; break ;
+            }
+        case 5 :
+            {
+        _fnod[0] = 2 ;
+        _fnod[1] = 3 ; break ;
+            }
+            }
     }
     __static_call
     __inline_call void_type faceind21 (
         iptr_type *_fnod,
-		iptr_type  _fpos
+        iptr_type  _fpos
         )
     {
         switch (_fpos)
@@ -757,13 +757,13 @@
     }
 
     __static_call
-	__inline_call void_type face_node (
-		iptr_type *_fnod,
-		iptr_type  _fpos,
+    __inline_call void_type face_node (
+        iptr_type *_fnod,
+        iptr_type  _fpos,
         iptr_type  _from,   // "from" dims
         iptr_type  _into    // "into" dims
-		)
-	{
+        )
+    {
     /* index FROM 3-dim faces */
         if (_from == +3)
             {       
@@ -843,9 +843,9 @@
         }
     }
 
-	} ;
-	
-		
+    } ;
+    
+        
     }
 
 #   endif  //__TRIA_COMPLEX_TYPE_K__

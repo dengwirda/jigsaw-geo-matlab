@@ -50,15 +50,15 @@
     --------------------------------------------------------
      */
  
-	__normal_call bool_type walk_mesh_node (
-		real_type *_ppos,
-		iptr_type &_elem,
-		iptr_type  _hint =  null_flag ()
-		)
-	{
-	/*------------- walk mesh until we find enclosing tri */
-		bool_type _done = false;
-		bool_type _scan = false;
+    __normal_call bool_type walk_mesh_node (
+        real_type *_ppos,
+        iptr_type &_elem,
+        iptr_type  _hint =  null_flag ()
+        )
+    {
+    /*------------- walk mesh until we find enclosing tri */
+        bool_type _done = false;
+        bool_type _scan = false;
         iptr_type _ntri = 
        (iptr_type)this->_tset.count () ;
 
@@ -86,70 +86,70 @@
             _elem = _hint ;
         }
 
-	/*------------- randomised scan: locate initial _elem */
-		if (_scan)
-		{
-		
-	    real_type _best = 
+    /*------------- randomised scan: locate initial _elem */
+        if (_scan)
+        {
+        
+        real_type _best = 
        +std::numeric_limits<real_type>::infinity() ;
-	
+    
     /*--------------------- scale no. iter with dims. */
         iptr_type _imax = (iptr_type)
             std::pow ((double) _ntri, 
         +1.0 / tria_pred::_dims) / 4 + 1 ;
 
-		for (auto _iter = _imax; _iter-- != +0; )
-		{
+        for (auto _iter = _imax; _iter-- != +0; )
+        {
         /*----------------------- randomise selection */
             iptr_type _ipos =
-	            (iptr_type)std::rand() 
-	                % this->_nset.count();
+                (iptr_type)std::rand() 
+                    % this->_nset.count();
 
         /*----------------------- reject "null" nodes */
             if (node(_ipos)->mark() < +0)
             { 
                 continue  ;
             }
-		/*----------------------- calc. dist. to node */
-			real_type _dist = 
+        /*----------------------- calc. dist. to node */
+            real_type _dist = 
                 tria_pred::lensqr_kd(_ppos, 
                     &node(_ipos)->pval(0));
 
-			if (_best > _dist)
-			{
+            if (_best > _dist)
+            {
         /*----------------------- keep closest so far */
-				_best = _dist;
-				
-				_elem = node(_ipos)->next() ;
-			}
-		}
-		
-		}
+                _best = _dist;
+                
+                _elem = node(_ipos)->next() ;
+            }
+        }
+        
+        }
 
-	/*------------- ensure that we have a non--null _elem */
-		for ( ; _elem != _ntri; ++_elem)
-		{
-		    if (tria(_elem)->mark()>=+0) break  ;
-		}
+    /*------------- ensure that we have a non--null _elem */
+        for ( ; _elem != _ntri; ++_elem)
+        {
+            if (tria(_elem)->mark()>=+0) break  ;
+        }
 
-	/*------------- walk elements toward _ppos from _elem */
-	
-	    iptr_type _next = +0 ;
-	    iptr_type _face = +0 ;
-	    
-		for (auto _iter = _ntri; 
-		          _iter-- != +0; _elem = _next)
-		{
-		/*--------------- test node-in-tria condition */
+    /*------------- walk elements toward _ppos from _elem */
+    
+        iptr_type _next = +0 ;
+        iptr_type _face = +0 ;
+        
+        for (auto _iter = _ntri; 
+                  _iter-- != +0; _elem = _next)
+        {
+        /*--------------- test node-in-tria condition */
             _done = typename tria_pred::
                 template walk_pred<self_type>() (
                     *this, _ppos,
                     _elem, _face) ;
-		
-			if(!_done )
+        
+            if(!_done )
             {
         /*--------------- push next element onto walk */
-			    _next = __unflip (
+                _next = __unflip (
                     tria(_elem)->next(_face));
 
                 if(_next == this->null_flag())
@@ -159,11 +159,11 @@
                 }
             }
         /*--------------- stop when _ppos is enclosed */
-			else break ;
-		}
+            else break ;
+        }
 
-		return ( _done )  ;
-	}
-	
-	
-	
+        return ( _done )  ;
+    }
+    
+    
+    

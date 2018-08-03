@@ -62,9 +62,9 @@
     
     /*-------------- "frontal" delaunay refinement in R^3 */
     
-    typedef G						    geom_type ;
-    typedef H						    hfun_type ;
-    typedef M						    mesh_type ;
+    typedef G                           geom_type ;
+    typedef H                           hfun_type ;
+    typedef M                           mesh_type ;
 
     typedef typename 
             mesh_type::real_type        real_type ;
@@ -92,6 +92,7 @@
         {
         public  :
         iptr_type       _mark ;
+        iptr_type       _imax ;
         real_type       _cost ;
         } ;
         
@@ -99,13 +100,15 @@
         {
         public  :
         iptr_type       _mark ;
+        iptr_type       _imax ;
         real_type       _cost ;
         } ;
         
     class tria_data
         {
         public  :
-        iptr_type       _mark ;        
+        iptr_type       _mark ;
+        iptr_type       _imax ;        
         real_type       _cost ;
         } ;
 
@@ -118,8 +121,14 @@
         )
     {   
         if(_idat._mark == _jdat._mark )
+        {
+        if(_idat._cost == _jdat._cost )
+        return _idat._imax < 
+               _jdat._imax ;
+        else
         return _idat._cost > 
                _jdat._cost ;
+        }
         else
         return _idat._mark < 
                _jdat._mark ;
@@ -132,8 +141,14 @@
         )
     {   
         if(_idat._mark == _jdat._mark )
+        {
+        if(_idat._cost == _jdat._cost )
+        return _idat._imax < 
+               _jdat._imax ;
+        else
         return _idat._cost > 
                _jdat._cost ;
+        }
         else
         return _idat._mark < 
                _jdat._mark ;
@@ -146,8 +161,14 @@
         )
     {   
         if(_idat._mark == _jdat._mark )
+        {
+        if(_idat._cost == _jdat._cost )
+        return _idat._imax < 
+               _jdat._imax ;
+        else
         return _idat._cost > 
                _jdat._cost ;
+        }
         else
         return _idat._mark < 
                _jdat._mark ;
@@ -516,8 +537,8 @@
     /*--------------------------------- find edge lengths */
         real_type _llen[3] ;
         iptr_type _enum ;
-	    for(_enum = +3; _enum-- != +0; )
-	    {
+        for(_enum = +3; _enum-- != +0; )
+        {
             iptr_type _enod[ +3] ;
             mesh_type::tria_type::
                 tria_type::
@@ -534,31 +555,31 @@
         }
      
     /*--------------------------------- find min/max edge */
-	    iptr_type _emin = (iptr_type)+0;
-	    iptr_type _emax = (iptr_type)+0;
-	    for(_enum = +3; _enum-- != +1; )
-	    {
-	    if (_llen[_emax] < _llen[_enum]) 
+        iptr_type _emin = (iptr_type)+0;
+        iptr_type _emax = (iptr_type)+0;
+        for(_enum = +3; _enum-- != +1; )
+        {
+        if (_llen[_emax] < _llen[_enum]) 
             _emax = _enum ;
-	    if (_llen[_emin] > _llen[_enum]) 
+        if (_llen[_emin] > _llen[_enum]) 
             _emin = _enum ;
-	    }
-	           
+        }
+               
     /*--------------------------------- hop to constraint */
-	    real_type _best = 
-	        std::numeric_limits
-	            <real_type>::infinity () ;
-	    
-	    for(_enum = +3; _enum-- != +0; )
-	    {
-	        iptr_type  _enod[ +3];
+        real_type _best = 
+            std::numeric_limits
+                <real_type>::infinity () ;
+        
+        for(_enum = +3; _enum-- != +0; )
+        {
+            iptr_type  _enod[ +3];
             mesh_type::tria_type::
                 tria_type::
             face_node(_enod, _enum, 2, 1) ;
-	        _enod[0] = _fnod[_enod[ 0]] ;
-	        _enod[1] = _fnod[_enod[ 1]] ;
-	        
-	        algorithms::isort(
+            _enod[0] = _fnod[_enod[ 0]] ;
+            _enod[1] = _fnod[_enod[ 1]] ;
+            
+            algorithms::isort(
                 &_enod[0], &_enod[2],
                     std::less<iptr_type>()) ;
                     
@@ -579,14 +600,14 @@
                     _best = _llen[_enum];
                 }
             }
-	    }
-	    
+        }
+        
     /*--------------------------------- pop edge indexing */
         iptr_type  _enod[ +3];
         mesh_type::tria_type::tria_type::
         face_node(_enod, _emin, 2, 1);
-	    _enod[0] = _fnod[_enod[ 0]];
-	    _enod[1] = _fnod[_enod[ 1]];
+        _enod[0] = _fnod[_enod[ 0]];
+        _enod[1] = _fnod[_enod[ 1]];
         _enod[2] = _fnod[_enod[ 2]];
         
         containers
@@ -794,8 +815,8 @@
     /*--------------------------------- find edge lengths */
         real_type _llen[6] ;
         iptr_type _enum ;
-	    for(_enum = +6; _enum-- != +0; )
-	    {
+        for(_enum = +6; _enum-- != +0; )
+        {
             iptr_type _enod[ +4] ;
             mesh_type::tria_type::
                 tria_type::
@@ -814,15 +835,15 @@
         }
     
     /*--------------------------------- find min/max edge */
-	    iptr_type _emin = (iptr_type)+0;
-	    iptr_type _emax = (iptr_type)+0;
-	    for(_enum = +6; _enum-- != +1; )
-	    {
-	    if (_llen[_emax] < _llen[_enum]) 
+        iptr_type _emin = (iptr_type)+0;
+        iptr_type _emax = (iptr_type)+0;
+        for(_enum = +6; _enum-- != +1; )
+        {
+        if (_llen[_emax] < _llen[_enum]) 
             _emax = _enum ;
-	    if (_llen[_emin] > _llen[_enum]) 
+        if (_llen[_emin] > _llen[_enum]) 
             _emin = _enum ;
-	    }
+        }
     
     /*--------------------------------- find 2-face radii */
         real_type _frad[4] ;
@@ -856,35 +877,35 @@
         }
     
     /*--------------------------------- find min/max face */
-	    iptr_type _fmin = (iptr_type)+0;
-	    iptr_type _fmax = (iptr_type)+0;
-	    for(_fpos = +4; _fpos-- != +1; )
-	    {
-	    if (_frad[_fmax] < _frad[_fpos]) 
+        iptr_type _fmin = (iptr_type)+0;
+        iptr_type _fmax = (iptr_type)+0;
+        for(_fpos = +4; _fpos-- != +1; )
+        {
+        if (_frad[_fmax] < _frad[_fpos]) 
             _fmax = _fpos ;
-	    if (_frad[_fmin] > _frad[_fpos]) 
+        if (_frad[_fmin] > _frad[_fpos]) 
             _fmin = _fpos ;
-	    }
-	    
+        }
+        
     /*--------------------------------- hop to constraint */  
         real_type _best = 
-	        std::numeric_limits
-	            <real_type>::infinity () ;
-	    
-	    for(_fpos = +4; _fpos-- != +0; )
-	    {
-	        iptr_type  _fnod[ +4];
+            std::numeric_limits
+                <real_type>::infinity () ;
+        
+        for(_fpos = +4; _fpos-- != +0; )
+        {
+            iptr_type  _fnod[ +4];
             mesh_type::tria_type::
                 tria_type::
             face_node(_fnod, _fpos, 3, 2);
-	        _fnod[ +0] = _mesh._tria.
+            _fnod[ +0] = _mesh._tria.
              tria(_tpos)->node(_fnod[ 0]);
             _fnod[ +1] = _mesh._tria.
              tria(_tpos)->node(_fnod[ 1]);
             _fnod[ +2] = _mesh._tria.
              tria(_tpos)->node(_fnod[ 2]);
-	        
-	        algorithms::isort(
+            
+            algorithms::isort(
                 &_fnod[0], &_fnod[3],
                     std::less<iptr_type>()) ;
                     
@@ -905,9 +926,9 @@
                     
                     _best = _frad[_fpos];
                 }
-            }	    
-	    }
-	
+            }       
+        }
+    
     /*-------------------------- ask for "frontal" status */   
         if(!ring_face(_mesh,_tpos,_fmin))
         {

@@ -77,7 +77,7 @@
         __unreferenced(_args) ;
      
         if (_enod[1] < _enod[0])
-        std::swap(_enod[0], _enod[1]);
+        std::swap(_enod[0], _enod[1]) ;
 
         real_type  _nsiz [ 3] ;
         _nsiz[ 0] = _hfun.eval (
@@ -90,10 +90,7 @@
          node(_enod[1])->pval(0) , 
         _mesh._tria.
          node(_enod[1])->idxh()) ;
-         
-        _hint = _mesh._tria.
-            node (_enod[0])->idxh() ;
-
+        
         real_type _dvec[4] ;
         real_type _ipos[3] = {
         _mesh._tria.
@@ -103,7 +100,10 @@
         _mesh._tria.
          node(_enod[0])->pval(2)
             } ;
-        
+         
+        _hint = _mesh._tria.
+            node (_enod[0])->idxh() ;
+
         _dvec[ 0] = 
         _sbal[ 0] - _ipos[ 0] ;
         _dvec[ 1] = 
@@ -120,7 +120,7 @@
         _ppos[ 0] = _sbal[ 0] ;
         _ppos[ 1] = _sbal[ 1] ;
         _ppos[ 2] = _sbal[ 2] ;
-
+        
         real_type static const  _seps = 
             (real_type)std::sqrt(
        +std::numeric_limits<real_type>::epsilon());
@@ -128,7 +128,7 @@
         uint32_t  _hash = hash_ball(_sbal) ;
 
         real_type _pert =
-           ((real_type)(_hash % +65536)) / +65536 ;
+           ((real_type)(_hash % +4096)) / +4096 ;
         _pert  *= _seps ;
 
         for(iptr_type _iter = +0; _iter++ != +8 ; )
@@ -157,8 +157,8 @@
                  rdel_opts::offh_kind  ;
             }
 
-            _dist -= _pert*_dist ;
-            
+            _dist -= _pert * _dist ;
+
             cosine_intersect _pred(_ipos,_dvec);
             if (!_geom.intersect (
                  _ipos, 
@@ -238,10 +238,10 @@
         _ppos[ 0] = _sbal[ 0] ;
         _ppos[ 1] = _sbal[ 1] ;
         _ppos[ 2] = _sbal[ 2] ;
-    
+        
         real_type _epsh = 
        +std::numeric_limits<real_type>::infinity();
-
+        
         real_type static const  _seps = 
             (real_type)std::sqrt(
        +std::numeric_limits<real_type>::epsilon());
@@ -249,9 +249,9 @@
         uint32_t  _hash = hash_ball(_sbal) ;
 
         real_type _pert =
-           ((real_type)(_hash % +65536)) / +65536 ;
+           ((real_type)(_hash % +4096)) / +4096 ;
         _pert  *= _seps ;
-
+    
         for(iptr_type _iter = +0; _iter++ != +8 ; )
         {
             _nsiz[2] = _hfun.eval(_ppos, _hint) ;
@@ -259,7 +259,7 @@
             real_type _hval = 
             _nsiz[0] * (real_type)1./4. +
             _nsiz[1] * (real_type)1./4. +
-            _nsiz[2] * (real_type)1./2. ;
+            _nsiz[2] * (real_type)2./4. ;
 
             real_type _hmin ;
             _hmin = std::min (_hval , _epsh);
@@ -267,7 +267,7 @@
             real_type _elen = _evec[ 3] ;
             real_type _dist ;
             real_type _dsqr = _hmin * _hmin - 
-	       (real_type)+.25  * _elen * _elen ;
+           (real_type)+.25  * _elen * _elen ;
 
             real_type _frad = 
            (real_type)+.25  * _elen * _elen ;
@@ -310,8 +310,8 @@
                  
                  return  _kind;
             }
-
-            _dist -= _pert*_dist ;
+            
+            _dist -= _pert * _dist ;
             
             cosine_intersect _pred(_pmid,_dvec);
             if (!_geom.intersect (
@@ -398,17 +398,17 @@
         _ppos[ 0] = _tbal[ 0] ;
         _ppos[ 1] = _tbal[ 1] ;
         _ppos[ 2] = _tbal[ 2] ;
-      
+        
         real_type static const  _seps = 
             (real_type)std::sqrt(
-        std::numeric_limits<real_type>::epsilon());
+       +std::numeric_limits<real_type>::epsilon());
 
         uint32_t  _hash = hash_ball(_tbal) ;
 
         real_type _pert =
-           ((real_type)(_hash % +65536)) / +65536 ;
+           ((real_type)(_hash % +4096)) / +4096 ;
         _pert  *= _seps ;
-
+      
         for(iptr_type _iter = +0; _iter++ != +8 ; )
         {
             _nsiz[3] = _hfun.eval(_ppos, _hint) ;
@@ -466,8 +466,8 @@
                  
                  return  _kind;
             }
-
-            _dist -= _pert*_dist ;
+            
+            _dist -= _pert * _dist ;
             
             real_type _proj[3] ;
             _proj[ 0] = 

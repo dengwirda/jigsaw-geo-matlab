@@ -3,13 +3,13 @@
     // for cmd-jigsaw:
     //
     // g++ -std=c++11 -pedantic -Wall -s -O3 -flto -D NDEBUG 
-    // -I libcpp -static-libstdc++ jigsaw.cpp -o jigsaw64r
+    // -static-libstdc++ jigsaw.cpp -o jigsaw64r
     //
     //
     // for lib-jigsaw:
     //
-    // g++ -std=c++11 -pedantic -Wall -O3 -flto -fPIC -D 
-    // NDEBUG -I libcpp -static-libstdc++ jigsaw.cpp -shared 
+    // g++ -std=c++11 -pedantic -Wall -O3 -flto -fPIC 
+    // -D NDEBUG -static-libstdc++ jigsaw.cpp -shared 
     // -o libjigsaw64r.so
     //
 
@@ -28,13 +28,13 @@
      * JIGSAW: an unstructured mesh generation package.
     --------------------------------------------------------
      *
-     * JIGSAW release 0.9.6.x
-     * Last updated: 21 March, 2018
+     * JIGSAW release 0.9.7.x
+     * Last updated: 31 July, 2018
      *
      * Copyright 2013 -- 2018
      * Darren Engwirda
      * darren.engwirda@columbia.edu
-     * https://github.com/dengwirda/
+     * https://github.com/dengwirda
      *
     --------------------------------------------------------
      *     
@@ -86,8 +86,10 @@
      * Univ. of Sydney. 
      * http://hdl.handle.net/2123/13148
      *
+    --------------------------------------------------------
+     *
      * JIGSAW builds on a variety of "standard" algorithms,
-     * described in, for instance:
+     * building upon technqiues described in, for instance:
      *
      * S. Cheng, T. Dey & J. Shewchuk, (2012): "Delaunay 
      * mesh generation", CRC Press.
@@ -99,7 +101,7 @@
      */
 
 
-#   define __JGSWVSTR "JIGSAW VERSION 0.9.6"
+#   define __JGSWVSTR "JIGSAW VERSION 0.9.7"
 
 
     /*---------------------------------- for i/o on files */
@@ -125,7 +127,14 @@
 #   include <chrono>
 #   endif//__use_timers
 
-    /*---------------------------------- JIGSAW's dyn-lib */
+    /*---------------------------------- JIGSAW's backend */
+
+#   include "libcpp/libbasic.hpp"
+#   include "libcpp/libparse.hpp"
+
+#   include "libcpp/geommesh.hpp"
+
+    /*---------------------------------- JIGSAW's userlib */
 
 //  define __lib_jigsaw               // define makes lib
 
@@ -134,39 +143,39 @@
 #   include "../inc/lib_jigsaw.h"
     }
 
-    typedef real_t        real_type;  // double-precision
-    typedef indx_t        iptr_type;  // 32bit signed int
+    typedef real_t real_type ;        // double-precision
+    typedef indx_t iptr_type ;        // 32bit signed int
 
-    /*---------------------------------- JIGSAW's backend */
-
-#   include "libbasic.hpp"
-
-#   include "init_jig_t.hpp"
-#   include "init_msh_t.hpp"
-
-#   include "geommesh.hpp"
-
-#   include "txt_file.hpp"
-#   include "msh_load.hpp"
-
+    /*---------------------------------- JIGSAW mesh kind */        
+        
+    struct jmsh_kind {   
+        enum enum_data {
+            euclidean_mesh      = +0 ,
+            euclidean_grid ,
+            euclidean_dual ,
+            ellipsoid_mesh ,
+            ellipsoid_grid ,
+            ellipsoid_dual
+        } ;
+        } ;
 
     /*---------------------------------- run-time errors! */
     
-    iptr_type static 
-        constexpr __unknown_error          = -1 ;
+    iptr_type static constexpr 
+        __unknown_error         = -1 ;
     
-    iptr_type static 
-        constexpr __no_error               = +0 ;
+    iptr_type static constexpr 
+        __no_error              = +0 ;
     
-    iptr_type static 
-        constexpr __file_not_located       = +2 ;
-    iptr_type static 
-        constexpr __file_not_created       = +3 ;
+    iptr_type static constexpr 
+        __file_not_located      = +2 ;
+    iptr_type static constexpr 
+        __file_not_created      = +3 ;
     
-    iptr_type static 
-        constexpr __invalid_argument       = +4 ;
+    iptr_type static constexpr 
+        __invalid_argument      = +4 ;
 
-    
+ 
     /*
     --------------------------------------------------------
      * JCFG-DATA: JIGSAW's config data.
@@ -186,37 +195,50 @@
         std::string             _hfun_file ;
         std::string             _tria_file ;
         std::string             _mesh_file ;
+        std::string             _bnds_file ;
         
-        iptr_type               _verbosity = +0 ;
+        iptr_type               _verbosity = 0 ;
+    
+    /*--------------------------------- geom-bnd. kernels */
+        struct bnds_pred {
+            enum enum_data {
+            nullkern ,    
+            bnd_tria = JIGSAW_BNDS_TRIACELL,
+            bnd_dual = JIGSAW_BNDS_DUALCELL
+            } ;
+            } ;
+
+        bnds_pred::enum_data    
+            _bnds_pred = bnds_pred::bnd_tria ;
         
     /*--------------------------------- mesh-gen. kernels */
         struct mesh_pred {
             enum enum_data {
-                nullkern ,    
-                delfront ,
-                delaunay
+            nullkern ,    
+            delfront = JIGSAW_KERN_DELFRONT,
+            delaunay = JIGSAW_KERN_DELAUNAY
             } ;
             } ;
 
-        mesh_pred::enum_data    _mesh_pred = 
-                            mesh_pred::delfront ;
+        mesh_pred::enum_data    
+            _mesh_pred = mesh_pred::delfront ;
         
     /*--------------------------------- H(x) fun. scaling */
         struct hfun_scal { 
             enum enum_data {
-                nullscal ,
-                absolute ,
-                relative
+            nullscal ,
+            absolute = JIGSAW_HFUN_ABSOLUTE,
+            relative = JIGSAW_HFUN_RELATIVE
             } ;
             } ;
         
-        hfun_scal::enum_data    _hfun_scal =
-                            hfun_scal::relative ;
+        hfun_scal::enum_data    
+            _hfun_scal = hfun_scal::relative ;
 
-        real_type               _hfun_hmax = 
-                           (real_type) +2.0E-02 ;
-        real_type               _hfun_hmin = 
-                           (real_type) +0.0E+00 ;
+        real_type _hfun_hmax = 
+            (real_type) +2.00E-02 ;
+        real_type _hfun_hmin = 
+            (real_type) +0.00E+00 ;
 
     /*------------------------------- "low-level" config. */        
         typedef mesh::rdel_params <
@@ -274,7 +296,12 @@
             )
         {
             this->_euclidean_mesh_2d.
+                _tria.make_ptrs() ;
+            this->_euclidean_mesh_2d.
                 init_geom(_jcfg._rdel_opts) ;
+                
+            this->_euclidean_mesh_3d.
+                _tria.make_ptrs() ;
             this->_euclidean_mesh_3d.
                 init_geom(_jcfg._rdel_opts) ;
                 
@@ -384,6 +411,9 @@
                 
         euclidean_rdel_2d       _euclidean_rdel_2d ;
         euclidean_rdel_3d       _euclidean_rdel_3d ;
+        
+        euclidean_rdel_2d       _euclidean_rvor_2d ;
+        euclidean_rdel_3d       _euclidean_rvor_3d ;
         
         } ;
     
@@ -513,40 +543,23 @@
 
     /*
     --------------------------------------------------------
-     * READ-GEOM: load GEOM data from file.
+     * READ-DATA: load MESH data from file.
     --------------------------------------------------------
      */
 
     #   include "geo_load.hpp"
-    
-    
-    /*
-    --------------------------------------------------------
-     * READ-INIT: load INIT data from file.
-    --------------------------------------------------------
-     */
-
     #   include "ini_load.hpp"
-
-    
-    /*
-    --------------------------------------------------------
-     * READ-HFUN: load HFUN data from file.
-    --------------------------------------------------------
-     */
-    
     #   include "hfn_load.hpp"
     
-    #   include "hfn_init.hpp"
     
-
     /*
     --------------------------------------------------------
-     * INIT-MESH: initialise mesh pointers.
+     * INIT-DATA: initialise mesh pointers.
     --------------------------------------------------------
      */
 
     #   include "msh_init.hpp"
+    #   include "hfn_init.hpp"
     
     
     /*
@@ -569,19 +582,11 @@
 
     /*
     --------------------------------------------------------
-     * MAKE-MESH: call mesh generator.
+     * CALC-MESH: call mesh generator.
     --------------------------------------------------------
      */
     
     #   include "run_mesh.hpp"
-    
-    
-    /*
-    --------------------------------------------------------
-     * ITER-MESH: call mesh optimiser.
-    --------------------------------------------------------
-     */
-
     #   include "run_iter.hpp"
 
 
@@ -684,10 +689,20 @@
  
 #   ifdef __lib_jigsaw
 
+#   include "liblib/init_jig_t.hpp"
+#   include "liblib/init_msh_t.hpp"
+
+#   include "liblib/load_jig_t.hpp"
+#   include "liblib/load_msh_t.hpp"
+
+#   include "liblib/save_jig_t.hpp"
+#   include "liblib/save_msh_t.hpp"
+ 
     __normal_call
         iptr_type jigsaw_make_mesh (    // lib-jigsaw
         jigsaw_jig_t *_jjig ,
         jigsaw_msh_t *_gmsh ,
+        jigsaw_msh_t *_imsh ,
         jigsaw_msh_t *_hmsh ,
         jigsaw_msh_t *_mmsh
         )
@@ -715,7 +730,7 @@
     
     /*--------------------------------- init. output data */    
         jigsaw_init_msh_t(_mmsh) ;
-        
+    
     /*--------------------------------- setup *.JLOG data */
         if (_jjig != nullptr )
         {
@@ -786,8 +801,25 @@
             {
                 return  _retv ;
             }
+            
+#           ifdef  __use_timers
+            _ttoc   = _time.now();
+            _jlog.push(dump_time(_ttic, _ttoc));
+#           endif//__use_timers
+        }
+        
+        if (_gmsh != nullptr )
+        {
+    /*--------------------------------- parse *.GEOM data */
+            _jlog.push (  __jloglndv    "\n" ) ;
+            _jlog.push (
+                "  Forming GEOM data...\n\n" ) ;
+        
+#           ifdef  __use_timers
+            _ttic   = _time.now();
+#           endif//__use_timers
 
-            _geom.init_geom (_jcfg);
+            _geom.init_geom(_jcfg) ;
             
             if (_jcfg._verbosity > 0 )
             {
@@ -804,6 +836,74 @@
             
             }
 
+#           ifdef  __use_timers
+            _ttoc   = _time.now();
+            _jlog.push(dump_time(_ttic, _ttoc));
+#           endif//__use_timers
+        }
+
+        if (_imsh != nullptr )
+        {
+    /*--------------------------------- parse *.INIT data */
+            _jlog.push (  __jloglndv    "\n" ) ;
+            _jlog.push (
+                "  Reading INIT data...\n\n" ) ;
+        
+#           ifdef  __use_timers
+            _ttic   = _time.now();
+#           endif//__use_timers
+
+            if ((_retv = copy_init (
+                 _jcfg, _jlog, 
+                 _mesh,*_mmsh)) != __no_error)
+            {
+                return  _retv ;
+            }
+
+            if ((_retv = test_init (
+                 _jcfg, 
+                 _jlog, _mesh)) != __no_error)
+            {
+                return  _retv ;
+            }
+            
+#           ifdef  __use_timers
+            _ttoc   = _time.now();
+            _jlog.push(dump_time(_ttic, _ttoc));
+#           endif//__use_timers
+        }
+        
+        if (_imsh != nullptr )
+        {
+    /*--------------------------------- assemble init-con */
+            _jlog.push (  __jloglndv    "\n" ) ;
+            _jlog.push (
+                "  Forming INIT data...\n\n" ) ;
+        
+#           ifdef  __use_timers
+            _ttic   = _time.now();
+#           endif//__use_timers
+
+            _mesh._euclidean_mesh_2d.
+                _mesh.make_ptrs();
+            _mesh._euclidean_mesh_3d.
+                _mesh.make_ptrs();
+
+            if (_jcfg._verbosity > 0 )
+            {
+
+            _jlog.push (
+                "  INIT data summary...\n\n" ) ;
+
+            if ((_retv = echo_init (
+                 _jcfg, 
+                 _jlog, _mesh)) != __no_error)
+            {
+                return  _retv ;
+            }
+            
+            }
+            
 #           ifdef  __use_timers
             _ttoc   = _time.now();
             _jlog.push(dump_time(_ttic, _ttoc));
@@ -884,6 +984,8 @@
         
         if (_gmsh != nullptr )
         {
+            if(_jcfg._rdel_opts.iter() != +0 )
+            {
     /*--------------------------------- call mesh routine */
             _jlog.push (  __jloglndv    "\n" ) ;
             _jlog.push (
@@ -895,7 +997,7 @@
 
             if ((_retv = make_mesh (
                  _jcfg, _jlog ,
-                 _geom, 
+                 _geom, _mesh , 
                  _hfun, _rdel)) != __no_error)
             {
                 return  _retv ;
@@ -905,11 +1007,15 @@
             _ttoc   = _time.now();
             _jlog.push(dump_time(_ttic, _ttoc));
 #           endif//__use_timers
+            }
         }
         
         if (_gmsh != nullptr )
         {
     /*--------------------------------- call copy routine */
+            if(_jcfg._rdel_opts.iter() != +0 &&
+               _jcfg._iter_opts.iter() != +0 )
+            {
             _jlog.push (  __jloglndv    "\n" ) ;
             _jlog.push (
                 "  Pushing MESH data...\n\n" ) ;
@@ -929,7 +1035,13 @@
             _ttoc   = _time.now();
             _jlog.push(dump_time(_ttic, _ttoc));
 #           endif//__use_timers
+            }
+        }
         
+        if (_gmsh != nullptr )
+        {
+            if(_jcfg._iter_opts.iter() != +0 )
+            {
     /*--------------------------------- call iter routine */
             _jlog.push (  __jloglndv    "\n" ) ;
             _jlog.push (
@@ -938,6 +1050,13 @@
 #           ifdef  __use_timers
             _ttic   = _time.now();
 #           endif//__use_timers
+
+            if ((_retv = init_mesh (
+                 _jcfg, 
+                 _jlog, _mesh)) != __no_error)
+            {
+                return  _retv ;
+            }
 
             if ((_retv = iter_mesh (
                  _jcfg, _jlog ,
@@ -951,24 +1070,42 @@
             _ttoc   = _time.now();
             _jlog.push(dump_time(_ttic, _ttoc));
 #           endif//__use_timers
+            }
         }
         
         if (_gmsh != nullptr )
         {
-    /*--------------------------------- dump mesh to file */
+    /*--------------------------------- dump mesh to data */
             _jlog.push (  __jloglndv    "\n" ) ;
             _jlog.push (
-                "  Writing MESH data...\n\n" ) ;
+                "  Writing MESH file...\n\n" ) ;
 
 #           ifdef  __use_timers
             _ttic   = _time.now();
 #           endif//__use_timers
+
+            if (_jcfg._rdel_opts.iter() != +0 &&
+                _jcfg._iter_opts.iter() == +0 )
+            {
+
+            if ((_retv = save_msht (
+                 _jcfg, _jlog , 
+                 _rdel,*_mmsh)) != __no_error)
+            {
+                return  _retv ;
+            }
+        
+            }    
+            else
+            {
 
             if ((_retv = save_msht (
                  _jcfg, _jlog , 
                  _mesh,*_mmsh)) != __no_error)
             {
                 return  _retv ;
+            }
+        
             }
 
 #           ifdef  __use_timers         
@@ -993,7 +1130,7 @@
         geom_data _geom ;               // GEOM data
         rdel_data _rdel ;               // TRIA data
         mesh_data _mesh ;               // MESH data
-    
+        
 #       ifdef  __use_timers
         typename std ::chrono::
         high_resolution_clock::
@@ -1191,6 +1328,11 @@
 #           ifdef  __use_timers
             _ttic   = _time.now();
 #           endif//__use_timers
+
+            _mesh._euclidean_mesh_2d.
+                _mesh.make_ptrs();
+            _mesh._euclidean_mesh_3d.
+                _mesh.make_ptrs();
 
             if (_jcfg._verbosity > 0 )
             {
@@ -1449,7 +1591,7 @@
     }
 
         
-#   endif//__lib_jigsaw
+#   endif   //__lib_jigsaw
 
     
     

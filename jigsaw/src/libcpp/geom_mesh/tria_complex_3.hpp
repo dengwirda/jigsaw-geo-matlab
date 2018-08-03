@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 21 March, 2018
+     * Last updated: 11 April, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -59,27 +59,27 @@
      * ALLOCATOR - memory allocator
     --------------------------------------------------------
      */
-     	
+        
     template <
     typename NN ,
     typename E2 ,
     typename T3 ,
     typename T4 ,
     typename AA = allocators::basic_alloc 
-	         >
+             >
     class tria_complex_3
     {
 /*----------------------------------- tria-complex in R^3 */
     public  :
-	typedef NN                          node_type ;
-	typedef E2	                        edge_type ;
-	typedef T3	                        tri3_type ;
-	typedef T4	                        tri4_type ;
+    typedef NN                          node_type ;
+    typedef E2                          edge_type ;
+    typedef T3                          tri3_type ;
+    typedef T4                          tri4_type ;
     typedef AA                          allocator ;
 
-	typedef typename 
+    typedef typename 
             node_type::real_type        real_type ;
-	typedef typename 
+    typedef typename 
             tri3_type::iptr_type        iptr_type ;
     typedef typename
             allocator::size_type        size_type ;
@@ -413,7 +413,7 @@
                 pool_byte_size      >   pool_base ;
 
     typedef allocators::_wrap_alloc <
-		        pool_base           >   pool_wrap ;
+                pool_base           >   pool_wrap ;
 
     typedef containers::hash_table  <
                 iptr_type, 
@@ -443,7 +443,7 @@
                 iptr_type,
                 pool_wrap           >   conn_list ;
 
-	public  :
+    public  :
 
     pool_base                   _hsrc ;
     pool_base                   _csrc ;
@@ -458,20 +458,20 @@
     tri3_maps                   _map3 ;
     tri4_maps                   _map4 ;
     
-    node_list					_set1 ;
-	edge_list					_set2 ;
-	tri3_list					_set3 ;
-	tri4_list					_set4 ;
+    node_list                   _set1 ;
+    edge_list                   _set2 ;
+    tri3_list                   _set3 ;
+    tri4_list                   _set4 ;
    
     iptr_list                   _del1 ;
-    iptr_list					_del2 ;
-    iptr_list					_del3 ;
-    iptr_list					_del4 ;
+    iptr_list                   _del2 ;
+    iptr_list                   _del3 ;
+    iptr_list                   _del4 ;
     
-    iptr_list					_tmp1 ;
-    iptr_list					_tmp2 ;
-    iptr_list					_tmp3 ;
-    iptr_list					_tmp4 ;
+    iptr_list                   _tmp1 ;
+    iptr_list                   _tmp2 ;
+    iptr_list                   _tmp3 ;
+    iptr_list                   _tmp4 ;
 
     public  :
 
@@ -482,27 +482,27 @@
      */
      
     __inline_call iptr_type _get_node (
-		)
-	{
-		iptr_type _ipos = -1;
-		if (this->_del1.count() != +0 )
-		{
+        )
+    {
+        iptr_type _ipos = -1;
+        if (this->_del1.count() != +0 )
+        {
     /*---------------------------- recycle from free list */
-			this->_del1._pop_tail(_ipos) ;
-		}
-		else
-		{
+            this->_del1._pop_tail(_ipos) ;
+        }
+        else
+        {
     /*---------------------------- alloc. from underlying */
-			_ipos = (iptr_type)
+            _ipos = (iptr_type)
                 this->_set1.count() ;
             this->_set1.push_tail() ;
-		}
+        }
 
-		this->_set1[_ipos].mark() = +0 ;
-		this->_set1[_ipos].self() = +0 ;
-		
-		return ( _ipos ) ;
-	}
+        this->_set1[_ipos].mark() = +0 ;
+        this->_set1[_ipos].self() = +0 ;
+        
+        return ( _ipos ) ;
+    }
     
     /*
     --------------------------------------------------------
@@ -511,27 +511,27 @@
      */
      
     __inline_call iptr_type _get_edge (
-		)
-	{
-		iptr_type _ipos = -1;
-		if (this->_del2.count() != +0 )
-		{
+        )
+    {
+        iptr_type _ipos = -1;
+        if (this->_del2.count() != +0 )
+        {
     /*---------------------------- recycle from free list */
-			this->_del2._pop_tail(_ipos) ;
-		}
-		else
-		{
+            this->_del2._pop_tail(_ipos) ;
+        }
+        else
+        {
     /*---------------------------- alloc. from underlying */
-			_ipos = (iptr_type)
+            _ipos = (iptr_type)
                 this->_set2.count() ;
             this->_set2.push_tail() ;
-		}
+        }
 
-		this->_set2[_ipos].mark() = +0 ;
-		this->_set2[_ipos].self() = +0 ;
+        this->_set2[_ipos].mark() = +0 ;
+        this->_set2[_ipos].self() = +0 ;
 
-		return ( _ipos ) ;
-	}
+        return ( _ipos ) ;
+    }
 
     /*
     --------------------------------------------------------
@@ -540,98 +540,98 @@
      */
      
     __inline_call iptr_type _get_tri3 (
-		)
-	{
-		iptr_type _ipos = -1;
-		if (this->_del3.count() != +0 )
-		{
+        )
+    {
+        iptr_type _ipos = -1;
+        if (this->_del3.count() != +0 )
+        {
     /*---------------------------- recycle from free list */
-			this->_del3._pop_tail(_ipos) ;
-		}
-		else
-		{
+            this->_del3._pop_tail(_ipos) ;
+        }
+        else
+        {
     /*---------------------------- alloc. from underlying */
-			_ipos = (iptr_type)
+            _ipos = (iptr_type)
                 this->_set3.count() ;
             this->_set3.push_tail() ;
-		}
+        }
 
-		this->_set3[_ipos].mark() = +0 ;
-		this->_set3[_ipos].self() = +0 ;
+        this->_set3[_ipos].mark() = +0 ;
+        this->_set3[_ipos].self() = +0 ;
 
-		return ( _ipos ) ;
-	}
-	
-	/*
+        return ( _ipos ) ;
+    }
+    
+    /*
     --------------------------------------------------------
      * GET-TRIA: "create" new tria, push onto active set.
     --------------------------------------------------------
      */
      
     __inline_call iptr_type _get_tri4 (
-		)
-	{
-		iptr_type _ipos = -1;
-		if (this->_del4.count() != +0 )
-		{
+        )
+    {
+        iptr_type _ipos = -1;
+        if (this->_del4.count() != +0 )
+        {
     /*---------------------------- recycle from free list */
-			this->_del4._pop_tail(_ipos) ;
-		}
-		else
-		{
+            this->_del4._pop_tail(_ipos) ;
+        }
+        else
+        {
     /*---------------------------- alloc. from underlying */
-			_ipos = (iptr_type)
+            _ipos = (iptr_type)
                 this->_set4.count() ;
             this->_set4.push_tail() ;
-		}
+        }
 
-		this->_set4[_ipos].mark() = +0 ;
-		this->_set4[_ipos].self() = +0 ;
+        this->_set4[_ipos].mark() = +0 ;
+        this->_set4[_ipos].self() = +0 ;
 
-		return ( _ipos ) ;
-	}
-	
-	/*
+        return ( _ipos ) ;
+    }
+    
+    /*
     --------------------------------------------------------
      * PUT-ITEM: "delete" old item, _pop from active set.
     --------------------------------------------------------
      */
      
-	__inline_call void_type _put_node (
-		iptr_type _ipos
-		)
-	{
-	    this->_del1.push_tail (_ipos);
+    __inline_call void_type _put_node (
+        iptr_type _ipos
+        )
+    {
+        this->_del1.push_tail (_ipos);
         this->_set1[_ipos].mark() = -1 ;
         this->_set1[_ipos].self() = -1 ;
-	}
-	
-	__inline_call void_type _put_edge (
-		iptr_type _ipos
-		)
-	{
-	    this->_del2.push_tail (_ipos);
+    }
+    
+    __inline_call void_type _put_edge (
+        iptr_type _ipos
+        )
+    {
+        this->_del2.push_tail (_ipos);
         this->_set2[_ipos].mark() = -1 ;
         this->_set2[_ipos].self() = -1 ;
-	}
-	
-	__inline_call void_type _put_tri3 (
-		iptr_type _ipos
-		)
-	{
-	    this->_del3.push_tail (_ipos);
+    }
+    
+    __inline_call void_type _put_tri3 (
+        iptr_type _ipos
+        )
+    {
+        this->_del3.push_tail (_ipos);
         this->_set3[_ipos].mark() = -1 ;
         this->_set3[_ipos].self() = -1 ;
-	}
-	
-	__inline_call void_type _put_tri4 (
-		iptr_type _ipos
-		)
-	{
-	    this->_del4.push_tail (_ipos);
+    }
+    
+    __inline_call void_type _put_tri4 (
+        iptr_type _ipos
+        )
+    {
+        this->_del4.push_tail (_ipos);
         this->_set4[_ipos].mark() = -1 ;
         this->_set4[_ipos].self() = -1 ;
-	}
+    }
     
     public  :
     
@@ -745,10 +745,33 @@
      
     __normal_call iptr_type push_node (
         node_type const&_ndat,
+        bool_type _link = true,
         iptr_type _itop = -1
         )
     {
         iptr_type _ipos = _get_node() ;
+        
+        if (!_link)
+        {
+        
+    /*------------------------ init. external d-face data */
+        this->_set1[_ipos]  = _ndat ;
+        this->_set1[_ipos].mark() = 0 ;
+        
+        this->_set1[_ipos].self() = 1 ;
+        this->
+       _set1 [_ipos].node(0) =_ipos ;
+       
+    /*------------------------ push face data to hash set */
+        this->_map1.push(_ipos) ;
+        
+    /*------------------------ init. local adj. index set */
+        init_list(this->_adj1, _ipos) ;
+        
+        }
+        else
+        {
+        
     /*------------------------ init. external d-face data */
         this->_set1[_ipos]  = _ndat ;
         this->_set1[_ipos].mark() = 0 ;
@@ -780,7 +803,8 @@
                 this->
                _adj1.push(_itop,*_same) ;
             }               
-            _put_node(_ipos); 
+            
+            _put_node(_ipos) ; 
         }
         else
         {
@@ -802,6 +826,8 @@
             this->_map1.push(_ipos) ;
         }
         
+        }
+        
         return _ipos ;
     }
     
@@ -813,11 +839,30 @@
      
     __normal_call iptr_type push_edge (
         edge_type const&_edat,
+        bool_type _link = true,
         iptr_type _itop = -1   
         )
     {
         iptr_type _ipos = _get_edge() ;
         iptr_type _npos ;
+        
+        if (!_link)
+        {
+            
+    /*------------------------ init. external d-face data */
+        this->_set2[_ipos]  = _edat ;
+        this->_set2[_ipos].mark() = 0 ;
+        this->_set2[_ipos].self() = 1 ;
+        
+    /*------------------------ push face data to hash set */
+        this->_map2.push(_ipos) ;
+        
+    /*------------------------ init. local adj. index set */
+        init_list(this->_adj2, _ipos) ;
+        
+        }
+        else
+        {
         
     /*------------------------ init. external d-face data */
         this->_set2[_ipos]  = _edat ;
@@ -845,8 +890,9 @@
         /*----- otherwise, append index to adj. lists */
                 this->
                _adj2.push(_itop,*_same) ;
-            }               
-            _put_edge(_ipos); 
+            }      
+                     
+            _put_edge(_ipos) ; 
         }
         else
         {
@@ -871,11 +917,14 @@
                 _ndat.node(0) = 
                     _edat.node(_npos) ;
                 
-                push_node(_ndat, _ipos) ;
+                push_node(
+                 _ndat, _link, _ipos) ;
             }
             
         /*-------------- push new face data onto hash */
             this->_map2.push(_ipos) ;
+        }
+        
         }
         
         return _ipos ;
@@ -889,11 +938,30 @@
      
     __normal_call iptr_type push_tri3 (
         tri3_type const&_tdat,
+        bool_type _link = true,
         iptr_type _itop = -1   
         )
     {
         iptr_type _ipos = _get_tri3() ;
         iptr_type _epos ;
+    
+        if (!_link)
+        {
+        
+    /*-------------------- init. external d-face data */
+        this->_set3[_ipos]  = _tdat ;
+        this->_set3[_ipos].mark() = 0 ;
+        this->_set3[_ipos].self() = 1 ;
+        
+    /*-------------------- push face data to hash set */
+        this->_map3.push(_ipos) ;
+        
+    /*-------------------- init. local adj. index set */
+        init_list(this->_adj3, _ipos) ;
+        
+        }
+        else
+        {
     
     /*------------------------ init. external d-face data */
         this->_set3[_ipos]  = _tdat ;
@@ -921,8 +989,9 @@
         /*----- otherwise, append index to adj. lists */
                 this->
                _adj3.push(_itop,*_same) ;
-            }               
-            _put_tri3(_ipos); 
+            }      
+                     
+            _put_tri3(_ipos) ; 
         }
         else
         {
@@ -953,11 +1022,14 @@
                 _edat.node(1) = 
                     _tdat.node(_enod[1]) ;
                 
-                push_edge(_edat , _ipos) ;
+                push_edge(
+                    _edat, _link, _ipos) ;
             }
             
         /*-------------- push new face data onto hash */
             this->_map3.push(_ipos) ;
+        }
+        
         }
         
         return _ipos ;
@@ -971,11 +1043,30 @@
      
     __normal_call iptr_type push_tri4 (
         tri4_type const&_tdat,
+        bool_type _link = true,
         iptr_type _itop = -1   
         )
     {
         iptr_type _ipos = _get_tri4() ;
         iptr_type _fpos ;
+        
+        if (!_link)
+        {
+        
+    /*------------------------ init. external d-face data */
+        this->_set4[_ipos]  = _tdat ;
+        this->_set4[_ipos].mark() = 0 ;
+        this->_set4[_ipos].self() = 1 ;
+        
+    /*------------------------ push face data to hash set */
+        this->_map4.push(_ipos) ;
+        
+    /*------------------------ init. local adj. index set */
+        init_list(this->_adj4, _ipos) ;
+        
+        }
+        else
+        {
     
     /*------------------------ init. external d-face data */
         this->_set4[_ipos]  = _tdat ;
@@ -1003,8 +1094,9 @@
         /*----- otherwise, append index to adj. lists */
                 this->
                _adj4.push(_itop,*_same) ;
-            }               
-            _put_tri4(_ipos); 
+            }    
+                       
+            _put_tri4(_ipos) ; 
         }
         else
         {
@@ -1037,16 +1129,101 @@
                 _fdat.node(2) = 
                     _tdat.node(_fnod[2]) ;
                 
-                push_tri3(_fdat , _ipos) ;
+                push_tri3(
+                    _fdat, _link, _ipos) ;
             }
             
         /*-------------- push new face data onto hash */
             this->_map4.push(_ipos) ;
         }
         
+        }
+        
         return _ipos ;
     }
     
+    /*
+    --------------------------------------------------------
+     * MAKE-PTRS: build item-to-item adj.
+    --------------------------------------------------------
+     */
+  
+    __normal_call void_type make_ptrs (
+        )
+    {
+        this->_adj1.empty () ;
+        this->_adj2.empty () ;
+        this->_adj3.empty () ;
+        this->_adj4.empty () ;
+    
+        iptr_type _epos = +0 ;
+        for (auto _iter  = this->_set2.head();
+                  _iter != this->_set2.tend();
+                ++_iter, ++_epos  )
+        {
+        /*-------------- descend into (d-1)-face data */
+            iptr_type _ipos;
+            for (_ipos = +2; _ipos-- != 0; )
+            {
+                node_type _ndat;                
+                _ndat.node(0) = 
+                    _iter->node( _ipos) ;
+                
+                push_node(
+                    _ndat, true, _epos) ;
+            }
+        }
+        
+        iptr_type _fpos = +0 ;
+        for (auto _iter  = this->_set3.head();
+                  _iter != this->_set3.tend();
+                ++_iter, ++_fpos  )
+        {
+        /*-------------- descend into (d-1)-face data */
+            iptr_type _ipos;
+            for (_ipos = +3; _ipos-- != 0; )
+            {
+                iptr_type  _enod [3];
+                tri3_type::face_node(
+                    _enod, _ipos, 2, 1 ) ;
+                
+                edge_type  _edat ;
+                _edat.node(0) = 
+                   _iter->node(_enod[0]) ;
+                _edat.node(1) = 
+                   _iter->node(_enod[1]) ;
+                
+                push_edge(
+                    _edat, true , _fpos) ;
+            }
+        }
+        
+        iptr_type _tpos = +0 ;
+        for (auto _iter  = this->_set4.head();
+                  _iter != this->_set4.tend();
+                ++_iter, ++_tpos  )
+        {
+        /*-------------- descend into (d-1)-face data */
+            iptr_type _ipos;
+            for (_ipos = +4; _ipos-- != 0; )
+            {
+                iptr_type  _fnod [4];
+                tri4_type::face_node(
+                    _fnod, _ipos, 3, 2 ) ;
+                
+                tri3_type _fdat ;
+                _fdat.node(0) = 
+                   _iter->node(_fnod[0]) ;
+                _fdat.node(1) = 
+                   _iter->node(_fnod[1]) ;
+                _fdat.node(2) = 
+                   _iter->node(_fnod[2]) ;
+                
+                push_tri3(
+                    _fdat, true , _tpos) ;
+            }
+        }
+    }
   
     /*
     --------------------------------------------------------

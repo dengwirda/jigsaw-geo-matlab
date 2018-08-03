@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 17 March, 2018
+     * Last updated: 08 April, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -93,55 +93,59 @@
         iptr_type  _tpos
         )
     {
+        {
     /*--------------------------------- get tria indexing */
-        tria_data _tdat, _same;
-        _tdat._node[0] = _mesh.
-            _tria.tria(_tpos)->node(0);
-        _tdat._node[1] = _mesh.
-            _tria.tria(_tpos)->node(1);
-        _tdat._node[2] = _mesh.
-            _tria.tria(_tpos)->node(2);
-        
+            tria_data _tdat, _same;
+            _tdat._node[0] = _mesh.
+                _tria.tria(_tpos)->node(0);
+            _tdat._node[1] = _mesh.
+                _tria.tria(_tpos)->node(1);
+            _tdat._node[2] = _mesh.
+                _tria.tria(_tpos)->node(2);
+            
     /*--------------------------------- remove if present */
-        _mesh._pop_tria(_tdat, _same) ;
+            _mesh._pop_tria(_tdat, _same) ;
+        }
     }
     
     /*
     --------------------------------------------------------
-     * PUSH-NBAL: add new ball to restricted-tria.
+     * INIT-BALL: add new ball to restricted-tria.
     --------------------------------------------------------
      */
     
     __static_call
-    __normal_call void_type push_nbal (
+    __normal_call void_type init_ball (
         mesh_type &_mesh,
         geom_type &_geom,
-        size_type &_size,
+        hfun_type &_hfun,
         iptr_type  _npos,
-        nbal_list &_nbal,
+        ball_list &_bset,
+        ball_list &_bscr,
+        char_type  _kind,
         iptr_type  _pass,
         rdel_opts &_opts
         )
     {
         __unreferenced (_geom) ;
-        __unreferenced (_pass) ;
         __unreferenced (_opts) ;
     
         if (_mesh._tria.
              node(_npos)->feat()==hard_feat)
         {
     /*---------- push protecting ball for "hard" features */
-            nbal_data _ball ;
+            ball_data _ball ;
             _ball._node[0] = _npos;
             
-            _ball._pass = +0;
+            _ball._pass    = _pass;
+            _ball._kind    = _kind;
             
             _ball._ball[0] = _mesh.
                 _tria.node(_npos)->pval(0) ;
             _ball._ball[1] = _mesh.
                 _tria.node(_npos)->pval(1) ;
             
-            real_type _rbal = _size.eval (
+            real_type _rbal = _hfun.eval (
                &_mesh._tria.
             node(_npos)->pval(0) ,
                 _mesh._tria.
@@ -149,7 +153,8 @@
             
             _ball._ball[2] = _rbal * _rbal ;
     
-            _nbal.push_tail (_ball) ;        
+            _bset.push_tail (_ball) ;
+            _bscr.push_tail (_ball) ;        
         }
     }
     
@@ -163,7 +168,7 @@
     __normal_call void_type push_edge (
         mesh_type &_mesh ,
         geom_type &_geom ,
-        size_type &_size ,
+        hfun_type &_hfun ,
         iptr_type  _tpos ,
         edat_list &_eset ,
         escr_list &_escr ,
@@ -194,17 +199,17 @@
             iptr_type _tnod[ +3] ;
             mesh_type::tria_type::
                 tria_type::
-            face_node(_tnod, _fpos, +2, +1);
+            face_node(_tnod, _fpos, +2, +1) ;
             _tnod[0] = _mesh._tria.
-                tria(_tpos)->node(_tnod[0]);
+            tria(_tpos)->node(_tnod[0]);
             _tnod[1] = _mesh._tria.
-                tria(_tpos)->node(_tnod[1]);
+            tria(_tpos)->node(_tnod[1]);
             
         /*--------------- face contains higher dim. nodes */
-            if (_mesh._tria.
-                 node(_tnod[0])->fdim()>1 ||
-                _mesh._tria.
-                 node(_tnod[1])->fdim()>1 )
+            if (_mesh._tria.node(
+                _tnod[0])->fdim() > 1 ||
+                _mesh._tria.node(
+                _tnod[1])->fdim() > 1 )
                 continue   ;
 
             algorithms::isort (
@@ -221,8 +226,9 @@
 
             typename mesh_type::
                      edge_list::
-                item_type *_mptr = nullptr;
-            if (_edge_test.find(_fdat, _mptr)) 
+                item_type *_mptr = nullptr  ;
+            if(_edge_test.
+                find( _fdat, _mptr) ) 
             {
         /*--------------------------- count bnd. repeats! */
                 _ndup += 
@@ -245,7 +251,7 @@
             real_type _fbal[ 3];
             real_type _sbal[ 3];
             mesh_pred::edge_cost (
-                _geom,_size, 
+                _geom,_hfun, 
                 _mesh, 
                 _fdat._tadj,
                 _fdat._eadj,
@@ -256,18 +262,22 @@
                 _fbal,_sbal)   ;
                 
         /*--------------------------- push edge onto mesh */
-            if (_fdat._kind == mesh::ring_item)
-                _escr. push_tail(_cdat);
+            if (_fdat._kind 
+                    == mesh::ring_item)
+                _escr. push_tail(_cdat) ;
 
-            if (_fdat._kind != mesh::null_item)
+            if (_fdat._kind 
+                    != mesh::null_item)
                 _nedg += +1 ;
 
-            if (_fdat._kind != mesh::null_item)
+            if (_fdat._kind 
+                    != mesh::null_item)
                 _fdat.
                 _dups  = +1 ;
 
-            if (_fdat._kind != mesh::null_item)
-                _eset. push_tail(_fdat);
+            if (_fdat._kind 
+                    != mesh::null_item)
+                _eset. push_tail(_fdat) ;
 
 
             _edge_test.push (_fdat) ;
@@ -285,7 +295,7 @@
     __normal_call void_type push_tria (
         mesh_type &_mesh ,
         geom_type &_geom ,
-        size_type &_size ,
+        hfun_type &_hfun ,
         iptr_type  _tpos ,
         iptr_type &_sign ,
         tdat_list &_tset ,
@@ -299,41 +309,46 @@
     {
     /*-------------------------------- check "restricted" */
         {
-            tria_data _tdat;
-            _tdat._node[0] = 
-            _mesh._tria.tria(_tpos)->node(0) ;
-            _tdat._node[1] = 
-            _mesh._tria.tria(_tpos)->node(1) ;
-            _tdat._node[2] = 
-            _mesh._tria.tria(_tpos)->node(2) ;
-
-            _tdat._tadj    = _tpos;
+            iptr_type  _tnod[ +3] ;
+            _tnod[0] = _mesh.
+            _tria.tria(_tpos)->node(0);
+            _tnod[1] = _mesh.
+            _tria.tria(_tpos)->node(1);
+            _tnod[2] = _mesh.
+            _tria.tria(_tpos)->node(2);
 
         /*--------------- face contains higher dim. nodes */
             if (_mesh._tria.node(
-                _tdat._node[0])->fdim() > 2 ||
+                _tnod[0])->fdim() > 2 ||
                 _mesh._tria.node(
-                _tdat._node[1])->fdim() > 2 ||
+                _tnod[1])->fdim() > 2 ||
                 _mesh._tria.node(
-                _tdat._node[2])->fdim() > 2 )
+                _tnod[2])->fdim() > 2 )
                 return ;
+
+            tria_data _tdat;
+            _tdat._node[0] = _tnod[0] ;
+            _tdat._node[1] = _tnod[1] ;
+            _tdat._node[2] = _tnod[2] ;
+
+            _tdat._tadj    = _tpos;
+
+            tria_cost _cdat;
+            _cdat._node[0] = _tnod[0] ;
+            _cdat._node[1] = _tnod[1] ;
+            _cdat._node[2] = _tnod[2] ;
 
             typename mesh_type::
                      tria_list::
-                     item_type *_mptr=nullptr;
-            if (_tria_test.find(_tdat, _mptr))
+                item_type *_mptr = nullptr;
+            if(_tria_test.
+                find( _tdat, _mptr) )
             { 
         /*--------------------------- don't test repeats! */
                 return ;
             }
 
-            _tria_test.push( _tdat) ;
-
-        /*--------------------------- calc tria cost/kind */
-            tria_cost _cdat;
-            _cdat._node[0] = _tdat._node[0] ;
-            _cdat._node[1] = _tdat._node[1] ;
-            _cdat._node[2] = _tdat._node[2] ;
+        //!!_tria_test.push( _tdat) ; won't have repeats!
 
         /*--------------------------- call tria predicate */
             _tdat._part =  _sign ;
@@ -342,7 +357,7 @@
             _tdat._pass =  _pass ;
 
             mesh_pred::tria_cost (
-                _geom,_size, 
+                _geom,_hfun, 
                 _mesh, 
                 _tdat._tadj,
                 _opts,_cdat,
@@ -352,14 +367,17 @@
             _sign = _tdat. _part ;
 
         /*--------------------------- push edge onto mesh */
-            if (_tdat._kind == mesh::ring_item)
-                _tscr. push_tail(_cdat);
+            if (_tdat._kind 
+                    == mesh::ring_item)
+                _tscr. push_tail(_cdat) ;
 
-            if (_tdat._kind != mesh::null_item)
+            if (_tdat._kind 
+                    != mesh::null_item)
                 _ntri += +1 ;
 
-            if (_tdat._kind != mesh::null_item)
-                _tset. push_tail(_tdat);
+            if (_tdat._kind 
+                    != mesh::null_item)
+                _tset. push_tail(_tdat) ;
         }
     }
 
@@ -401,9 +419,9 @@
             ) ;
             
         _mesh._tria.tria(
-        _tpos)->circ(0)= _tbal[0] ;
+        _tpos)->circ(0) =  _tbal[0] ;
         _mesh._tria.tria(
-        _tpos)->circ(1)= _tbal[1] ;
+        _tpos)->circ(1) =  _tbal[1] ;
     }
 
     /*
@@ -415,7 +433,7 @@
     __static_call
     __normal_call void_type push_rdel (
         geom_type &_geom ,
-        size_type &_size ,
+        hfun_type &_hfun ,
         mesh_type &_mesh ,
         iptr_list &_nnew ,
         iptr_list &_tnew ,
@@ -423,7 +441,8 @@
         edat_list &_edat ,
         tscr_list &_tscr ,
         tdat_list &_tdat ,
-        nbal_list &_nbal ,
+        ball_list &_bscr ,
+        ball_list &_bdat ,
         iptr_type  _sign ,
         iptr_type  _pass ,
         mode_type  _dim0 ,
@@ -477,9 +496,12 @@
                   _iter != _nnew.tend(); 
                 ++_iter  )
         {     
-            push_nbal(_mesh, _geom ,
-                      _size,*_iter , 
-                      _nbal, 
+            char_type _kind = feat_ball;
+        
+            init_ball(_mesh, _geom ,
+                      _hfun,*_iter , 
+                      _bdat, _bscr , 
+                      _kind,
                       _pass, _opts) ;
         } 
         }
@@ -492,7 +514,7 @@
                 ++_iter  )
         {        
             push_edge(_mesh, _geom ,
-                      _size,*_iter , 
+                      _hfun,*_iter , 
                       _edat, _escr , 
                       _eset, _nedg , 
                       _ndup, 
@@ -515,7 +537,7 @@
            _sign =  (!_safe) ? -1 : _sign ;
 
             push_tria(_mesh, _geom ,
-                      _size,*_iter , 
+                      _hfun,*_iter , 
                       _sign, _tdat , 
                       _tscr, _tset , 
                       _ntri,

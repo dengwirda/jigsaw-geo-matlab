@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 13 March, 2018
+     * Last updated: 24 July, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -118,53 +118,54 @@
         if (this->_xpos.empty()) return ;
         if (this->_ypos.empty()) return ;
    
-        real_type _xbar, _ybar ;
+        real_type _xbar, _xmin, _xmax ;
         _xbar = *this->_xpos.tail() - 
                 *this->_xpos.head() ;
         
         _xbar /=(this->_xpos.count () - 1) ;
         
-        real_type _xmin, _xmax ;
         _xmin = _xbar - _FTOL * _xbar ;
         _xmax = _xbar + _FTOL * _xbar ;
         
+        real_type _ybar, _ymin, _ymax ;
         _ybar = *this->_ypos.tail() - 
                 *this->_ypos.head() ;
 
         _ybar /=(this->_ypos.count () - 1) ;
         
-        real_type _ymin, _ymax ;
         _ymin = _ybar - _FTOL * _ybar ;
         _ymax = _ybar + _FTOL * _ybar ;
         
-        for (auto _iter  = this->_xpos.head();
-                  _iter != this->_xpos.tail();
-                ++_iter  )
+        for (auto 
+            _iter  = this->_xpos.head() ;
+            _iter != this->_xpos.tail() ;
+          ++_iter  )
         {
-            real_type _xdel =*(_iter+1) - 
-                             *(_iter+0) ;
+            real_type _xdel = 
+                *(_iter+1)-*(_iter+0) ;
         
-            if (_xdel < _xmin && 
-                _xdel > _xmax ) 
+            if (_xdel < _xmin || 
+                _xdel > _xmax )  
             {
                 _xvar =  true ; break ;
             }
         }
          
-        for (auto _iter  = this->_ypos.head();
-                  _iter != this->_ypos.tail();
-                ++_iter  )
+        for (auto 
+            _iter  = this->_ypos.head() ;
+            _iter != this->_ypos.tail() ;
+          ++_iter  )
         {
-            real_type _ydel =*(_iter+1) - 
-                             *(_iter+0) ;
+            real_type _ydel = 
+                *(_iter+1)-*(_iter+0) ;
         
-            if (_ydel < _ymin && 
+            if (_ydel < _ymin || 
                 _ydel > _ymax ) 
             {
                 _yvar =  true ; break ;
             }
-        }       
-    
+        }
+     
     }
 
     /*
@@ -242,14 +243,14 @@
            
         if (this->_xvar == true)
         {
-            auto _jits = 
+            auto _joff = 
             algorithms::upper_bound (
                 this->_xpos.head(), 
                 this->_xpos.tend(), 
             _alon,std::less<real_type>() ) ;
            
-            _jpos = (iptr_type)
-           (_jits - this->_xpos.head()- 1) ;
+            _jpos = (iptr_type) (
+            _joff - this->_xpos.head()- 1) ;
         }
         else
         {
@@ -267,14 +268,14 @@
     /*---------------------------- find enclosing y-range */
         if (this->_yvar == true)
         {
-            auto _iits = 
+            auto _ioff = 
             algorithms::upper_bound (
                 this->_ypos.head(), 
                 this->_ypos.tend(), 
             _alat,std::less<real_type>() ) ;
            
-            _ipos = (iptr_type)
-           (_iits - this->_ypos.head()- 1) ;
+            _ipos = (iptr_type) (
+            _ioff - this->_ypos.head()- 1) ;
         }
         else
         {
@@ -292,6 +293,7 @@
         if (_ipos == 
        (iptr_type)this->_ypos.count() - 1)
             _ipos = _ipos - 1 ;
+        
         if (_jpos == 
        (iptr_type)this->_xpos.count() - 1)
             _jpos = _jpos - 1 ;
@@ -337,7 +339,7 @@
           + _aa12*this->_hmat[_kk12]
           + _aa21*this->_hmat[_kk21]
           + _aa22*this->_hmat[_kk22] )
-          /(_aa11+_aa12+_aa21+_aa22) ;
+        / ( _aa11+_aa12+_aa21+_aa22) ;
 
         return (  _hbar ) ; 
     }

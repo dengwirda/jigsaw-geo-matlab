@@ -60,9 +60,9 @@
     
     /*------------ "classical" delaunay refinement in R^2 */
     
-    typedef G						    geom_type ;
-    typedef H						    hfun_type ;
-    typedef M						    mesh_type ;
+    typedef G                           geom_type ;
+    typedef H                           hfun_type ;
+    typedef M                           mesh_type ;
 
     typedef typename 
             mesh_type::real_type        real_type ;

@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 04 September, 2017
+     * Last updated: 17 March, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -89,9 +89,13 @@
             return  ;
                
     /*------------------------- calc. refinement priority */
-        _edat._mark =        +0  ;
+        _edat._mark =         +0  ;
         
-        _edat._cost = _pmax[ +2] ;
+        _edat._cost =    _pmax[2] ;
+        
+        _edat._imax =    _enod[0] ;
+        _edat._imax = std::max(
+            _edat._imax, _enod[1]);
 
     /*------------------------- eval. size func. at _tbal */
         real_type _esiz = (real_type)+0.;
@@ -216,30 +220,30 @@
 
     /*--------------------------------- find min/max edge */
         iptr_type _enum ;
-	    iptr_type _emin = (iptr_type)+0;
-	    iptr_type _emax = (iptr_type)+0;
-	    for(_enum = +3; _enum-- != +1; )
-	    {
-	    if (_llen[_emax] < _llen[_enum]) 
+        iptr_type _emin = (iptr_type)+0;
+        iptr_type _emax = (iptr_type)+0;
+        for(_enum = +3; _enum-- != +1; )
+        {
+        if (_llen[_emax] < _llen[_enum]) 
             _emax = _enum ;
-	    if (_llen[_emin] > _llen[_enum]) 
+        if (_llen[_emin] > _llen[_enum]) 
             _emin = _enum ;
-	    }
-	
+        }
+    
     /*------------------------- calc. refinement priority */
         _tdat._mark  =  +0 ;
     
     #   ifdef __bias_BNDS      
         for(_enum = +3; _enum-- != +0; )
-	    {
-	        iptr_type  _enod[ +3];
+        {
+            iptr_type  _enod[ +3];
             mesh_type::tria_type::
                 tria_type::
             face_node(_enod, _enum, 2, 1);
             _enod[ +0] = _tnod[_enod[+0]];
             _enod[ +1] = _tnod[_enod[+1]];
 
-	        algorithms::isort(
+            algorithms::isort(
                 &_enod[0] , &_enod[2] ,
                     std::less<iptr_type>()) ;
                     
@@ -254,8 +258,8 @@
             if (_mesh.find_edge(_edat,_eptr))
             {
                 _tdat._mark -= +1 ;
-            }	    
-	    }
+            }       
+        }
     #   endif
 
     /*------------------------- eval. radius--edge ratios */
@@ -265,17 +269,11 @@
     /*------------------------- calc. refinement priority */
         _tdat._cost = _erat * _tbal[2] ;
 
-        uint32_t  _hash = hash_ball (_tbal) ;
-
-        real_type static const _seps = 
-            std::sqrt(std::
-        numeric_limits<real_type>::epsilon()) ;
-
-        real_type _pert =
-      ((real_type)(_hash%65536))/65536 ;
-      
-        _tdat._cost -=  
-           _seps * _pert * _tdat._cost ;
+        _tdat._imax =    _tnod[0] ;
+        _tdat._imax = std::max(
+            _tdat._imax, _tnod[1]);
+        _tdat._imax = std::max(
+            _tdat._imax, _tnod[2]);
 
     /*------------------------- refinement classification */
         if (_erat >= _args.rad2() *

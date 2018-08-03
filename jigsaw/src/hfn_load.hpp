@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 21 March, 2018
+     * Last updated: 08 June, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -42,6 +42,8 @@
      */
 
 #   pragma once
+
+#   include "msh_read.hpp"
 
 #   ifndef __HFN_LOAD__
 #   define __HFN_LOAD__
@@ -74,7 +76,6 @@
             jmsh_kind::
             enum_data            _kind ;
             std::int32_t         _ndim ;
-            std::int32_t         _idim ;
             
         public  :
         __normal_call hfun_reader (
@@ -123,7 +124,7 @@
                 
                 _npos = this->_hfun->
                    _euclidean_mesh_2d.
-                        _mesh.push_node(_ndat) ;
+                _mesh.push_node(_ndat, false) ;
                         
                 this->_pmap.
                     push_tail(_npos) ; 
@@ -143,7 +144,7 @@
                 
                 _npos = this->_hfun->
                    _euclidean_mesh_3d.
-                        _mesh.push_node(_ndat) ;
+                _mesh.push_node(_ndat, false) ;
                         
                 this->_pmap.
                     push_tail(_npos) ;
@@ -156,13 +157,8 @@
             }
         }      
     /*-------------------------------- read COORD section */
-        __normal_call void_type open_coord (
-            std::int32_t _idim,
-            std::int32_t
-            )
-        {   this->_idim =_idim;
-        }
         __normal_call void_type push_coord (
+            std::int32_t _idim,
             std::int32_t _irow,
             double       _ppos
             )
@@ -173,14 +169,14 @@
                 this->_kind == 
                     jmsh_kind::euclidean_grid)
             {
-                if (this->_idim == +1)
+                if (_idim == +1)
                 {
                     this->_hfun->
                     _euclidean_grid_2d.
                         _xpos.push_tail(_ppos) ;
                 }
                 else
-                if (this->_idim == +2)
+                if (_idim == +2)
                 {
                     this->_hfun->
                     _euclidean_grid_2d.
@@ -192,21 +188,21 @@
                 this->_kind == 
                     jmsh_kind::euclidean_grid)
             {
-                if (this->_idim == +1)
+                if (_idim == +1)
                 {
                     this->_hfun->
                     _euclidean_grid_3d.
                         _xpos.push_tail(_ppos) ;
                 }
                 else
-                if (this->_idim == +2)
+                if (_idim == +2)
                 {
                     this->_hfun->
                     _euclidean_grid_3d.
                         _ypos.push_tail(_ppos) ;
                 }
                 else
-                if (this->_idim == +3)
+                if (_idim == +3)
                 {
                     this->_hfun->
                     _euclidean_grid_3d.
@@ -217,16 +213,16 @@
             if (this->_kind == 
                     jmsh_kind::ellipsoid_grid)
             {
-                if (this->_idim == +1)
+                if (_idim == +1)
                 {
                     this->_hfun->
                     _ellipsoid_grid_3d.
                         _xpos.push_tail(_ppos) ;
                 }
                 else
-                if (this->_idim == +2)
+                if (_idim == +2)
                 {
-                    this->_hfun->
+                     this->_hfun->
                     _ellipsoid_grid_3d.
                         _ypos.push_tail(_ppos) ;
                 }            
@@ -319,7 +315,7 @@
                 
                 this->_hfun->
                     _euclidean_mesh_2d.
-                        _mesh.push_tri3(_tdat) ;
+               _mesh.push_tri3(_tdat, false) ;
             }
             else
             if (this->_ndim == +3)
@@ -356,7 +352,7 @@
                 
                 this->_hfun->
                     _euclidean_mesh_3d.
-                        _mesh.push_tri4(_tdat) ;
+               _mesh.push_tri4(_tdat, false) ;
             }
         }
         } ;
@@ -369,7 +365,7 @@
             jmsh_reader   _jmsh ;
             std::ifstream _file ; 
             _file. open(
-            _jcfg._hfun_file, std::ifstream::in);
+            _jcfg._hfun_file, std::ifstream::in) ;
 
             if (_file.is_open() )
             {
@@ -389,7 +385,7 @@
                     ++_iter  )
             {
                 _jlog.push(
-            "  **parse error: " + *_iter + "\n");
+            "**parse error: " + * _iter + "\n" ) ;
             }
         }
         catch (...)
@@ -399,43 +395,7 @@
 
         return (  _errv ) ;
     }
-
-    /*
-    --------------------------------------------------------
-     * READ-HFUN: read HFUN input file.
-    --------------------------------------------------------
-     */
-     
-    template <
-    typename      jlog_data
-             >
-    __normal_call iptr_type read_hfun (
-        jcfg_data &_jcfg ,
-        jlog_data &_jlog ,
-        hfun_data &_hfun
-        )
-    {
-        iptr_type _errv  = __no_error ;
-
-        std::string _path ;
-        std::string _name ;
-        std::string _fext ;
-        file_part(_jcfg._hfun_file , 
-            _path, _name, _fext);
-
-        if (_fext.find("msh") == +0)
-        {
-        return hfun_from_jmsh (
-                _jcfg, _jlog, _hfun)  ;
-        }
-        else
-        {   
-            _errv =__file_not_located ;
-        }
-        
-        return ( _errv ) ;
-    }
-       
+   
     /*
     --------------------------------------------------------
      * HFUN-FROM-MSHT: read MSH_t data into HFUN data.
@@ -486,7 +446,7 @@
                     _value._data[_ipos] ;
                 
                 _hfun._euclidean_mesh_2d.
-                        _mesh.push_node(_ndat);
+                _mesh.push_node(_ndat, false) ;
             }
             
             for (auto _ipos = (iptr_type)+0 ;
@@ -504,7 +464,7 @@
                     _tria3._data[_ipos]._node[2];
                 
                 _hfun._euclidean_mesh_2d.
-                        _mesh.push_tri3(_tdat);
+                _mesh.push_tri3(_tdat, false) ;
             }
     
             }
@@ -537,7 +497,7 @@
                     _value._data[_ipos] ;
                 
                 _hfun._euclidean_mesh_3d.
-                        _mesh.push_node(_ndat);
+                _mesh.push_node(_ndat, false) ;
             }
             
             for (auto _ipos = (iptr_type)+0 ;
@@ -557,7 +517,7 @@
                     _tria4._data[_ipos]._node[3];
                 
                 _hfun._euclidean_mesh_3d.
-                        _mesh.push_tri4(_tdat);
+                _mesh.push_tri4(_tdat, false) ;
             }
     
             }
@@ -699,6 +659,43 @@
     
     /*
     --------------------------------------------------------
+     * READ-HFUN: read HFUN input file.
+    --------------------------------------------------------
+     */
+     
+    template <
+    typename      jlog_data
+             >
+    __normal_call iptr_type read_hfun (
+        jcfg_data &_jcfg ,
+        jlog_data &_jlog ,
+        hfun_data &_hfun
+        )
+    {
+        iptr_type _errv  = __no_error ;
+
+        std::string _path ;
+        std::string _name ;
+        std::string _fext ;
+        file_part (
+            _jcfg._hfun_file , 
+                _path, _name, _fext ) ;
+
+        if (_fext.find("msh") == +0 )
+        {
+        return hfun_from_jmsh (
+                _jcfg, _jlog, _hfun ) ;
+        }
+        else
+        {   
+            _errv =__file_not_located ;
+        }
+        
+        return ( _errv ) ;
+    }
+    
+    /*
+    --------------------------------------------------------
      * COPY-HFUN: copy HFUN input data.
     --------------------------------------------------------
      */
@@ -714,7 +711,7 @@
         )
     {   
         return hfun_from_msht (
-            _jcfg, _jlog, _hfun, _hmsh) ;
+           _jcfg, _jlog, _hfun, _hmsh);
     }
         
     /*
@@ -741,11 +738,6 @@
              jmsh_kind::euclidean_mesh)
         {
     /*--------------------------------- euclidean-mesh-2d */
-            iptr_type _nmax = 
-                (iptr_type) _hfun.
-                    _euclidean_mesh_2d.
-                        _mesh._set1.count();
-        
             real_type _hmin = 
             std::numeric_limits<real_type>::max() ;
             
@@ -753,6 +745,8 @@
             std::numeric_limits<iptr_type>::max() ;
             iptr_type _imax = 
             std::numeric_limits<iptr_type>::min() ;
+
+            iptr_type _nmax = +0 ;
 
             for (auto _iter  = _hfun.
             _euclidean_mesh_2d._mesh._set1.head() ;
@@ -764,6 +758,17 @@
             
                 _hmin = std::min(
                     _hmin, _iter->hval ()) ;
+            }
+            
+            for (auto _iter  = _hfun.
+            _euclidean_mesh_2d._mesh._set1.head() ;
+                      _iter != _hfun.
+            _euclidean_mesh_2d._mesh._set1.tend() ;
+                    ++_iter  )
+            {
+                if (_iter->mark() < 0) continue ;
+            
+                _nmax += +1  ;
             }
 
             for (auto _iter  = _hfun.
@@ -792,7 +797,7 @@
             if (_hmin <= (real_type) +0.)
             {
                 _jlog.push (
-    "  **input error: HFUN. values must be strictly +ve.\n") ;
+    "**input error: HFUN. values must be strictly +ve.\n") ;
         
                 _errv = __invalid_argument ;
             }
@@ -800,7 +805,7 @@
             if (_imin < +0 || _imax>=_nmax)
             {
                 _jlog.push (
-    "  **input error: HFUN. tria. indexing is incorrect.\n") ;
+    "**input error: HFUN. tria. indexing is incorrect.\n") ;
         
                 _errv = __invalid_argument ;
             }
@@ -863,7 +868,7 @@
             if (_hnum != _xnum * _ynum)
             {
                 _jlog.push (
-    "  **input error: HFUN. matrix incorrect dimensions.\n") ;
+    "**input error: HFUN. matrix incorrect dimensions.\n") ;
         
                 _errv = __invalid_argument ;
             }
@@ -871,7 +876,7 @@
             if (_hmin <= (real_type) +0.)
             {
                 _jlog.push (
-    "  **input error: HFUN. values must be strictly +ve.\n") ;
+    "**input error: HFUN. values must be strictly +ve.\n") ;
         
                 _errv = __invalid_argument ;
             }
@@ -879,7 +884,7 @@
             if (!_mono)
             {
                 _jlog.push (
-    "  **input error: grid must be monotonic increasing.\n") ;
+    "**input error: grid must be monotonic increasing.\n") ;
         
                 _errv = __invalid_argument ;
             }        
@@ -890,11 +895,6 @@
              jmsh_kind::euclidean_mesh)
         {
     /*--------------------------------- euclidean-mesh-3d */
-            iptr_type _nmax = 
-                (iptr_type) _hfun.
-                    _euclidean_mesh_3d.
-                        _mesh._set1.count();
-        
             real_type _hmin = 
             std::numeric_limits<real_type>::max() ;
             
@@ -902,6 +902,8 @@
             std::numeric_limits<iptr_type>::max() ;
             iptr_type _imax = 
             std::numeric_limits<iptr_type>::min() ;
+
+            iptr_type _nmax = +0 ;
 
             for (auto _iter  = _hfun.
             _euclidean_mesh_3d._mesh._set1.head() ;
@@ -913,6 +915,17 @@
             
                 _hmin = std::min(
                     _hmin, _iter->hval ()) ;
+            }
+
+            for (auto _iter  = _hfun.
+            _euclidean_mesh_3d._mesh._set1.head() ;
+                      _iter != _hfun.
+            _euclidean_mesh_3d._mesh._set1.tend() ;
+                    ++_iter  )
+            {
+                if (_iter->mark() < 0) continue ;
+
+                _nmax += +1  ;                
             }
 
             for (auto _iter  = _hfun.
@@ -945,7 +958,7 @@
             if (_hmin <= (real_type) +0.)
             {
                 _jlog.push (
-    "  **input error: HFUN. values must be strictly +ve.\n") ;
+    "**input error: HFUN. values must be strictly +ve.\n") ;
         
                 _errv = __invalid_argument ;
             }
@@ -953,7 +966,7 @@
             if (_imin < +0 || _imax>=_nmax)
             {
                 _jlog.push (
-    "  **input error: HFUN. tria. indexing is incorrect.\n") ;
+    "**input error: HFUN. tria. indexing is incorrect.\n") ;
         
                 _errv = __invalid_argument ;
             }
@@ -1032,7 +1045,7 @@
             if (_hnum!=_xnum*_ynum*_znum)
             {
                 _jlog.push (
-    "  **input error: HFUN. matrix incorrect dimensions.\n") ;
+    "**input error: HFUN. matrix incorrect dimensions.\n") ;
         
                 _errv = __invalid_argument ;
             }
@@ -1040,7 +1053,7 @@
             if (_hmin <= (real_type) +0.)
             {
                 _jlog.push (
-    "  **input error: HFUN. values must be strictly +ve.\n") ;
+    "**input error: HFUN. values must be strictly +ve.\n") ;
         
                 _errv = __invalid_argument ;
             }
@@ -1048,7 +1061,7 @@
             if (!_mono)
             {
                 _jlog.push (
-    "  **input error: grid must be monotonic increasing.\n") ;
+    "**input error: grid must be monotonic increasing.\n") ;
         
                 _errv = __invalid_argument ;
             }        
@@ -1110,7 +1123,7 @@
             if (_hnum != _xnum * _ynum)
             {
                 _jlog.push (
-    "  **input error: HFUN. matrix incorrect dimensions.\n") ;
+    "**input error: HFUN. matrix incorrect dimensions.\n") ;
         
                 _errv = __invalid_argument ;
             }
@@ -1118,7 +1131,7 @@
             if (_hmin <= (real_type) +0.)
             {
                 _jlog.push (
-    "  **input error: HFUN. values must be strictly +ve.\n") ;
+    "**input error: HFUN. values must be strictly +ve.\n") ;
         
                 _errv = __invalid_argument ;
             }
@@ -1126,7 +1139,7 @@
             if (!_mono)
             {
                 _jlog.push (
-    "  **input error: grid must be monotonic increasing.\n") ;
+    "**input error: grid must be monotonic increasing.\n") ;
         
                 _errv = __invalid_argument ;
             }        

@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 09 September, 2017
+     * Last updated: 13 April, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -89,7 +89,7 @@
     __normal_call
     typename rdel_opts::node_kind push_node (
         geom_type &_geom ,
-        size_type &_size ,
+        hfun_type &_hfun ,
         mesh_type &_mesh ,
         mode_type  _mode ,
         char_type  _topo ,
@@ -112,8 +112,8 @@
         fscr_list &_fscr ,
         tdat_list &_tcav ,
         tscr_list &_tscr ,
-        nbal_list &_nbal ,
-        ebal_list &_ebal ,
+        ball_list &_bcav ,
+        ball_list &_bscr ,
         iptr_type  _hint ,
         char_type &_tdim ,
         iptr_type  _pass ,
@@ -149,8 +149,8 @@
                 _tscr.set_count(+0) ;
                 _tcav.set_count(+0) ;
                 
-                _nbal.set_count(+0) ;
-                _ebal.set_count(+0) ;
+                _bscr.set_count(+0) ;
+                _bcav.set_count(+0) ;
             
                 _kout = 
                  rdel_opts ::null_kind;
@@ -161,7 +161,7 @@
         /*------------------------- config. new node data */
             _mesh._tria.
                 node(_node)->idxh() = 
-                    size_type::null_hint() ;
+                    hfun_type::null_hint() ;
 
             _mesh._tria.
              node(_node)->fdim() = 0  ;
@@ -183,12 +183,12 @@
 
         /*------------------------- form "new" rDT cavity */
             mode_type  _dim0=null_mode;
-            push_rdel( _geom, _size , 
+            push_rdel( _geom, _hfun , 
                 _mesh, _nnew, _tnew , 
                 _escr, _ecav, 
                 _fscr, _fcav,
                 _tscr, _tcav,
-                _nbal, _ebal, 
+                _bscr, _bcav, 
                 _sign, _pass, 
                 _dim0, _mode, _args ) ;
                 
@@ -202,8 +202,8 @@
 
             if (_cav_bnds( _geom, _mesh, 
                     _told, _pedg, _pfac, 
-                    _ecav, _fcav, _eold, 
-                    _fold) )
+                    _ecav, _fcav, 
+                    _eold, _fold) )
             {
         /*-------- new node modifies restricted sub-faces */
                 _mesh.
@@ -213,24 +213,24 @@
                 _tdim = +0 ;
 
                 _kout = 
-                 rdel_opts::null_kind ;
+                    rdel_opts::null_kind ;
+
+                _nnew.set_count(+0) ;
+                _nold.set_count(+0) ;
+                _tnew.set_count(+0) ;
+                _told.set_count(+0) ;
                 
-                _nnew.set_count(  +0) ;
-                _nold.set_count(  +0) ;
-                _tnew.set_count(  +0) ;
-                _told.set_count(  +0) ;
+                _eold.set_count(+0) ;
+                _escr.set_count(+0) ;
+                _ecav.set_count(+0) ;
+                _fold.set_count(+0) ;
+                _fscr.set_count(+0) ;
+                _fcav.set_count(+0) ;
+                _tscr.set_count(+0) ;
+                _tcav.set_count(+0) ;
                 
-                _eold.set_count(  +0) ;
-                _escr.set_count(  +0) ;
-                _ecav.set_count(  +0) ;
-                _fold.set_count(  +0) ;
-                _fscr.set_count(  +0) ;
-                _fcav.set_count(  +0) ;
-                _tscr.set_count(  +0) ;
-                _tcav.set_count(  +0) ;
-                
-                _nbal.set_count(  +0) ;
-                _ebal.set_count(  +0) ;
+                _bscr.set_count(+0) ;
+                _bcav.set_count(+0) ;
                 
                 break ;
             }
@@ -246,28 +246,28 @@
 
                 _cav_bnds( _geom, _mesh, 
                     _told, _ecav, _fcav, 
-                    _eold, _fold, _pnow, 
-                    _ppos, _tdim) ;
-
+                    _eold, _fold, 
+                    _pnow, _ppos, _tdim) ;
+                    
                 _kout = 
-                 rdel_opts::circ_kind ;
+                    rdel_opts::circ_kind ;
+
+                _nnew.set_count(+0) ;
+                _nold.set_count(+0) ;
+                _tnew.set_count(+0) ;
+                _told.set_count(+0) ;
                 
-                _nnew.set_count(  +0) ;
-                _nold.set_count(  +0) ;
-                _tnew.set_count(  +0) ;
-                _told.set_count(  +0) ;
+                _eold.set_count(+0) ;
+                _escr.set_count(+0) ;
+                _ecav.set_count(+0) ;
+                _fold.set_count(+0) ;
+                _fscr.set_count(+0) ;
+                _fcav.set_count(+0) ;
+                _tscr.set_count(+0) ;
+                _tcav.set_count(+0) ;
                 
-                _eold.set_count(  +0) ;
-                _escr.set_count(  +0) ;
-                _ecav.set_count(  +0) ;
-                _fold.set_count(  +0) ;
-                _fscr.set_count(  +0) ;
-                _fcav.set_count(  +0) ;
-                _tscr.set_count(  +0) ;
-                _tcav.set_count(  +0) ;
-                
-                _nbal.set_count(  +0) ;
-                _ebal.set_count(  +0) ;
+                _bscr.set_count(+0) ;
+                _bcav.set_count(+0) ;
             }
         /*------------------- new node acceptable "as-is" */
             else break ;

@@ -31,9 +31,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 10 September, 2017
+ * Last updated: 07 April, 2018
  *
- * Copyright 2013-2017
+ * Copyright 2013-2018
  * Darren Engwirda
  * de2363@columbia.edu
  * https://github.com/dengwirda/
@@ -137,6 +137,9 @@
 
 #   include "geom_mesh/rdel_mesh_2.hpp"
 #   include "geom_mesh/rdel_mesh_3.hpp"
+
+#   include "geom_mesh/rvor_mesh_2.hpp"
+#   include "geom_mesh/rvor_mesh_3.hpp"
 
 /*-------------------------- hill-climb mesh optimisation */
 

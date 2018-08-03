@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 07 September, 2017
+     * Last updated: 13 April, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -364,9 +364,9 @@
             _edat._node[1] = _enod[1] ;
             
             _edat._tadj = 
-				(iptr_type) _fpos ; //!! no ??
+                (iptr_type) _fpos ; //!! no ??
             _edat._eadj = 
-				(char_type) _epos ;
+                (char_type) _epos ;
              
             typename mesh_type::
                      edge_list::
@@ -426,7 +426,6 @@
     __normal_call 
     typename rdel_opts::node_kind topo_node (
         geom_type &_geom,
-        size_type & ,
         mesh_type &_mesh,
         edat_list &_eset,
         fdat_list &_fset,
@@ -524,7 +523,7 @@
     __normal_call 
     typename rdel_opts::node_kind _bad_etop (
         geom_type &_geom ,
-        size_type &_size ,
+        hfun_type &_hfun ,
         mesh_type &_mesh ,
         mode_type  _mode ,
         typename 
@@ -546,8 +545,8 @@
         fscr_list &_fscr ,
         tdat_list &_tcav ,
         tscr_list &_tscr ,
-        nbal_list &_nbal ,
-        ebal_list &_ebal ,
+        ball_list &_bcav ,
+        ball_list &_bscr ,
         char_type &_tdim ,
         iptr_type  _pass ,
         rdel_opts &_args
@@ -605,8 +604,8 @@
         _tscr.set_count(   +0) ;
         _tcav.set_count(   +0) ;
 
-        _nbal.set_count(   +0) ;
-        _ebal.set_count(   +0) ;
+        _bscr.set_count(   +0) ;
+        _bcav.set_count(   +0) ;
 
         containers::
             array<iptr_type> _tset ;
@@ -651,13 +650,12 @@
         iptr_type _hint = -1;
       
         _kind = topo_node( _geom,
-            _size , _mesh,
-            _eset , _fset,
+            _mesh , _eset, _fset,
             _pmax , _tmax, _hint) ;
       
     /*------------------------- push node via constraints */
         _kind = push_node( _geom, 
-            _size , _mesh, _mode,
+            _hfun , _mesh, _mode,
             _tmax , _pmax, _kind,
             _pedg , _pfac,
             _nnew , _nold,
@@ -665,7 +663,7 @@
             _etmp , _ecav, _escr, 
             _ftmp , _fcav, _fscr, 
             _tcav , _tscr,
-            _nbal , _ebal, _hint,
+            _bcav , _bscr, _hint,
             _tdim , _pass, _args) ;
         
         return ( _kind ) ;
@@ -681,7 +679,7 @@
     __normal_call 
     typename rdel_opts::node_kind _bad_ftop (
         geom_type &_geom ,
-        size_type &_size ,
+        hfun_type &_hfun ,
         mesh_type &_mesh ,
         mode_type  _mode ,
         typename 
@@ -703,8 +701,8 @@
         fscr_list &_fscr ,
         tdat_list &_tcav ,
         tscr_list &_tscr ,
-        nbal_list &_nbal ,
-        ebal_list &_ebal ,
+        ball_list &_bcav ,
+        ball_list &_bscr ,
         char_type &_tdim ,
         iptr_type  _pass ,
         rdel_opts &_args
@@ -759,6 +757,9 @@
         _fcav.set_count(   +0) ;
         _tscr.set_count(   +0) ;
         _tcav.set_count(   +0) ;
+        
+        _bscr.set_count(   +0) ;
+        _bcav.set_count(   +0) ;
 
         containers::                        //!! do we need these??
             array<iptr_type> _tset ;
@@ -808,13 +809,12 @@
         _eset.set_count(  +0) ;     //!!
       
         _kind = topo_node( _geom,
-            _size , _mesh,
-            _eset , _fset,
+            _mesh , _eset, _fset,
             _pmax , _tmax, _hint) ;
         
     /*------------------------- push node via constraints */
         _kind = push_node( _geom, 
-            _size , _mesh, _mode,
+            _hfun , _mesh, _mode,
             _tmax , _pmax, _kind,
             _pedg , _pfac,
             _nnew , _nold,
@@ -822,7 +822,7 @@
             _etmp , _ecav, _escr, 
             _ftmp , _fcav, _fscr, 
             _tcav , _tscr,
-            _nbal , _ebal, _hint,
+            _bcav , _bscr, _hint,
             _tdim , _pass, _args) ;
         
         return ( _kind ) ;

@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 17 March, 2018
+     * Last updated: 10 June, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -157,6 +157,7 @@
                 _file << "POINT=" << _last << "\n" ;
                 
                 iptr_type _npos  = +0 ;
+                
                 for (auto _iter  = _rdel.
                 _euclidean_rdel_2d._tria._nset.head();
                           _iter != _rdel.
@@ -169,6 +170,29 @@
                     _file << _iter->pval(0) << ";"
                           << _iter->pval(1) << ";"
                           << +0 << "\n" ;
+                    }
+                }
+                }
+                
+                if (_rdel._euclidean_rdel_2d.
+                        _tria._nset.count() > 0)
+                {
+            /*-------------------------- write POWER data */                
+                _file << "POWER=" 
+                      << _last << ";1" << "\n" ;
+                
+                iptr_type _npos  = +0 ;
+                
+                for (auto _iter  = _rdel.
+                _euclidean_rdel_2d._tria._nset.head();
+                          _iter != _rdel.
+                _euclidean_rdel_2d._tria._nset.tend();
+                        ++_iter, ++_npos)
+                {
+                    if (_iter->mark() >= 0 &&
+                        _nmap[_npos ] >= 0)
+                    {
+                    _file << (real_type)0. << "\n" ;
                     }
                 }
                 }
@@ -329,6 +353,7 @@
                 _file << "POINT=" << _last << "\n" ;
                 
                 iptr_type _npos  = +0 ;
+                
                 for (auto _iter  = _rdel.
                 _euclidean_rdel_3d._tria._nset.head();
                           _iter != _rdel.
@@ -345,6 +370,30 @@
                     }
                 }
                 }
+                
+                if (_rdel._euclidean_rdel_3d.
+                        _tria._nset.count() > 0)
+                {
+            /*-------------------------- write POWER data */                
+                _file << "POWER=" 
+                      << _last << ";1" << "\n" ;
+                
+                iptr_type _npos  = +0 ;
+                
+                for (auto _iter  = _rdel.
+                _euclidean_rdel_3d._tria._nset.head();
+                          _iter != _rdel.
+                _euclidean_rdel_3d._tria._nset.tend();
+                        ++_iter, ++_npos)
+                {
+                    if (_iter->mark() >= 0 &&
+                        _nmap[_npos ] >= 0)
+                    {
+                    _file << (real_type)0. << "\n" ;
+                    }
+                }
+                }
+                
                 if (_rdel._euclidean_rdel_3d.
                         _eset.count() > +0)
                 {
@@ -793,6 +842,9 @@
             /*-------------------------- write POINT data */                
                 jigsaw_alloc_vert2 (
                      &_mmsh._vert2, _last) ;
+                     
+                jigsaw_alloc_reals (
+                     &_mmsh._power, _last) ;
                 
                 iptr_type _npos  = +0 ;
                 iptr_type _nout  = +0 ;
@@ -809,12 +861,12 @@
                         _ppos[0] = _iter->pval(0) ;
                     _mmsh._vert2._data[_nout].
                         _ppos[1] = _iter->pval(1) ;
-                        
-                    _mmsh._vert2._data[_nout].
-                        _vpwr    = (real_type)+0. ;
                     
                     _mmsh._vert2.
                         _data[_nout]._itag = 0 ;
+                        
+                    _mmsh._power.
+                    _data[_nout] = (real_type)+0. ;
                         
                     _nout = _nout + 1 ;
                     }
@@ -980,6 +1032,9 @@
             /*-------------------------- write POINT data */                
                 jigsaw_alloc_vert3 (
                      &_mmsh._vert3 , _last);
+                     
+                jigsaw_alloc_reals (
+                     &_mmsh._power , _last);
                 
                 iptr_type _npos  = +0 ;
                 iptr_type _nout  = +0 ;
@@ -999,11 +1054,11 @@
                     _mmsh._vert3._data[_nout].
                         _ppos[2] = _iter->pval(2) ;
                     
-                    _mmsh._vert3._data[_nout].
-                        _vpwr    = (real_type)+0. ;
-                    
                     _mmsh._vert3.
                         _data[_nout]._itag = 0 ;
+                        
+                    _mmsh._power.
+                    _data[_nout] = (real_type)+0. ;
                         
                     _nout = _nout + 1 ;
                     }
@@ -1644,6 +1699,9 @@
                 jigsaw_alloc_vert2 (
                      &_mmsh._vert2, _nnum) ;
 
+                jigsaw_alloc_reals (
+                     &_mmsh._power, _nnum) ;
+
                 iptr_type _npos  = +0 ;
                 iptr_type _nout  = +0 ;
                 
@@ -1661,11 +1719,11 @@
                     _mmsh._vert2._data[_nout].
                         _ppos[1] = _iter->pval(1) ;
                     
-                    _mmsh._vert2._data[_nout].
-                        _vpwr    = _iter->pval(2) ;
-                    
                     _mmsh._vert2.
                         _data[_nout]._itag = 0 ;
+                        
+                    _mmsh._power.
+                    _data[_nout] = _iter->pval(2) ;
                         
                     _nout = _nout + 1 ;
                     }
@@ -1819,6 +1877,9 @@
             /*-------------------------- write POINT data */                
                 jigsaw_alloc_vert3 (
                      &_mmsh._vert3, _nnum) ;
+                     
+                jigsaw_alloc_reals (
+                     &_mmsh._power, _nnum) ;
 
                 iptr_type _npos  = +0 ;
                 iptr_type _nout  = +0 ;
@@ -1839,11 +1900,11 @@
                     _mmsh._vert3._data[_nout].
                         _ppos[2] = _iter->pval(2) ;
                     
-                    _mmsh._vert3._data[_nout].
-                        _vpwr    = _iter->pval(3) ;
-                    
                     _mmsh._vert3.
                         _data[_nout]._itag = 0 ;
+                        
+                    _mmsh._power.
+                    _data[_nout] = _iter->pval(3) ;
                         
                     _nout = _nout + 1 ;
                     }

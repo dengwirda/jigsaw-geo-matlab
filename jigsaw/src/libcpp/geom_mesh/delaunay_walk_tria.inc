@@ -50,48 +50,48 @@
     --------------------------------------------------------
      */
      
-	template <
+    template <
     typename      func_type
-			 >
-	__normal_call void_type walk_tria_list (
-		iptr_type  _elem,
-		fptr_type  _flag,
-	    func_type  _pred,
-		iptr_list &_list
-		)
-	{
+             >
+    __normal_call void_type walk_tria_list (
+        iptr_type  _elem,
+        fptr_type  _flag,
+        func_type  _pred,
+        iptr_list &_list
+        )
+    {
         _list.push_tail(_elem);
         
-		__mark(_elem)+= _flag ;
-		
-	/*--------- traversal about _elem while _pred is true */
-		for (typename iptr_list::
+        __mark(_elem)+= _flag ;
+        
+    /*--------- traversal about _elem while _pred is true */
+        for (typename iptr_list::
                 size_type _iter = +0 ; 
                     _iter != _list.count(); ++_iter)
-		{
-		/*--------- scan all faces within current element */
-			for(iptr_type _fpos = tria_pred::_dims + 1; 
+        {
+        /*--------- scan all faces within current element */
+            for(iptr_type _fpos = tria_pred::_dims + 1; 
                           _fpos-- != +0 ; )
-			{
-			/*--------- find neighbour about current edge */
-				iptr_type  _tadj, _fadj , _fmrk;
-				find_pair( _list[ _iter], _tadj,
-					_fpos, _fadj, _fmrk);
+            {
+            /*--------- find neighbour about current edge */
+                iptr_type  _tadj, _fadj , _fmrk;
+                find_pair( _list[ _iter], _tadj,
+                    _fpos, _fadj, _fmrk);
 
             /*---------------------- skip if null or seen */
-				if (_tadj == this->null_flag())
-					continue ;
-				if (__mark(_tadj) >=   _flag )
-					continue ;
+                if (_tadj == this->null_flag())
+                    continue ;
+                if (__mark(_tadj) >=   _flag )
+                    continue ;
 
-			/*--------- push neighbour when _pred is true */
-				if (_pred(*this, _tadj, _fadj))
-				{
-					__mark(_tadj)+= _flag ;
-					_list.push_tail(_tadj);
-				}
-			}
-		}
+            /*--------- push neighbour when _pred is true */
+                if (_pred(*this, _tadj, _fadj))
+                {
+                    __mark(_tadj)+= _flag ;
+                    _list.push_tail(_tadj);
+                }
+            }
+        }
 
     /*------------------------------ need for degeneracy? */
         algorithms::qsort(_list.head(), 
@@ -99,13 +99,13 @@
                 std::less<iptr_type>()) ;
 
     /*------------------------------ unmark list of trias */
-		for (typename iptr_list::
+        for (typename iptr_list::
                 size_type _iter = +0 ; 
                     _iter != _list.count(); ++_iter)
-		{
+        {
             __mark( _list[_iter]) -=_flag ;
         }
-	}
+    }
 
 
 

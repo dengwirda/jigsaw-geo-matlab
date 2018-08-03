@@ -59,7 +59,7 @@
     __const_ptr  (iptr_type) _jnod
         )
     {
-		real_type static const _LTOL = 
+        real_type static const _LTOL = 
         std::pow(std::numeric_limits
        <real_type>::epsilon(), +.80) ;
 
@@ -142,7 +142,7 @@
     __const_ptr  (iptr_type) _jnod
         )
     {
-		real_type static const _LTOL = 
+        real_type static const _LTOL = 
         std::pow(std::numeric_limits
        <real_type>::epsilon(), +.80) ;
 
