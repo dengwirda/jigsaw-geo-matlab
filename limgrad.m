@@ -16,7 +16,7 @@ function [ffun] = limgrad(varargin)
 %   based artefacts. 'EDGE-LIMITER' is an alternative, low-
 %   order method provided for backwards compatibility. 
 %
-% - OPTS.RTOL = {+1.0E-04} relative tolerance, controlling
+% - OPTS.RTOL = {+1.0E-03} relative tolerance, controlling
 %   algorithm convergence. Iteration is continued until 
 %   ABS(dF)./MAX(ABS(FF),OPTS.ATOL) <= OPTS.RTOL, where dF
 %   is the local delta in a given update.
@@ -29,7 +29,7 @@ function [ffun] = limgrad(varargin)
 %-----------------------------------------------------------
 %   Darren Engwirda
 %   github.com/dengwirda/jigsaw-matlab
-%   23-Jul-2018
+%   02-Aug-2018
 %   de2363@columbia.edu
 %-----------------------------------------------------------
 %
@@ -306,6 +306,28 @@ function [ffun] = limgrad(varargin)
             end          
         end
     
+        if (ay(n1,1) > ay(+1,1))
+    %--------------------------- setup caps at poles
+        DY = ay(2:n1-0,1)-ay(1:n1-1,1) ;
+        
+        Z0 = rz*sin(-.5*pi+2.5*DY(  +1)) ;
+        Z1 = rz*sin(+.5*pi-2.5*DY(n1-1)) ;
+        
+        link{ 1} = find(pp(:,3) <= Z0) ;
+        link{ 2} = find(pp(:,3) >= Z1) ;
+        
+        else
+    %--------------------------- setup caps at poles
+        DY = ay(1:n1-1,1)-ay(2:n1-0,1) ;
+        
+        Z0 = rz*sin(-.5*pi+2.5*DY(n1-1)) ;
+        Z1 = rz*sin(+.5*pi-2.5*DY(  +1)) ;
+        
+        link{ 1} = find(pp(:,3) <= Z0) ;
+        link{ 2} = find(pp(:,3) >= Z1) ;
+        
+        end
+    
         if (strcmpi(...
             opts.slvr,'edge-limiter'))
         
@@ -321,11 +343,23 @@ function [ffun] = limgrad(varargin)
         if (meshhas(ffun,'value'))
     %--------------------------- call eikonal solver
        [ffun.value] = reshape(limmesh( ...
-            pp,e2,t3,q4,t4,h8, ...
-        ffun.value(:),DFDX,opts),size(ffun.value)) ; 
+            pp,e2,t3,q4,t4,h8,ffun.value(:), ...
+        DFDX,opts,@setbnds,link),size(ffun.value)) ; 
         end
         
         end
+    
+    end
+
+end
+
+function [ff] = setbnds(ff,li)
+%SETBNDS implement a very low-order patch-based BC at linked
+%sets of vertices. 
+
+    for il = 1 : length(li)
+    
+    ff(li{il}) = min(ff(li{il})) ;
     
     end
 
@@ -386,7 +420,7 @@ function [op] = setopts(op)
     end
     
     if (~isfield(op,'iter'))
-        op.iter = +100;
+        op.iter = +250;
     else
     if (~isnumeric(op.iter))
         error('limgrad:incorrectInputClass', ...
@@ -403,7 +437,7 @@ function [op] = setopts(op)
     end
     
     if (~isfield(op,'rtol'))
-        op.rtol  = +1.0E-04;
+        op.rtol  = +1.0E-03;
     else
     if (~isnumeric(op.rtol))
         error('limgrad:incorrectInputClass', ...
