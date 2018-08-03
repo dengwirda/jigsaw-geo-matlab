@@ -1,4 +1,4 @@
-function [ff] = limmesh( ...
+function [ff,ok] = limmesh( ...
         pp,e2,t3,q4,t4,h8,ff,varargin)
 %LIMMESH gradient-limiting of a discrete function defined on 
 %an unstructured mesh embedded in R^d.
@@ -30,11 +30,14 @@ function [ff] = limmesh( ...
 %-----------------------------------------------------------
 %
 
-    DFDX = +0.25; opts = [] ;
+    DFDX = +0.25; opts = [] ; 
+    bfun =   [] ; args = {} ;
     
 %---------------------------------------------- extract args
     if (nargin>=+8), DFDX = varargin{1}; end
     if (nargin>=+9), opts = varargin{2}; end
+    if (nargin>=10), bfun = varargin{3}; end
+    if (nargin>=11), args = varargin(4:end); end
 
    [opts] =  setopts (opts) ;
 
@@ -150,7 +153,7 @@ function [ff] = limmesh( ...
     Q4 = true(size(q4,1),1) ;
     T4 = true(size(t4,1),1) ;
     H8 = true(size(h8,1),1) ;
-
+    
 %---------------------------------------------- a fast-march
     for iter = +1:opts.iter
 
@@ -188,6 +191,11 @@ function [ff] = limmesh( ...
         end
         %}
 
+        if (~isempty(bfun))
+    %-- apply user-defined BC fun.
+           [ff] = feval(bfun,ff,args{:}) ;
+        end
+
     %-- calc. relative change in F 
         df = abs(ff-fi);
         df = df./ max(abs(ff),opts.atol) ;
@@ -219,6 +227,8 @@ function [ff] = limmesh( ...
         
     end
 
+    ok = (iter < opts.iter) ;
+
 end
 
 function [ff] = limit_edge_2(pp,e2,ff,DFDX,opts)
@@ -231,26 +241,20 @@ function [ff] = limit_edge_2(pp,e2,ff,DFDX,opts)
     fb = local_edge_2( ...
         pp,e2(up,:),ff,  [1,2],DFDX) ;
         
-    Fb = accumarray(e2(up,2), ...
-        fb,[size(pp,1),1],@min,+inf) ;
-    
-    ff = min(Fb,ff) ;
+    ff = limit_vals_k(ff,fb,e2(up,1));
     
     up = f0<ff(e2(:,1),:);
     
     fb = local_edge_2( ...
         pp,e2(up,:),ff,  [2,1],DFDX) ;
         
-    Fb = accumarray(e2(up,1), ...
-        fb,[size(pp,1),1],@min,+inf) ;
-    
-    ff = min(Fb,ff) ;
+    ff = limit_vals_k(ff,fb,e2(up,1));
 
 end
 
 function [ff] = limit_tria_3(pp,t3,ff,DFDX,opts)
 %LIMIT-TRIA-3 local Eikonal solver for TRIA-3 cells.
-
+    
     f0 = min(ff(t3),[],2);
     
     up = f0<ff(t3(:,3),:); 
@@ -259,21 +263,21 @@ function [ff] = limit_tria_3(pp,t3,ff,DFDX,opts)
         pp,t3(up,:),ff,[1,2,3],DFDX) ;
       
     ff = limit_vals_k(ff,fb,t3(up,3));
-                 
+                   
     up = f0<ff(t3(:,2),:);
                  
     fb = local_tria_3(  ...
         pp,t3(up,:),ff,[3,1,2],DFDX) ;
                  
     ff = limit_vals_k(ff,fb,t3(up,2));
-    
+           
     up = f0<ff(t3(:,1),:);
     
     fb = local_tria_3(  ...
         pp,t3(up,:),ff,[2,3,1],DFDX) ;
         
     ff = limit_vals_k(ff,fb,t3(up,1));
-    
+   
 end
 
 function [ff] = limit_quad_4(pp,q4,ff,DFDX,opts)
@@ -284,7 +288,7 @@ function [ff] = limit_quad_4(pp,q4,ff,DFDX,opts)
        
     ff = limit_tria_3(pp, ...
         q4(:,[1,3,4]),ff,DFDX,opts);
-        
+       
     ff = limit_tria_3(pp, ...
         q4(:,[1,2,4]),ff,DFDX,opts);
         
@@ -299,6 +303,7 @@ function [ff] = limit_vals_k(ff,fb,ip)
     if ( exist( ...
         'OCTAVE_VERSION','builtin') <= +0)
         
+    %----------------- typically faster in MATLAB...
         for ii = +1:length(ip)
             if (fb(ii) < ff(ip(ii)))
                 ff(ip(ii)) = fb(ii);
@@ -307,6 +312,7 @@ function [ff] = limit_vals_k(ff,fb,ip)
         
     else
  
+    %----------------- typically faster in OCTAVE...
         Fb = accumarray(ip, ...
             fb,[size(ff,1),1],@min,+inf) ;
     
@@ -400,7 +406,7 @@ function [op] = setopts (op)
 %SETOPTS setup a struct of default user-def. options 
 
     if (~isfield(op,'iter'))
-        op.iter = +100;
+        op.iter = +250;
     else
     if (~isnumeric(op.iter))
         error('limgrad:incorrectInputClass', ...
@@ -417,7 +423,7 @@ function [op] = setopts (op)
     end
     
     if (~isfield(op,'rtol'))
-        op.rtol  = +1.0E-04;
+        op.rtol  = +1.0E-03;
     else
     if (~isnumeric(op.rtol))
         error('limgrad:incorrectInputClass', ...
