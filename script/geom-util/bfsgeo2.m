@@ -21,16 +21,9 @@ function [node,PSLG,part] = bfsgeo2(node,PSLG,seed)
 %
 %   See also REFINE2, FIXGEO2, BFSTRI2
 
-%-----------------------------------------------------------
 %   Darren Engwirda : 2017 --
 %   Email           : de2363@columbia.edu
 %   Last updated    : 11/10/2017
-%-----------------------------------------------------------
-
-    filename = mfilename('fullpath') ;
-    filepath = fileparts( filename ) ;
-    
-    addpath([filepath,'/aabb-tree']) ;
 
 %---------------------------------------------- basic checks    
     if ( ~isnumeric(node) || ...
