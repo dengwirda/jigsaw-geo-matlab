@@ -45,7 +45,7 @@ function [flag] = certify(mesh)
         error('certify:incompatiblemshID', ...
             'Incompatible msh-ID flag.') ;
         end
-        if (strcmpi(mesh.mshID,'allipsoid-grid'))
+        if (strcmpi(mesh.mshID,'ellipsoid-grid'))
         error('certify:incompatiblemshID', ...
             'Incompatible msh-ID flag.') ;
         end
