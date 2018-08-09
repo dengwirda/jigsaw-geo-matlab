@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 31 July, 2018
+     * Last updated: 9 August, 2018
      *
      * Copyright 2013-2017
      * Darren Engwirda
@@ -693,7 +693,7 @@
             ) ;
 
     /*------------------------------ ensure deterministic */  
-        std::srand( +0 ) ;
+        std::srand( +1 ) ;
 
     /*------------------------------ init. list workspace */
         iptr_list _nnew, _nold ;

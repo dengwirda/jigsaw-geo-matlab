@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 22 April, 2018
+     * Last updated: 7 August, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -64,9 +64,9 @@
         real_list &_csrc ,
         real_list &_cdst ,
         real_type  _lmin
-            = (real_type) +0.50E+00,
+            = (real_type) +0.67E+00,
         real_type  _good 
-            = (real_type) +9.75E-01,
+            = (real_type) +9.25E-01,
         real_type  _qinc 
             = (real_type) +1.00E-08
         )
