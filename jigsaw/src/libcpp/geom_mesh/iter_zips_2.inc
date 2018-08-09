@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 22 April, 2018
+     * Last updated: 7 August, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -73,7 +73,7 @@
         real_type  _lmax 
             = (real_type) +0.80E+00 ,
         real_type  _good 
-            = (real_type) +9.75E-01 ,
+            = (real_type) +9.25E-01 ,
         real_type  _qinc 
             = (real_type) +1.00E-08
         )
