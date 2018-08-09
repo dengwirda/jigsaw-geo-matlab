@@ -1619,7 +1619,7 @@
             
           //real_type _DLIM = + 0.99250 ;
             real_type _DLIM = 
-                std::pow(_TLIM, +1./8.) ;
+                std::pow(_TLIM, +1./5.) ;
     
     /*------------------------------ update mesh geometry */
     #       ifdef  __use_timers
