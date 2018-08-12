@@ -510,26 +510,26 @@
             _dnew.set_count(0) ;
     
     /*---------------- test quasi-monotonicity w.r.t. Q^T */     
-            loop_tscr(_mesh, _pred , 
-                      _tset, 
-                      _tnew) ;
+            loop_tscr( _mesh, _pred , 
+                       _tset, 
+                       _tnew) ;
             
-            move_okay(_tnew, _told , 
-                      _okay, _TLIM , 
-                _opts .qtol()) ;
+            move_okay( _tnew, 
+                _told, _okay, 
+            std::sqrt( _TLIM) , _opts.qtol()) ;
                 
             if (!_okay) continue ;
                   
             if ( _TMIN>=_TLIM)
             {
     /*---------------- test quasi-monotonicity w.r.t. Q^D */
-            loop_dscr(_mesh, _pred , 
-                      _tset, 
-                      _dnew) ;
+            loop_dscr( _mesh, _pred , 
+                       _tset, 
+                       _dnew) ;
             
-            move_okay(_dnew, _dold , 
-                      _okay, _DLIM , 
-                _opts .qtol()) ;
+            move_okay( _dnew, 
+                _dold, _okay, 
+            std::sqrt( _DLIM) , _opts.qtol()) ;
             }
                   
             if (!_okay) continue ;
@@ -637,17 +637,17 @@
             _dnew.set_count(0) ;
         
     /*---------------- test quasi-monotonicity w.r.t. Q^D */
-            loop_dscr(_mesh, _pred , 
-                      _tset, 
-                      _dnew) ;
+            loop_dscr( _mesh, _pred , 
+                       _tset, 
+                       _dnew) ;
             
-            move_okay(_dnew, _dold , 
-                      _okay, _DLIM , 
-                _opts .qtol()) ;
+            move_okay( _dnew, 
+                _dold, _okay, 
+            std::sqrt( _DLIM) , _opts.qtol()) ;
                   
-            if (_okay) break ;
+            if (_okay) break  ;
             
-            _scal *= (real_type).5 ;
+            _scal *= (real_type)+.5 ;
         }
  
         if (!_okay)
@@ -700,9 +700,8 @@
                 bool_type operator () (
                 cost_pair const&_idat ,
                 cost_pair const&_jdat
-                ) const
-            {   return ( _idat._cost <
-                         _jdat._cost );
+                ) const {  return
+            _idat._cost < _jdat._cost ;
             }
             } ;
      
@@ -754,59 +753,6 @@
                 {
                     _qscr[_knod]  = _cost;
                 }
-                
-        /*-------------------- push if - in "low-Q" tria. */
-                if (_cost <= _TLIM)
-                {
-                if (_amrk[_inod] != _isub)
-                {
-                    _amrk[_inod]  = _isub;
-                    _aset.push_tail(_inod) ;
-                }
-                if (std::abs(
-                   _nmrk[_inod]) != _iout)
-                {
-                    if (_nmrk[_inod] >= 0)
-                    _nmrk[_inod] = +_iout;
-                    else
-                    _nmrk[_inod] = -_iout;
-                    
-                    _nset.push_tail(_inod) ;
-                }
-                
-                if (_amrk[_jnod] != _isub)
-                {
-                    _amrk[_jnod]  = _isub;
-                    _aset.push_tail(_jnod) ;
-                }
-                if (std::abs(
-                   _nmrk[_jnod]) != _iout)
-                {
-                    if (_nmrk[_jnod] >= 0)
-                    _nmrk[_jnod] = +_iout;
-                    else
-                    _nmrk[_jnod] = -_iout;
-                    
-                    _nset.push_tail(_jnod) ;
-                }
-                
-                if (_amrk[_knod] != _isub)
-                {
-                    _amrk[_knod]  = _isub;
-                    _aset.push_tail(_knod) ;
-                }
-                if (std::abs(
-                   _nmrk[_knod]) != _iout)
-                {
-                    if (_nmrk[_knod] >= 0)
-                    _nmrk[_knod] = +_iout;
-                    else
-                    _nmrk[_knod] = -_iout;
-                    
-                    _nset.push_tail(_knod) ;
-                }  
-                  
-                }
             }
         }
         
@@ -828,6 +774,20 @@
                     _cost = _qscr[_inum] ;
                 }
             }
+            else
+        /*-------------------- push if - in "low-Q" tria. */
+            if (_node->mark() >= +0 &&
+                    _qscr[_inum] <= _TLIM)
+            {
+                if (_amrk[_inum] != _isub)
+                {
+                _sset.push_tail() ;
+                _sset.tail()->
+                    _node =       _inum;
+                _sset.tail()->
+                    _cost = _qscr[_inum] ;
+                }
+            }
         }
         
         algorithms::qsort( _sset.head(), 
@@ -839,7 +799,7 @@
                 ++_iter  )
         {
         /*-------------------- push sorted wrt min.-cost */
-            _aset.push_tail( _iter->_node) ;
+            _aset.push_tail( _iter->_node );
         }
    
         }
@@ -888,7 +848,7 @@
                 ++_iter  )
         {
             auto _sift = std::min (
-                (size_t) +4 , 
+                (size_t) +8 , 
            (size_t)(_aset.tend()-_iter)) ;
         
             auto _next = _iter + 
@@ -958,7 +918,7 @@
                     _DMIN, _DLIM ) ;
             }
                        
-            if (_okay || _TMIN <= _TLIM)
+            if (_okay)
             {
         /*---------------- update when state is improving */
                 _hval[*_apos] = (real_type)-1. ;
@@ -1019,7 +979,7 @@
                     _DMIN, _DLIM ) ;
             }  
                      
-            if (_okay || _DMIN <= _DLIM) 
+            if (_okay) 
             {
         /*---------------- update when state is improving */
                 if (std::abs(
