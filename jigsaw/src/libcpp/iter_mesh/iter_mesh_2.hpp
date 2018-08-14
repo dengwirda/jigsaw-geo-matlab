@@ -284,7 +284,7 @@
    
     /*--------------------- prevent element inversion */
         _qtol *= std::max(
-            _0src, (real_type) +0.) ;
+            _0src, (real_type) +0.0);
         
         _msrc /= _csrc.count() ;
         _mdst /= _cdst.count() ;
