@@ -447,18 +447,20 @@
     /*---------------- calc. line search direction vector */
         if (_kind == +1 )
         {
-            _odt_move( _mesh, _hfun, 
-                _pred, _hval, _tset, 
-                _node, _line, _ladj) ;
+            _odt_move_2 ( 
+                _mesh, _hfun, _pred, 
+                _hval, _tset, _node, 
+                _line, _ladj) ;
         }
         else
         if (_TMIN<=_TLIM)
         { 
-            grad_move( _mesh, _hfun, 
-                _pred, _tset, _node, 
-                _told, _line, _ladj) ;
+            grad_move_2 ( 
+                _mesh, _hfun, _pred, 
+                _tset, _node, _told, 
+                _line, _ladj) ;
         }
-        else { return  ; }
+        else { return ; }
       
     /*---------------- scale line search direction vector */
         real_type _llen = std::
@@ -586,15 +588,14 @@
         real_type  _radj, _line, _save ;
  
     /*---------------- calc. line search direction vector */
-        if(_DMIN < _DLIM )
+        if(_DMIN < _DLIM)
         { 
-            grad_dual( _geom, _mesh,
-                _hfun, _pred,
-                _tset, _node, 
-                _dold, _line, _radj
-                ) ;
+            grad_dual_2 ( 
+                _geom, _mesh, _hfun, 
+                _pred, _tset, _node, 
+                _dold, _line, _radj) ;
         }
-        else { return  ; }
+        else { return ; }
          
     /*---------------- scale line search direction vector */
         real_type 
@@ -767,10 +768,10 @@
             {
                 if (_amrk[_inum] != _isub)
                 {
-                _sset.push_tail() ;
-                _sset.tail()->
-                    _node =       _inum;
-                _sset.tail()->
+                    _sset.push_tail();
+                    _sset.tail()->
+                        _node =   _inum;
+                    _sset.tail()->
                     _cost = _qscr[_inum] ;
                 }
             }
@@ -781,10 +782,10 @@
             {
                 if (_amrk[_inum] != _isub)
                 {
-                _sset.push_tail() ;
-                _sset.tail()->
-                    _node =       _inum;
-                _sset.tail()->
+                    _sset.push_tail();
+                    _sset.tail()->
+                        _node =   _inum;
+                    _sset.tail()->
                     _cost = _qscr[_inum] ;
                 }
             }
