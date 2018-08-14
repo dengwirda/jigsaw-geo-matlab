@@ -18,7 +18,7 @@
 
 `JIGSAW(GEO)` is a multi-part library, consisting of a `MATLAB` / `OCTAVE` front-end, and a core `c++` back-end. All of the heavy-lifting is done in the `c++` layer - the interface contains additional scripts for `file I/O`, `visualisation` and general `data processing`:
 
-	JIGASW(GEO) :: MATLAB/OCTAVE top-level functions
+	JIGSAW(GEO) :: MATLAB/OCTAVE top-level functions
 	├── script  -- MATLAB/OCTAVE utilities
 	└── jigsaw
 	    ├── src -- JIGSAW source files
