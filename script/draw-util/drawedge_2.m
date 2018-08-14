@@ -8,13 +8,14 @@ function drawedge_2(pp,e2,varargin)
 %   See also DRAWMESH
 
 %-----------------------------------------------------------
-%   JIGSAW-0.9.6.x
 %   Darren Engwirda
 %   github.com/dengwirda/jigsaw-matlab
-%   27-Jul-2018
+%   13-Aug-2018
 %   darren.engwirda@columbia.edu
 %-----------------------------------------------------------
 %
+
+    if (isempty(e2)), return; end
 
     if (nargin <= +2) 
         args = {

@@ -29,7 +29,7 @@
     --------------------------------------------------------
      *
      * JIGSAW release 0.9.7.x
-     * Last updated: 31 July, 2018
+     * Last updated: 13 August, 2018
      *
      * Copyright 2013 -- 2018
      * Darren Engwirda
@@ -132,7 +132,8 @@
 #   include "libcpp/libbasic.hpp"
 #   include "libcpp/libparse.hpp"
 
-#   include "libcpp/geommesh.hpp"
+#   include "libcpp/rdelmesh.hpp"
+#   include "libcpp/itermesh.hpp"
 
     /*---------------------------------- JIGSAW's userlib */
 
@@ -380,6 +381,8 @@
             
             this->
            _euclidean_grid_2d.init() ;
+            this->
+           _euclidean_grid_3d.init() ;
             this->
            _ellipsoid_grid_3d.init() ;
         }

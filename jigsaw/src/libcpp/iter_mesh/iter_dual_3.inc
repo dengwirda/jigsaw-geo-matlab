@@ -1,7 +1,7 @@
 
     /*
     --------------------------------------------------------
-     * ITER-DUAL-2: optim. schemes to reposition dual.
+     * ITER-DUAL-3: optim. schemes to reposition dual.
     --------------------------------------------------------
      *
      * This program may be freely redistributed under the 
@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 18 April, 2018
+     * Last updated: 12 August, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -41,7 +41,7 @@
     --------------------------------------------------------
      */
     
-    // from iter_mesh_2.hpp
+    // from iter_mesh_k.hpp
     
     
     /*
@@ -54,7 +54,7 @@
         typename  node_iter
              >
     __static_call
-    __normal_call void_type grad_dual (
+    __normal_call void_type grad_dual_3 (
         geom_type &_geom ,
         mesh_type &_mesh ,
         size_type &_hfun ,
@@ -104,7 +104,7 @@
                 ++_tria, ++_tnum)
         {     
              auto _tptr  = 
-            _mesh._set3.head()+*_tria ;
+            _mesh._set4.head()+*_tria ;
          
              auto _inod = _mesh.
             _set1 .head()+_tptr->node(0) ;
@@ -112,6 +112,8 @@
             _set1 .head()+_tptr->node(1) ;
              auto _knod = _mesh.
             _set1 .head()+_tptr->node(2) ;
+             auto _lnod = _mesh.
+            _set1 .head()+_tptr->node(3) ;
          
             _qmin = std::min(
                 _qmin, _cost[_tnum]) ;
@@ -120,7 +122,8 @@
             _pred.circ_ball(_ball,
                 &_inod->pval(0),
                 &_jnod->pval(0),
-                &_knod->pval(0)) ;
+                &_knod->pval(0),
+                &_lnod->pval(0)) ;
                 
             _ladj += _ball[_dims];  // ball-rad.^2
         }
@@ -144,7 +147,7 @@
                 ++_tria, ++_tnum)
         {     
              auto _tptr  = 
-            _mesh._set3.head()+*_tria ;
+            _mesh._set4.head()+*_tria ;
         
             real_type _qtri = _cost[_tnum] ;
             real_type _DQDW ;
@@ -175,7 +178,10 @@
                    &_mesh._set1[
                     _tptr->node(1)].pval(0),
                    &_mesh._set1[
-                    _tptr->node(2)].pval(0)) ;                
+                    _tptr->node(2)].pval(0),
+                   &_mesh._set1[
+                    _tptr->node(3)].pval(0)
+                        ) ;                
                     
                     _node->pval(_dims) = 
                         _save - _wdel;
@@ -190,7 +196,10 @@
                    &_mesh._set1[
                     _tptr->node(1)].pval(0),
                    &_mesh._set1[
-                    _tptr->node(2)].pval(0)) ;
+                    _tptr->node(2)].pval(0),
+                   &_mesh._set1[
+                    _tptr->node(3)].pval(0)
+                        ) ;
                     
                     _sdel = _scr1 - _scr0 ;
                     _sabs = 

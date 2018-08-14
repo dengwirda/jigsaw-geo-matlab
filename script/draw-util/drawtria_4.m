@@ -8,13 +8,14 @@ function drawtria_4(pp,t4,varargin)
 %   See also DRAWMESH
 
 %-----------------------------------------------------------
-%   JIGSAW-0.9.6.x
 %   Darren Engwirda
 %   github.com/dengwirda/jigsaw-matlab
-%   27-Jul-2018
+%   13-Aug-2018
 %   darren.engwirda@columbia.edu
 %-----------------------------------------------------------
 %
+    
+    if (isempty(t4)), return; end
 
     if (nargin >= 3)
 %-- extract users R^3 splitting plane
