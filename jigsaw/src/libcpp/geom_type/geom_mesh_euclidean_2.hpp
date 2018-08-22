@@ -617,18 +617,6 @@
                  this->_tria._set1.tend() ;
                     ++_ipos  )
             {
-            
-            
-                if (_ipos->mark() < +0)
-                {
-                    std::cout << _ipos->fdim()
-                              << _ipos->self()
-                              << _ipos->pval(0)
-                              << _ipos->pval(1)
-                              << std::endl ;
-                }
-            
-            
                 if (_ipos->mark() >= 0 && 
                         _ipos->fdim () == _fdim)
                 {
