@@ -209,6 +209,7 @@
             containers::loose_alloc, +0);
     
         {
+    /*------------------------------ form adj. about node */
         iptr_type _enum  = (iptr_type)0 ;
         for (auto _epos  = _edge.head() ;
                   _epos != _edge.tend() ;
@@ -227,6 +228,7 @@
         }
     
         {
+    /*------------------------------ init. edge cost heap */
         iptr_type _enum  = (iptr_type)0 ;
         for (auto _epos  = _edge.head() ;
                   _epos != _edge.tend() ;
@@ -243,7 +245,8 @@
                 = _heap.push( _edat) ;    
         }
         }
-    
+  
+    /*------------------------------ form greedy matching */  
         iptr_type _pass = (iptr_type)+0 ;
         
         _nmrk.set_count(_nmax, 
@@ -251,6 +254,7 @@
         
         for ( ; !_heap.empty() ; )
         {
+        /* _pop next matched edge */
             edge_type _edat;
             _heap._pop_root(_edat) ;
             
@@ -261,7 +265,7 @@
             _mark[_edat._inod] =  _pass ;
             _mark[_edat._jnod] =  _pass ;
     
-    
+        /*-------------------- delete edges adj. to I */
             _nset.set_count ( +0) ;        
             
             for (auto _epos  = 
@@ -295,6 +299,7 @@
                 }
             }
             
+        /*-------------------- delete edges adj. to J */
             for (auto _epos  = 
                 _nadj[_edat._jnod].head() ;
                       _epos != 
@@ -326,7 +331,7 @@
                 }
             }
     
-    
+        /*-------------------- update edge cost//heap */
             for (auto _node  =_nset.head();
                       _node !=_nset.tend();
                     ++_node  )
