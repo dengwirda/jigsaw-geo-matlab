@@ -202,6 +202,7 @@
         this->_ptrs[_hptr] = nullptr;
         this->_ptrs[_tptr] = nullptr;
         this->_ptrs[_lptr] = nullptr;
+        
         copy_iter(_size,_dsrc,
         __cont::null_iterator_kind()) ;
     }
@@ -219,6 +220,7 @@
         this->_ptrs[_hptr] = nullptr;
         this->_ptrs[_tptr] = nullptr;
         this->_ptrs[_lptr] = nullptr;
+        
         copy_iter(_head,_tail,
             __cont::iter_kind(_head)) ;
     }
