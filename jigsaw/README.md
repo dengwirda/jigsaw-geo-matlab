@@ -82,7 +82,7 @@ This program may be freely redistributed under the condition that the copyright 
 
 If you make use of `JIGSAW` please make reference to the following. The algorithmic developments behind `JIGSAW` have been the subject of a number of publications, originally stemming from my PhD research at the University of Sydney:
 
-`[1]` - Darren Engwirda: Generalised primal-dual grids for unstructured co-volume schemes, to appear in J. Comp. Phys., https://arxiv.org/abs/1712.02657, 2018.
+`[1]` - Darren Engwirda: Generalised primal-dual grids for unstructured co-volume schemes, J. Comp. Phys., 375, pp. 155-176, https://doi.org/10.1016/j.jcp.2018.07.025, 2018.
 
 `[2]` - Darren Engwirda, Conforming Restricted Delaunay Mesh Generation for Piecewise Smooth Complexes, Procedia Engineering, Volume 163, Pages 84-96, ISSN 1877-7058, https://doi.org/10.1016/j.proeng.2016.11.024, 2016.
 
