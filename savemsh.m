@@ -60,6 +60,9 @@ function savemsh(name,mesh)
 %
 %   MESH.RADII - [ 3x 1] array of principle ellipsoid radii.
 %
+%   Additionally, entities described in the 'EUCLIDEAN-MESH'
+%   data-type are optionally written.
+%
 %   .IF. MESH.MSHID == 'EUCLIDEAN-GRID':
 %   .OR. MESH.MSHID == 'ELLIPSOID-GRID':
 %   -----------------------------------
@@ -80,7 +83,7 @@ function savemsh(name,mesh)
 %-----------------------------------------------------------
 %   Darren Engwirda
 %   github.com/dengwirda/jigsaw-matlab
-%   26-Jul-2018
+%   26-Nov-2018
 %   darren.engwirda@columbia.edu
 %-----------------------------------------------------------
 %
@@ -124,18 +127,24 @@ function savemsh(name,mesh)
     switch (upper(mshID))
     
     case 'EUCLIDEAN-MESH'
-        save_euclidean_mesh(ffid,nver,mesh) ;     
+        save_mesh_format( ...
+            ffid,nver,mesh,'EUCLIDEAN-MESH') ;     
     case 'EUCLIDEAN-GRID'
-        save_euclidean_grid(ffid,nver,mesh) ;
+        save_grid_format( ...
+            ffid,nver,mesh,'EUCLIDEAN-GRID') ;
     case 'EUCLIDEAN-DUAL'
-       %save_euclidean_dual(ffid,nver,mesh) ;
+       %save_dual_format( ...
+       %    ffid,nver,mesh,'EUCLIDEAN-DUAL') ;
     
     case 'ELLIPSOID-MESH'
-        save_ellipsoid_mesh(ffid,nver,mesh) ;
+        save_mesh_format( ...
+            ffid,nver,mesh,'ELLIPSOID-MESH') ;     
     case 'ELLIPSOID-GRID'
-        save_ellipsoid_grid(ffid,nver,mesh) ;
-    case 'ELLISPOID-DUAL' 
-       %save_ellipsoid_dual(ffid,nver,mesh) ;
+        save_grid_format( ...
+            ffid,nver,mesh,'ELLIPSOID-GRID') ;
+    case 'ELLIPSOID-DUAL'
+       %save_dual_format( ...
+       %    ffid,nver,mesh,'ELLIPSOID-DUAL') ;
     
     otherwise
         error('Invalid mshID!') ;
@@ -156,12 +165,40 @@ function savemsh(name,mesh)
     
 end
         
-function save_euclidean_mesh(ffid,nver,mesh)
+function save_mesh_format(ffid,nver,mesh,kind)
 %SAVE-EUCLIDEAN-MESH save mesh data in EUCLDIEAN-MESH format
+  
+    switch (upper(kind))
+    case 'EUCLIDEAN-MESH'
+        fprintf( ...
+    ffid,'MSHID=%u;EUCLIDEAN-MESH\n',nver) ;
     
-    fprintf(ffid,'MSHID=%u;EUCLIDEAN-MESH \n',nver);
+    case 'ELLIPSOID-MESH'
+        fprintf( ...
+    ffid,'MSHID=%u;ELLIPSOID-MESH\n',nver) ;
     
-    npts = +0;
+    end
+ 
+    npts = +0 ;
+ 
+    if (isfield(mesh,'radii') && ...
+            ~isempty(mesh.radii) )
+    
+%-- write "RADII" data
+        
+    if (~isnumeric(mesh.radii))
+        error('Incorrect input types');
+    end
+    if (ndims(mesh.radii) ~= 2)
+        error('Incorrect dimensions!');
+    end
+    if (numel(mesh.radii) ~= 3)
+        mesh.radii = mesh.radii(1) * ones(+3,+1);
+    end
+    
+    fprintf(ffid,'RADII=%f;%f;%f\n',mesh.radii');
+    
+    end
     
     if (isfield(mesh,'point') && ...
             isfield(mesh.point,'coord') && ...
@@ -443,54 +480,7 @@ function save_euclidean_mesh(ffid,nver,mesh)
     
 end
 
-function save_ellipsoid_mesh(ffid,nver,mesh)
-%SAVE-ELLIPSOID-MESH save mesh data in ELLIPSOID-MESH format
-    
-    fprintf(ffid,'MSHID=%u;ELLIPSOID-MESH \n',nver);
-    
-    npts = +0;
-    
-    if (isfield(mesh,'radii') && ...
-            ~isempty(mesh.radii) )
-    
-%-- write "RADII" data
-        
-    if (~isnumeric(mesh.radii))
-        error('Incorrect input types');
-    end
-    if (ndims(mesh.radii) ~= 2)
-        error('Incorrect dimensions!');
-    end
-    if (numel(mesh.radii) ~= 3)
-        error('Incorrect dimensions!');
-    end
-    
-    fprintf(ffid,'RADII=%f;%f;%f\n',mesh.radii');
-    
-    end
-
-%-- to-do: coast edges...
-    
-end
-
-function save_euclidean_grid(ffid,nver,mesh)
-%SAVE-EUCLIDEAN-GRID save mesh data in EUCLIDEAN-GRID format
-
-    save_monotonic_grid(ffid,nver,mesh, ...
-        'EUCLIDEAN-GRID') ;
-
-end
-
-function save_ellipsoid_grid(ffid,nver,mesh)
-%SAVE-ELLIPSOID-GRID save mesh data in ELLIPSOID-GRID format
-
-    save_monotonic_grid(ffid,nver,mesh, ...
-        'ELLIPSOID-GRID') ;
-
-end
-
-function save_monotonic_grid(ffid,nver,mesh, ...
-                             kind)
+function save_grid_format(ffid,nver,mesh,kind)
 %SAVE-MONOTONIC-GRID save mesh data in MONOTONIC-GRID format
 % ==> EUCLIDEAN-GRID, ELLIPSOID-GRID, etc...
     
@@ -506,6 +496,25 @@ function save_monotonic_grid(ffid,nver,mesh, ...
     end
     
     dims = [] ;
+    
+    if (isfield(mesh,'radii') && ...
+            ~isempty(mesh.radii) )
+    
+%-- write "RADII" data
+        
+    if (~isnumeric(mesh.radii))
+        error('Incorrect input types');
+    end
+    if (ndims(mesh.radii) ~= 2)
+        error('Incorrect dimensions!');
+    end
+    if (numel(mesh.radii) ~= 3)
+        mesh.radii = mesh.radii(1) * ones(+3,+1);
+    end
+    
+    fprintf(ffid,'RADII=%f;%f;%f\n',mesh.radii');
+    
+    end
     
     if (isfield(mesh,'point') && ...
             isfield(mesh.point,'coord') && ...

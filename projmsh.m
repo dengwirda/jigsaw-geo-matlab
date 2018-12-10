@@ -18,8 +18,8 @@ function [pmsh] = projmsh(mesh,proj,kind)
 %-----------------------------------------------------------
 %   Darren Engwirda
 %   github.com/dengwirda/jigsaw-geo-matlab
-%   25-Jul-2018
-%   de2363@columbia.edu
+%   26-Nov-2018
+%   darren.engwirda@columbia.edu
 %-----------------------------------------------------------
 %
 
@@ -66,10 +66,18 @@ function [pmsh] = projmsh(mesh,proj,kind)
     %------------------------------- setup proj.'d object
         switch (upper(kind))   
         case 'FWD'
+        
         pmsh.mshID = 'EUCLIDEAN-MESH' ;
+   
+        if (isfield(pmsh,'radii'))
+            pmsh = rmfield(pmsh,'radii') ;
+        end
         
         case 'INV'
+        
         pmsh.mshID = 'ELLIPSOID-MESH' ;
+        pmsh.radii = proj.rrad(1) * ...
+                     ones (+3,+1) ;
         
         otherwise
         
@@ -138,10 +146,18 @@ function [pmsh] = projmsh(mesh,proj,kind)
     %------------------------------- setup proj.'d object
         switch (upper(kind))   
         case 'FWD'
+        
         pmsh.mshID = 'EUCLIDEAN-MESH' ;
+   
+        if (isfield(pmsh,'radii'))
+            pmsh = rmfield(pmsh,'radii') ;
+        end
         
         case 'INV'
+        
         pmsh.mshID = 'ELLIPSOID-MESH' ;
+        pmsh.radii = proj.rrad(1) * ...
+                     ones (+3,+1) ;
         
         otherwise
         

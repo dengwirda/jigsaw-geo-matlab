@@ -162,7 +162,7 @@ function demo2
   
     fprintf(1,'  Loading TOPO data...\n');
   
-    geom = loadmsh('jigsaw/geo/AUS-GEOM.msh');
+    geom = loadmsh('jigsaw/geo/aust.msh');
     
     topo = loadmsh('jigsaw/geo/topo.msh');
     

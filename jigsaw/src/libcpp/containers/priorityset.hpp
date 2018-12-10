@@ -275,7 +275,7 @@
     
 /*------------------------------------- peek at heap item */
     __inline_call data_type const& peek (
-        size_type  _hpos
+        size_type  _hpos    = +0
         ) const
     {   return this->_heap[_hpos] ;
     }

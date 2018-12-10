@@ -619,8 +619,10 @@
             real_type _dloc = 
             _bmin[_idim] - _ppos[_idim];
         
-            _dist = 
-                std::max (_dist, _dloc);
+            _dist +=  _dloc ;
+        
+          //_dist = 
+          //    std::max (_dist, _dloc);
         }
         else
         if (_ppos[_idim] > _bmax[_idim])
@@ -628,8 +630,10 @@
             real_type _dloc = 
             _ppos[_idim] - _bmax[_idim];
         
-            _dist = 
-                std::max (_dist, _dloc);
+            _dist +=  _dloc ;
+        
+          //_dist = 
+          //    std::max (_dist, _dloc);
         }
         }
         

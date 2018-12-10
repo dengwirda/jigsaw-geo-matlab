@@ -29,7 +29,7 @@
     --------------------------------------------------------
      *
      * JIGSAW release 0.9.7.x
-     * Last updated: 13 August, 2018
+     * Last updated: 09 December, 2018
      *
      * Copyright 2013 -- 2018
      * Darren Engwirda
@@ -76,9 +76,35 @@
      * three-dimensional operations, catering to a variety 
      * of planar, surface and volumetric configurations.
      *
-     * JIGSAW has grown out of my Ph.D. research, in which
-     * I explored early versions of both the refinement and
-     * optimisation-based algorithms described here:
+     * JIGSAW's 'frontal' Delaunay-refinement algorithms
+     * are described here:
+     *
+     * D. Engwirda and D. Ivers, (2016): Off-centre Steiner 
+     * points for Delaunay-refinement on curved surfaces, 
+     * Computer-Aided Design, 72, pp. 157-171, 
+     * http://dx.doi.org/10.1016/j.cad.2015.10.007
+     *
+     * D. Engwirda, (2016): "Conforming restricted Delaunay 
+     * mesh generation for piecewise smooth complexes", 
+     * Procedia Engineering, 163, pp. 84-96, 
+     * http://dx.doi.org/10.1016/j.proeng.2016.11.024
+     *
+     * D. Engwirda, (2015): "Voronoi-based point-placement 
+     * for three-dimensional Delaunay-refinement", 
+     * Procedia Engineering, 124, pp. 330-342, 
+     * http://dx.doi.org/10.1016/j.proeng.2015.10.143
+     *
+     * JIGSAW's hybrid, optimisation-based mesh improvement
+     * schemes are discussed here: 
+     *
+     * D. Engwirda, (2018): "Generalised primal-dual grids 
+     * for unstructured co-volume schemes, J. Comp. Phys., 
+     * 375, pp. 155-176, 
+     * https://doi.org/10.1016/j.jcp.2018.07.025 
+     *
+     * JIGSAW originally grew out of my Ph.D. research, in 
+     * which I explored initial versions of the refinement 
+     * and optimisation-based algorithms:
      *
      * D. Engwirda, (2014): "Locally-optimal Delaunay-
      * refinement and optimisation-based mesh generation", 
@@ -89,9 +115,9 @@
     --------------------------------------------------------
      *
      * JIGSAW builds on a variety of "standard" algorithms,
-     * building upon technqiues described in, for instance:
+     * expanding on technqiues described in, for instance:
      *
-     * S. Cheng, T. Dey & J. Shewchuk, (2012): "Delaunay 
+     * S. Cheng, T. Dey and J. Shewchuk, (2012): "Delaunay 
      * mesh generation", CRC Press.
      *
      * Additional references are provided inline throughout 
@@ -101,7 +127,7 @@
      */
 
 
-#   define __JGSWVSTR "JIGSAW VERSION 0.9.7"
+#   define __JGSWVSTR "JIGSAW VERSION 0.9.7.1"
 
 
     /*---------------------------------- for i/o on files */

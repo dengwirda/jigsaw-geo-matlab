@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 June, 2018
+     * Last updated: 27 November, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -62,7 +62,20 @@
         _vert2->_size = _size ;       
         _vert2->_data = 
         (jigsaw_VERT2_t *) malloc (
-            _size * sizeof(jigsaw_VERT2_t)) ;   
+            _size * sizeof(jigsaw_VERT2_t)) ;
+            
+        for (indx_t _item  = (indx_t) +0 ; 
+                    _item != _size ; 
+                  ++_item  )
+        {
+            _vert2->_data[_item].
+                _ppos[ 0 ] = (real_t) +0.;
+            _vert2->_data[_item].
+                _ppos[ 1 ] = (real_t) +0.;
+                
+            _vert2->_data[_item].
+                _itag      = (indx_t) +0 ;
+        }   
     }
     
     void jigsaw_alloc_vert3 (               // _new-alloc
@@ -73,7 +86,22 @@
         _vert3->_size = _size ;       
         _vert3->_data = 
         (jigsaw_VERT3_t *) malloc (
-            _size * sizeof(jigsaw_VERT3_t)) ;   
+            _size * sizeof(jigsaw_VERT3_t)) ; 
+            
+        for (indx_t _item  = (indx_t) +0 ; 
+                    _item != _size ; 
+                  ++_item  )
+        {
+            _vert3->_data[_item].
+                _ppos[ 0 ] = (real_t) +0.;
+            _vert3->_data[_item].
+                _ppos[ 1 ] = (real_t) +0.;
+            _vert3->_data[_item].
+                _ppos[ 2 ] = (real_t) +0.;
+                
+            _vert3->_data[_item].
+                _itag      = (indx_t) +0 ;
+        }  
     }
     
     void jigsaw_alloc_edge2 (               // _new-alloc
@@ -85,6 +113,19 @@
         _edge2->_data = 
         (jigsaw_EDGE2_t *) malloc (
             _size * sizeof(jigsaw_EDGE2_t)) ;   
+    
+        for (indx_t _item  = (indx_t) +0 ; 
+                    _item != _size ; 
+                  ++_item  )
+        {
+            _edge2->_data[_item].
+                _node[ 0 ] = (indx_t) +0 ;
+            _edge2->_data[_item].
+                _node[ 1 ] = (indx_t) +0 ;
+                
+            _edge2->_data[_item].
+                _itag      = (indx_t) +0 ;
+        }
     }
  
     void jigsaw_alloc_tria3 (               // _new-alloc
@@ -95,7 +136,22 @@
         _tria3->_size = _size ;       
         _tria3->_data = 
         (jigsaw_TRIA3_t *) malloc (
-            _size * sizeof(jigsaw_TRIA3_t)) ;   
+            _size * sizeof(jigsaw_TRIA3_t)) ;  
+            
+        for (indx_t _item  = (indx_t) +0 ; 
+                    _item != _size ; 
+                  ++_item  )
+        {
+            _tria3->_data[_item].
+                _node[ 0 ] = (indx_t) +0 ;
+            _tria3->_data[_item].
+                _node[ 1 ] = (indx_t) +0 ;
+            _tria3->_data[_item].
+                _node[ 2 ] = (indx_t) +0 ;
+                
+            _tria3->_data[_item].
+                _itag      = (indx_t) +0 ;
+        } 
     }
     
     void jigsaw_alloc_tria4 (               // _new-alloc
@@ -106,7 +162,24 @@
         _tria4->_size = _size ;       
         _tria4->_data = 
         (jigsaw_TRIA4_t *) malloc (
-            _size * sizeof(jigsaw_TRIA4_t)) ;   
+            _size * sizeof(jigsaw_TRIA4_t)) ;
+            
+        for (indx_t _item  = (indx_t) +0 ; 
+                    _item != _size ; 
+                  ++_item  )
+        {
+            _tria4->_data[_item].
+                _node[ 0 ] = (indx_t) +0 ;
+            _tria4->_data[_item].
+                _node[ 1 ] = (indx_t) +0 ;
+            _tria4->_data[_item].
+                _node[ 2 ] = (indx_t) +0 ;
+            _tria4->_data[_item].
+                _node[ 3 ] = (indx_t) +0 ;
+                
+            _tria4->_data[_item].
+                _itag      = (indx_t) +0 ;
+        }
     }
 
     void jigsaw_alloc_reals (               // _new-alloc
@@ -116,7 +189,15 @@
     {
         _reals->_size = _size ;       
         _reals->_data = (real_t *) 
-            malloc (_size * sizeof(real_t)) ;   
+            malloc (_size * sizeof(real_t)) ;
+            
+        for (indx_t _item  = (indx_t) +0 ; 
+                    _item != _size ; 
+                  ++_item  )
+        {
+            _reals->
+              _data[_item] = (real_t) +0.;
+        }
     }
     
 #   endif//__lib_jigsaw 
@@ -148,6 +229,13 @@
             _mesh->_vert3._size = +0;
              free(
             _mesh->_vert3._data) ;
+        }
+        
+        if (_mesh->_radii._size > +0)
+        {
+            _mesh->_radii._size = +0;
+             free(
+            _mesh->_radii._data) ;
         }
         
         if (_mesh->_power._size > +0)
@@ -229,6 +317,9 @@
         
         _mesh->_vert3._size = +0 ;
         _mesh->_vert3._data = nullptr ;
+ 
+        _mesh->_radii._size = +0 ;
+        _mesh->_radii._data = nullptr ;
         
         _mesh->_power._size = +0 ;
         _mesh->_power._data = nullptr ;

@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 20 August, 2018
+     * Last updated: 25 November, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -472,10 +472,10 @@
         
         real_type _xtol = 
        (real_type)+.1 * _opts.qtol() ;
-        
+       
         if (_llen<= 
             _ladj * _xtol) return;
-      
+        
         real_type _scal =           // overrelaxation
             _llen * (real_type)5./3. ;
         
@@ -589,7 +589,7 @@
 
         _okay = false ;
     
-        real_type  _radj, _line, _save ;
+        real_type  _wadj, _line, _save ;
  
     /*---------------- calc. line search direction vector */
         if(_DMIN < _DLIM)
@@ -597,7 +597,7 @@
             grad_dual_2 ( 
                 _geom, _mesh, _hfun, 
                 _pred, _tset, _node, 
-                _dold, _line, _radj) ;
+                _dold, _line, _wadj) ;
         }
         else { return ; }
          
@@ -607,15 +607,12 @@
         
         real_type _xtol = 
        (real_type)+.1 * _opts.qtol() ;
-        
+ 
         if (_llen<= 
-            _radj * _xtol) return;
-      
+            _wadj * _xtol) return;
+        
         real_type _scal =           // overrelaxation
             _llen * (real_type)5./3. ;
-            
-      //real_type _wmax = 
-      //    _radj * (real_type)   4. ;
       
         _line /= _llen  ;
         
@@ -664,12 +661,11 @@
     
     /*
     --------------------------------------------------------
-     * MOVE-NODE: do a single node smoothing pass.
+     * SORT-NODE: permutations for node optimisation.
     --------------------------------------------------------
      */
     
-    __static_call 
-    __normal_call void_type move_node (
+    __static_call void_type sort_node (
         geom_type &_geom ,
         mesh_type &_mesh ,
         size_type &_hfun ,
@@ -677,6 +673,7 @@
         real_list &_hval ,
         real_list &_qscr ,
         iptr_list &_nset ,
+        iptr_list &_aset ,
         iptr_list &_amrk ,
         iptr_list &_nmrk ,
         iptr_list &_emrk ,
@@ -684,7 +681,6 @@
         iptr_type  _iout , 
         iptr_type  _isub ,
         iter_opts &_opts ,
-        iptr_type &_nmov , 
         real_type  _TLIM ,
         real_type  _DLIM
         )
@@ -692,7 +688,7 @@
         class cost_pair
             {
             public  :
-        /*-------------------- tuple for node re-ordering */
+    /*------------------------ tuple for node re-ordering */
             iptr_type           _node ;
             real_type           _cost ;
             } ;
@@ -700,29 +696,30 @@
         class cost_less
             {
             public  :
-        /*-------------------- less-than op. for cost-tup */
+    /*------------------------ less-than op. for cost-tup */
             __inline_call 
                 bool_type operator () (
                 cost_pair const&_idat ,
                 cost_pair const&_jdat
-                ) const {  return
-            _idat._cost < _jdat._cost ;
+                ) const 
+            {   return    _idat._cost < 
+                          _jdat._cost ;
             }
             } ;
      
         typedef containers::
            array<cost_pair> cost_list ;
+        
+        iptr_list _eset ;
+        cost_list _sset ;
+           
+        __unreferenced(_geom) ;
+        __unreferenced(_hfun) ;
+        __unreferenced(_pred) ;
+        __unreferenced(_hval) ;
+        __unreferenced(_emrk) ;
+        __unreferenced(_tmrk) ;
  
-        iptr_list _aset, _eset, _tset ;
-        cost_list _sset;
-        real_list _told, _tnew;
-        real_list _dold, _dnew;
-
-        __unreferenced ( _emrk) ;
-        __unreferenced ( _tmrk) ;
-
-        _nmov = (iptr_type)  +0 ;
-   
         if (_isub == (iptr_type) +0)
         {
     /*-------------------- 1ST SUB-ITER: build full init. */
@@ -768,7 +765,7 @@
         /*-------------------- push if - non-bnd + recent */
             if (_node->mark() >= +0 && 
                     std::abs(
-                _nmrk[_inum]) >= _iout - 4 )
+                _nmrk[_inum]) >= _iout -4)
             {
                 if (_amrk[_inum] != _isub)
                 {
@@ -803,7 +800,7 @@
                   _iter != _sset.tend();
                 ++_iter  )
         {
-        /*-------------------- push sorted wrt min.-cost */
+    /*------------------------ push sorted wrt. min.-cost */
             _aset.push_tail( _iter->_node );
         }
    
@@ -847,6 +844,53 @@
                        
         }
         
+    }
+    
+    /*
+    --------------------------------------------------------
+     * MOVE-NODE: do a single node smoothing pass.
+    --------------------------------------------------------
+     */
+    
+    __static_call 
+    __normal_call void_type move_node (
+        geom_type &_geom ,
+        mesh_type &_mesh ,
+        size_type &_hfun ,
+        pred_type &_pred ,
+        real_list &_hval ,
+        real_list &_qscr ,
+        iptr_list &_nset ,
+        iptr_list &_amrk ,
+        iptr_list &_nmrk ,
+        iptr_list &_emrk ,
+        iptr_list &_tmrk ,
+        iptr_type  _iout , 
+        iptr_type  _isub ,
+        iter_opts &_opts ,
+        iptr_type &_nmov , 
+        real_type  _TLIM ,
+        real_type  _DLIM
+        )
+    {
+        iptr_list _aset, _tset;
+        real_list _told, _tnew;
+        real_list _dold, _dnew;
+
+        __unreferenced ( _emrk) ;
+        __unreferenced ( _tmrk) ;
+
+        _nmov = (iptr_type)  +0 ;   
+            
+    /*-------------------- permute nodes for optimisation */
+        sort_node( _geom, _mesh ,
+            _hfun, _pred, _hval , 
+            _qscr, 
+            _nset, _aset, _amrk , 
+            _nmrk, _emrk, _tmrk , 
+            _iout, _isub, 
+            _opts, _TLIM, _DLIM) ;
+  
     /*-------------------- weak, stochastic randomisation */
         for (auto _iter  = _aset.head(); 
                   _iter != _aset.tend();
@@ -926,20 +970,20 @@
             if (_okay)
             {
         /*---------------- update when state is improving */
-                _hval[*_apos] = (real_type)-1. ;
-            
-                if (std::abs(
-                   _nmrk[*_apos]) != _iout)
-                {
-                    if (_nmrk[*_apos] >= 0)
-                    _nmrk[*_apos] = +_iout;
-                    else
-                    _nmrk[*_apos] = -_iout;
-                    
-                    _nset.push_tail(*_apos) ;
-                }
+            _hval[*_apos] = (real_type)-1. ;
+        
+            if (std::abs(
+               _nmrk[*_apos]) != _iout)
+            {
+                if (_nmrk[*_apos] >= 0)
+                _nmrk[*_apos] = +_iout;
+                else
+                _nmrk[*_apos] = -_iout;
                 
-                _nmov += +1 ;
+                _nset.push_tail(*_apos) ;
+            }
+            
+            _nmov += +1 ;
             }
             }
         }     
@@ -987,18 +1031,18 @@
             if (_okay) 
             {
         /*---------------- update when state is improving */
-                if (std::abs(
-                   _nmrk[*_apos]) != _iout)
-                {
-                    if (_nmrk[*_apos] >= 0)
-                    _nmrk[*_apos] = +_iout;
-                    else
-                    _nmrk[*_apos] = -_iout;
-                    
-                    _nset.push_tail(*_apos) ;
-                }
+            if (std::abs(
+               _nmrk[*_apos]) != _iout)
+            {
+                if (_nmrk[*_apos] >= 0)
+                _nmrk[*_apos] = +_iout;
+                else
+                _nmrk[*_apos] = -_iout;
                 
-                _nmov += +1 ;
+                _nset.push_tail(*_apos) ;
+            }
+            
+            _nmov += +1 ;
             }
         }
         }
