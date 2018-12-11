@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 June, 2018
+     * Last updated: 28 November, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -141,6 +141,7 @@
         
        
     /* if (_flags == EUCLIDEAN_GRID) */
+    /* OR (_flags == ELLIPSOID_GRID) */
        
         jigsaw_REALS_array_t    _xgrid;
         jigsaw_REALS_array_t    _ygrid;
@@ -149,6 +150,8 @@
 
     /* if (_flags == EUCLIDEAN_MESH) */
     /* OR (_flags == EUCLIDEAN_GRID) */
+    /* OR (_flags == ELLIPSOID_MESH) */
+    /* OR (_flags == ELLIPSOID_GRID) */
     
         jigsaw_REALS_array_t    _value;
        

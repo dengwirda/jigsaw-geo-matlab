@@ -448,8 +448,8 @@
          */
         
         data_type _qq = 
-            (data_type)+.67 * _qb + 
-                (data_type)+.33 * _qe ;
+            (data_type)+.75 * _qb + 
+                (data_type)+.25 * _qe ;
 
         return    _qq ;
     }
@@ -548,8 +548,8 @@
          */
          
         data_type _qq = 
-            (data_type)+.67 * _qb + 
-                (data_type)+.33 * _qe ;
+            (data_type)+.75 * _qb + 
+                (data_type)+.25 * _qe ;
 
         return    _qq ;
     }

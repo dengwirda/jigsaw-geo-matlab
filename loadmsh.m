@@ -59,6 +59,9 @@ function [mesh] = loadmsh(name)
 %
 %   MESH.RADII - [ 3x 1] array of principle ellipsoid radii.
 %
+%   Additionally, entities described in the 'EUCLIDEAN-MESH'
+%   data-type are optionally loaded.
+%
 %   .IF. MESH.MSHID == 'EUCLIDEAN-GRID':
 %   .OR. MESH.MSHID == 'ELLIPSOID-GRID':
 %   -----------------------------------
@@ -78,8 +81,8 @@ function [mesh] = loadmsh(name)
 
 %-----------------------------------------------------------
 %   Darren Engwirda
-%   github.com/dengwirda/jigsaw-geo-matlab
-%   11-Nov-2017
+%   github.com/dengwirda/jigsaw-matlab
+%   26-Nov-2018
 %   darren.engwirda@columbia.edu
 %-----------------------------------------------------------
 %
@@ -110,6 +113,11 @@ function [mesh] = loadmsh(name)
         %-- tokenise line about '=' character
             tstr = regexp(lower(lstr),'=','split');
            
+            if (length(tstr) ~= +2)
+                warning(['Invalid tag: ',lstr]);
+                continue;
+            end
+           
             switch (strtrim(tstr{1}))
             case 'mshid'
 
@@ -129,7 +137,28 @@ function [mesh] = loadmsh(name)
         %-- read "NDIMS" data
         
                 ndim = str2double(tstr{2}) ;
+                
+            case 'radii'
 
+        %-- read "RADII" data
+
+                stag = regexp(tstr{2},';','split');
+    
+                if (length(stag) == +3)
+                
+                mesh.radii = [ ...
+                    str2double(stag{1}), ...
+                    str2double(stag{2}), ...
+                    str2double(stag{3})  ...
+                    ] ;
+                
+                else
+                
+                warning(['Invalid RADII: ', lstr]);
+                continue;
+                
+                end
+    
             case 'point'
 
         %-- read "POINT" data
@@ -325,8 +354,17 @@ function [mesh] = loadmsh(name)
 
                 stag = regexp(tstr{2},';','split');
                 
+                if (length(stag) == +2)
+                
                 nnum = str2double(stag{1}) ;
                 vnum = str2double(stag{2}) ;
+               
+                else
+                
+                warning(['Invalid VALUE: ', lstr]);
+                continue;
+                
+                end
                
                 numr = nnum * (vnum+1) ;
                 
@@ -350,8 +388,17 @@ function [mesh] = loadmsh(name)
 
                 stag = regexp(tstr{2},';','split');
                 
+                if (length(stag) == +2)
+                
                 nnum = str2double(stag{1}) ;
                 pnum = str2double(stag{2}) ;
+  
+                else
+                
+                warning(['Invalid POWER: ', lstr]);
+                continue;
+                
+                end
                
                 numr = nnum * (pnum+0) ;
                 
@@ -376,14 +423,14 @@ function [mesh] = loadmsh(name)
            
         else
     %-- if(~ischar(lstr)) //i.e. end-of-file
-            break ;
+            break;
         end
         
     end
     
     mesh.mshID = kind ;
     mesh.fileV = nver ;
-    
+
     fclose(ffid) ;
     
     catch err

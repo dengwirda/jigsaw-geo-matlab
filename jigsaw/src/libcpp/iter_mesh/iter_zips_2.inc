@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 20 August, 2018
+     * Last updated: 25 November, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -68,10 +68,10 @@
         real_list &_tsrc ,
         real_list &_tdst ,
         real_list &_ttmp ,
-        real_list &_dsrc ,
+        real_list &_dtmp ,
         real_list &_ddst ,
         real_type  _lmax 
-            = (real_type) +0.80E+00 ,
+            = (real_type) +8.00E-01 ,
         real_type  _good 
             = (real_type) +9.25E-01 ,
         real_type  _qinc 
@@ -107,7 +107,7 @@
         _tsrc.set_count(+0) ;
         _tdst.set_count(+0) ;
         _ttmp.set_count(+0) ;
-        _dsrc.set_count(+0) ;
+        _dtmp.set_count(+0) ;
         _ddst.set_count(+0) ;
     
     /*--------------------------------- exit if FEAT node */    
@@ -420,7 +420,7 @@
             bool_type _move = false ;
         
             _ttmp.set_count(0) ;
-            _dsrc.set_count(0) ;
+            _dtmp.set_count(0) ;
         
             real_type  _minC = 
             loop_tscr( _mesh, _pred , 
@@ -430,14 +430,14 @@
             real_type  _minD = 
             loop_dscr( _mesh, _pred , 
                        _cset, 
-                       _dsrc ) ;
+                       _dtmp ) ;
             
             move_node( _geom, _mesh ,
                 _hfun, _pred, _hval , 
                 _opts, _nptr, +1    , 
                 _move, _cset, 
                 _ttmp, _tdst,
-                _dsrc, _ddst, 
+                _dtmp, _ddst, 
                 _minC, _good,
                 _minD, _good ) ;
                
@@ -448,7 +448,7 @@
                 _opts, _nptr, +2    , 
                 _move, _cset, 
                 _ttmp, _tdst,
-                _dsrc, _ddst, 
+                _dtmp, _ddst, 
                 _minC, _good,
                 _minD, _good ) ;
                
@@ -464,7 +464,7 @@
                   _tdst) ;
     
         move_okay(_tdst, _tsrc, _okay, 
-                  _good,
+        std::sqrt(_good) ,
                   _qinc) ;
               
         if (_okay)
