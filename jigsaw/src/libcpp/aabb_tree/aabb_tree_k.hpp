@@ -31,9 +31,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 03 October, 2017
+ * Last updated: 31 December, 2018
  *
- * Copyright 2013-2017
+ * Copyright 2013-2018
  * Darren Engwirda
  * de2363@columbia.edu
  * https://github.com/dengwirda/
@@ -97,6 +97,10 @@
         iptr_type           _mark;
         iptr_type           _size;
     /*----------------------------- tree-pointer handlers */
+        __inline_call item_data* items (
+            ) const
+        {   return  this->_hptr ;
+        }
         __inline_call node_type* upper (
             ) const
         {   return  this->_pptr ;
@@ -604,7 +608,72 @@
     
     }
     
-/*------- helper: calc. "distance" between point and AABB */
+/*-------- form a biased, spatially-local insertion order */    
+    template <
+        typename  iptr_list
+             >
+    __normal_call void_type brio (
+        iptr_list &_iset
+        )
+    {
+        containers::array<item_data*> _next ;
+    
+        this->_work.set_count( +0) ;
+        this->_work.
+            push_tail(this->_root) ;
+    
+    /*---------------------------- init. leading item ptr */
+        for ( ; !this->_work.empty() ; )
+        {
+            node_type *_node = nullptr ;
+            this->_work.
+                _pop_tail(_node) ;
+            
+            if (_node->items () != nullptr)
+            {
+                _next.push_tail(
+                    _node->items () ) ;
+            }
+            
+            if (_node->lower(0) != nullptr)
+            {
+                this->_work.push_tail (
+                    _node->lower( 0)) ;
+                
+                this->_work.push_tail (
+                    _node->lower( 1)) ;
+            }
+        }
+       
+    /*---------------------------- build order from lists */
+        bool_type _push  = true ;
+        for (auto _imax  = +2 ; 
+                _push; _imax *= 4 )
+        {
+            _push = false;
+        for (auto _iter  = _next.head() ;
+                  _iter != _next.tend() ;
+                ++_iter  )
+        {
+            iptr_type _inum  = +0 ;
+            for (auto _ipos  = *_iter ; 
+                      _ipos != nullptr;
+                _ipos  = _ipos->_next )
+            {
+                _push  =  true ;
+                
+                _iset.push_tail(
+                    _ipos->_data.ipos());
+                    
+               *_iter  = _ipos->_next ;
+               
+                if (++_inum>_imax) break;
+            }
+        }
+        }
+    }
+    
+/*-------- helper: calc. "distance" between pos. and aabb */
     __normal_call real_type calc_rect_dist (
         real_type *_ppos,
         real_type *_bmin,
@@ -653,11 +722,14 @@
         if (this->_root == nullptr) return false ;
 
     /*----------------- maintain stack of unvisited nodes */
-        this->_work.set_count( +0);
+        this->_work.set_count( +0) ;
+        if (_pred(this->_root->_pmin,
+                  this->_root->_pmax)
+                 )
         this->_work.
-            push_tail(this->_root);
+            push_tail(this->_root) ;
 
-    /*------------ traverse tree while _pred remains true */
+    /*----------------- traverse while _pred remains true */
         bool_type _find =  false ;
         for ( ; !this->_work.empty() ; )
         {
@@ -665,25 +737,29 @@
             this->_work.
                 _pop_tail(_node) ;
 
-        /*------------- eval. node intersection predicate */
-            if (_pred(_node->_pmin, _node->_pmax))
+            if (_node->_hptr!= nullptr )
             {
-                if (_node->_hptr    != nullptr)
-                {
-            /*-------------------- leaf: push onto output */
-                    _fout( _node->_hptr) ;
+                _find = true ;
+        /*-------------------- leaf: push onto output */
+                _fout( _node->_hptr) ;
+            }
 
-                    _find = true ;
-                }
-
-                if (_node->lower(0) != nullptr)
-                {
-            /*-------------------- traverse into children */
-                this->_work.push_tail (
-                        _node->lower(0)) ;
-                this->_work.push_tail (
-                        _node->lower(1)) ;
-                }
+            if (_node->lower(0) != nullptr)
+            {
+        /*-------------------- traverse into children */
+            if (_pred(
+                _node->lower(0)->_pmin ,
+                _node->lower(0)->_pmax )
+                     )
+            this->_work.push_tail (
+                  _node->lower(0)) ;
+                  
+            if (_pred(
+                _node->lower(1)->_pmin ,
+                _node->lower(1)->_pmax )
+                     )
+            this->_work.push_tail (
+                  _node->lower(1)) ;
             }
         }
         

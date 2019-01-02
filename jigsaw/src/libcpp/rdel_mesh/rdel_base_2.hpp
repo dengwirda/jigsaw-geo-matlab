@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 10 December, 2017
+     * Last updated: 29 December, 2018
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2018
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -209,6 +209,66 @@
 
     /*----------------------- return TRUE if "restricted" */
         return ( _pred._find ) ;
+    }
+
+    /*
+    --------------------------------------------------------
+     * TRIA-BALL: calc. tria-based circumballs.
+    --------------------------------------------------------
+     */
+     
+    __static_call 
+    __inline_call bool_type tria_ball (
+        geom_type &_geom,
+        mesh_type &_mesh,
+        iptr_type  _tpos,
+        real_type *_tbal,
+        iptr_type &_part
+        )
+    {
+    /*--------------------------- assemble local indexing */
+        iptr_type  _tnod[3] = {
+            _mesh.
+        _tria.tria(_tpos)->node(+0) ,
+            _mesh.
+        _tria.tria(_tpos)->node(+1) ,
+            _mesh.
+        _tria.tria(_tpos)->node(+2)
+            } ;
+
+    /*--------------------------- init. local output ball */
+        _tbal[0] = _mesh.
+            _tria.tria(_tpos)->circ(+0) ;
+        _tbal[1] = _mesh.
+            _tria.tria(_tpos)->circ(+1) ;
+  
+        _tbal[2] = (real_type)+.0 ; 
+        _tbal[2]+= 
+            geometry::lensqr_2d (_tbal, 
+               &_mesh._tria.node(
+                    _tnod[0])->pval(0)) ;
+        _tbal[2]+= 
+            geometry::lensqr_2d (_tbal, 
+               &_mesh._tria.node(
+                    _tnod[1])->pval(0)) ;
+        _tbal[2]+= 
+            geometry::lensqr_2d (_tbal, 
+               &_mesh._tria.node(
+                    _tnod[2])->pval(0)) ;
+                    
+        _tbal[2]/= (real_type)+3. ;
+        
+    /*------------------------- evaluate "in--out" status */
+        if (_part <= -1 && (_part = 
+            _geom.is_inside(_tbal)) < +0) 
+        {
+    /*------------------------- is not a restricted facet */
+            return false ;
+        }
+        else
+        {
+            return  true ;
+        }    
     }
 
     } ;

@@ -1,7 +1,7 @@
-
+    
     /*
     --------------------------------------------------------
-     * RDEL-UPDATE-3: update restricted delaunay in R^3. 
+     * RDEL-MAKE-3: restricted delaunay tria. in R^3. 
     --------------------------------------------------------
      *
      * This program may be freely redistributed under the 
@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 13 April, 2018
+     * Last updated: 29 December, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -40,116 +40,60 @@
      *
     --------------------------------------------------------
      */
-     
-    // from rdel_mesh_3.hpp
-    
-    
-    /*
-    --------------------------------------------------------
-     * _POP-EDGE: delete edge from restricted-tria. 
-    --------------------------------------------------------
-     */
-    
-    __static_call 
-    __normal_call void_type _pop_edge (
-        mesh_type &_mesh ,
-        iptr_type  _tpos
-        )
-    {
-        for(auto _fpos =+6; _fpos-- != +0; )
-        {
-    /*--------------------------------- get edge indexing */
-            iptr_type _tnod[ +4] ;
-            mesh_type::tria_type::
-                tria_type::
-            face_node(_tnod, _fpos, +3, +1);
-            _tnod[0] = _mesh._tria.
-                tria(_tpos)->node(_tnod[0]);
-            _tnod[1] = _mesh._tria.
-                tria(_tpos)->node(_tnod[1]);
 
-            algorithms::isort (
-                &_tnod[0], &_tnod[2], 
-                    std::less<iptr_type>());
+#   pragma once
 
-            edge_data _edat, _same ;
-            _edat._node[0] = _tnod[0];
-            _edat._node[1] = _tnod[1];
+#   ifndef __RDEL_MAKE_3__
+#   define __RDEL_MAKE_3__
 
-    /*--------------------------------- remove if present */
-            _mesh._pop_edge(_edat, _same)  ;
-        }
-    }
+    namespace mesh {
     
-    /*
-    --------------------------------------------------------
-     * _POP-FACE: delete face from restricted-tria. 
-    --------------------------------------------------------
-     */
+    template <
+    typename M ,
+    typename G ,
+    typename A = allocators::basic_alloc
+             >
+    class rdel_make_3d
+    { 
+    public  : 
     
-    __static_call
-    __normal_call void_type _pop_face (
-        mesh_type &_mesh ,
-        iptr_type  _tpos
-        )
-    {
-        for(auto _fpos =+4; _fpos-- != +0; )
-        {
-    /*--------------------------------- get face indexing */
-            iptr_type _tnod[ +4] ;
-            mesh_type::tria_type::
-                tria_type::
-            face_node(_tnod, _fpos, +3, +2);
-            _tnod[0] = _mesh._tria.
-                tria(_tpos)->node(_tnod[0]);
-            _tnod[1] = _mesh._tria.
-                tria(_tpos)->node(_tnod[1]);
-            _tnod[2] = _mesh._tria.
-                tria(_tpos)->node(_tnod[2]);
-
-            algorithms::isort (
-                &_tnod[0], &_tnod[3], 
-                    std::less<iptr_type>());
-
-            face_data _fdat, _same ;
-            _fdat._node[0] = _tnod[0];
-            _fdat._node[1] = _tnod[1];
-            _fdat._node[2] = _tnod[2];
-
-    /*--------------------------------- remove if present */
-            _mesh._pop_face(_fdat, _same)  ;
-        }
-    }
+    /*----------- restricted delaunay tessellation in R^3 */  
     
-    /*
-    --------------------------------------------------------
-     * _POP-TRIA: delete tria from restricted-tria. 
-    --------------------------------------------------------
-     */
-    
-    __static_call
-    __normal_call void_type _pop_tria (
-        mesh_type &_mesh ,
-        iptr_type  _tpos
-        )
-    {
-        {
-    /*--------------------------------- get tria indexing */
-            tria_data _tdat, _same;
-            _tdat._node[0] = _mesh.
-                _tria.tria(_tpos)->node(0);
-            _tdat._node[1] = _mesh.
-                _tria.tria(_tpos)->node(1);
-            _tdat._node[2] = _mesh.
-                _tria.tria(_tpos)->node(2);
-            _tdat._node[3] = _mesh.
-                _tria.tria(_tpos)->node(3);
+    typedef M                               mesh_type ;
+    typedef G                               geom_type ;
+    typedef A                               allocator ;
 
-    /*--------------------------------- remove if present */
-            _mesh._pop_tria(_tdat, _same) ;
-        }
-    }
+    typedef typename 
+            mesh_type::real_type            real_type ;
+    typedef typename 
+            mesh_type::iptr_type            iptr_type ;
+            
+    typedef typename 
+            allocator::size_type            uint_type ;
+
+    typedef typename 
+            mesh_type::node_data            node_data ;
+    typedef typename 
+            mesh_type::ball_data            ball_data ;
+    typedef typename 
+            mesh_type::edge_data            edge_data ;
+    typedef typename 
+            mesh_type::face_data            face_data ;
+    typedef typename 
+            mesh_type::tria_data            tria_data ;
+
+    typedef containers::array       <
+                iptr_type           >       iptr_list ;
     
+    typedef mesh::rdel_pred_base_3  <
+                geom_type,
+                mesh_type           >       rdel_pred ;
+
+    typedef mesh::rdel_params       <
+                real_type, 
+                iptr_type           >       rdel_opts ;
+                
+                
     /*
     --------------------------------------------------------
      * INIT-BALL: add new ball to restricted-tria.
@@ -160,12 +104,9 @@
     __normal_call void_type init_ball (
         mesh_type &_mesh,
         geom_type &_geom,
-        hfun_type &_hfun,
         iptr_type  _npos,
-        ball_list &_bset,
-        ball_list &_bscr,
         char_type  _kind,
-        iptr_type  _pass,
+        iptr_type &_nbal,
         rdel_opts &_opts
         )
     {
@@ -179,7 +120,7 @@
             ball_data _ball ;
             _ball._node[0] = _npos;
             
-            _ball._pass    = _pass;
+            _ball._pass    =   +0 ;
             _ball._kind    = _kind;
             
             _ball._ball[0] = _mesh.
@@ -188,17 +129,12 @@
                 _tria.node(_npos)->pval(1) ;
             _ball._ball[2] = _mesh.
                 _tria.node(_npos)->pval(2) ;
-    
-            real_type _rbal = _hfun.eval (
-           &_mesh._tria.
-                node(_npos)->pval(0),
-            _mesh._tria.
-                node(_npos)->idxh());
             
-            _ball._ball[3] = _rbal * _rbal ;
+            _ball._ball[3] = (real_type)0. ;
     
-            _bset.push_tail (_ball) ;
-            _bscr.push_tail (_ball) ;        
+            _nbal +=   +1;
+    
+            _mesh.push_ball (_ball) ;        
         }
     }
     
@@ -209,32 +145,16 @@
      */
     
     __static_call
-    __normal_call void_type push_edge (
+    __normal_call void_type test_edge (
         mesh_type &_mesh ,
         geom_type &_geom ,
-        hfun_type &_hfun ,
         iptr_type  _tpos ,
-        edat_list &_eset ,
-        escr_list &_escr ,
         typename 
     mesh_type::edge_list & _edge_test ,
         iptr_type &_nedg ,
-        iptr_type  _pass ,
         rdel_opts &_opts
         )
     {
-    /*-------------------------------- correct node dims? */       
-        iptr_type _fdim =+0;
-        for (auto _node =+4; _node-- != +0; )
-        {
-        if (_mesh._tria.node (
-            _mesh._tria.tria (
-            _tpos)->node(_node))->fdim() <= +1)
-            _fdim += +1 ;
-        }
-    /*-------------------------------- quick break if not */
-        if (_fdim  < +2 ) return ;
-
     /*-------------------------------- check "restricted" */
         for (auto _fpos =+6; _fpos-- != +0; )
         {
@@ -242,7 +162,7 @@
             iptr_type _tnod[ +4] ;
             mesh_type::tria_type::
                 tria_type::
-            face_node(_tnod, _fpos, +3, +1) ;
+            face_node(_tnod, _fpos, +3, +1) ;          
             _tnod[0] = _mesh._tria.
             tria(_tpos)->node(_tnod[0]);
             _tnod[1] = _mesh._tria.
@@ -263,10 +183,6 @@
             _edat._node[0] = _tnod[ 0] ;
             _edat._node[1] = _tnod[ 1] ;
 
-            edge_cost _cdat;
-            _cdat._node[0] = _tnod[ 0] ;
-            _cdat._node[1] = _tnod[ 1] ;
-
             typename mesh_type::
                      edge_list::
                 item_type *_mptr = nullptr  ;
@@ -277,46 +193,38 @@
                 continue   ;
             }
 
-            _cdat._pass    = _pass;
-            _edat._pass    = _pass;
-
             _edat._tadj    = _tpos;
             _edat._eadj    = _fpos;
+            _edat._pass    =   +0 ;
             
         /*--------------------------- call edge predicate */
             char_type _hits;
             real_type _fbal[ 4];
             real_type _sbal[ 4];
-            mesh_pred::edge_cost (
-                _geom,_hfun, 
-                _mesh, 
+            
+            __unreferenced(_opts);
+            
+            bool_type _rBND  =
+            rdel_pred::edge_ball (
+                _geom,_mesh, 
                 _edat._tadj,
                 _edat._eadj,
-                _opts,_cdat,
-                _edat._part,
+                _fbal,_sbal,
                 _hits,
                 _edat._feat,
                 _edat._topo,
-                _edat._kind,
-                _fbal,_sbal)   ;
+                _edat._part) ;
             
         /*--------------------------- push edge onto mesh */
-            if (_edat._kind 
-                    == mesh::ring_item)
-                _escr. push_tail(_cdat) ;
+            if (_rBND) _nedg += +1 ;
 
-            if (_edat._kind 
-                    != mesh::null_item)
-                _nedg += +1 ;
-
-            if (_edat._kind 
-                    != mesh::null_item)
-                _eset. push_tail(_edat) ;
+            if (_rBND)
+            _mesh.push_edge(_edat) ;
                 
                 
-            _edge_test.push( _edat) ;
+            _edge_test.push(_edat) ;
 
-        } // for (auto _fpos = +6; _fpos-- != +0; )
+        } // for (auto _fpos = +6; _fpos-- != +0; )        
     }
     
     /*
@@ -326,33 +234,17 @@
      */
     
     __static_call
-    __normal_call void_type push_face (
+    __normal_call void_type test_face (
         mesh_type &_mesh ,
         geom_type &_geom ,
-        hfun_type &_hfun ,
         iptr_type  _tpos ,
-        fdat_list &_fset ,
-        fscr_list &_fscr ,
         typename 
     mesh_type::face_list & _face_test ,
         iptr_type &_nfac ,
         iptr_type &_ndup ,
-        iptr_type  _pass ,
         rdel_opts &_opts
         )
     {
-    /*-------------------------------- correct node dims? */       
-        iptr_type _fdim =+0;
-        for (auto _node =+4; _node-- != +0; )
-        {
-        if (_mesh._tria.node (
-            _mesh._tria.tria (
-            _tpos)->node(_node))->fdim() <= +2)
-            _fdim += +1 ;
-        }
-    /*-------------------------------- quick break if not */
-        if (_fdim  < +3 ) return ;
-
     /*-------------------------------- check "restricted" */
         for (auto _fpos =+4; _fpos-- != +0; )
         {
@@ -386,11 +278,6 @@
             _fdat._node[1] = _tnod[ 1] ;
             _fdat._node[2] = _tnod[ 2] ;
 
-            face_cost _cdat;
-            _cdat._node[0] = _tnod[ 0] ;
-            _cdat._node[1] = _tnod[ 1] ;
-            _cdat._node[2] = _tnod[ 2] ;
-
             typename mesh_type::
                      face_list::
                 item_type *_mptr = nullptr  ;
@@ -405,53 +292,43 @@
                 continue   ;
             }
 
-            _cdat._pass    = _pass;
-            _fdat._pass    = _pass;
-
             _fdat._tadj    = _tpos;
             _fdat._fadj    = _fpos;
-            _fdat._dups    = +0; // count num. dup's
+            _fdat._pass    = 0 ;
+            _fdat._dups    = 0 ; // count num. dup's
                                  // only in hash-set
             
         /*--------------------------- call face predicate */
             char_type _feat, _topo;
             real_type _fbal[ 4];
             real_type _sbal[ 4];
-            mesh_pred::face_cost (
-                _geom,_hfun, 
-                _mesh, 
+            
+            __unreferenced(_opts);
+            
+            bool_type _rBND    =
+            rdel_pred::face_ball (
+                _geom,_mesh, 
                 _fdat._tadj,
                 _fdat._fadj,
-                _opts,_cdat,
-                _fdat._part,
+                _fbal,_sbal,
                 _feat,_topo,
-                _fdat._kind,
-                _fbal,_sbal)   ;
-
-        /*--------------------------- push face onto mesh */
-            if (_fdat._kind 
-                    == mesh::ring_item)
-                _fscr. push_tail(_cdat) ;
-
-            if (_fdat._kind 
-                    != mesh::null_item)
-                _nfac += +1 ;
+                _fdat._part)   ;
                 
-            if (_fdat._kind 
-                    != mesh::null_item)
-                _fdat.
-                _dups  = +1 ;
+        /*--------------------------- push face onto mesh */
+            if (_rBND) _nfac += +1 ;
 
-            if (_fdat._kind 
-                    != mesh::null_item)
-                _fset. push_tail(_fdat) ;
+            if (_rBND)
+                _fdat._dups   = +1 ;
+
+            if (_rBND)
+            _mesh.push_face(_fdat) ;
 
 
-            _face_test.push( _fdat) ;
+            _face_test.push(_fdat) ;
 
         } // for (auto _fpos = +4; _fpos-- != +0; )
     }
-        
+    
     /*
     --------------------------------------------------------
      * PUSH-TRIA: add new tria to restricted-tria.
@@ -459,23 +336,19 @@
      */
     
     __static_call
-    __normal_call void_type push_tria (
+    __normal_call void_type test_tria (
         mesh_type &_mesh ,
         geom_type &_geom ,
-        hfun_type &_hfun ,
         iptr_type  _tpos ,
         iptr_type &_sign ,
-        tdat_list &_tset ,
-        tscr_list &_tscr ,
         typename 
     mesh_type::tria_list & _tria_test ,
         iptr_type &_ntri ,
-        iptr_type  _pass ,
         rdel_opts &_opts
         )
     {
+    /*-------------------------------- check "restricted" */
         {
-        /*---------------------------- check "restricted" */
             iptr_type  _tnod[ +4] ;
             _tnod[0] = _mesh.
             _tria.tria(_tpos)->node(0);
@@ -496,7 +369,7 @@
                 _mesh._tria.node(
                 _tnod[3])->fdim() > 3 )
                 return ;
-                
+
             tria_data _tdat;
             _tdat._node[0] = _tnod[ 0] ;
             _tdat._node[1] = _tnod[ 1] ;
@@ -505,55 +378,45 @@
 
             _tdat._tadj    = _tpos;
 
-            tria_cost _cdat;
-            _cdat._node[0] = _tnod[ 0] ;
-            _cdat._node[1] = _tnod[ 1] ;
-            _cdat._node[2] = _tnod[ 2] ;
-            _cdat._node[3] = _tnod[ 3] ;
-
             typename mesh_type::
                      tria_list::
                 item_type *_mptr = nullptr;
             if(_tria_test.
-                find(_tdat , _mptr) )
+                find( _tdat, _mptr) )
             { 
         /*--------------------------- don't test repeats! */
                 return ;
             }
 
-        //!!_tria_test.push( _tdat) ; won't have repeats!
-
-        /*--------------------------- calc tria cost/kind */
+        /*--------------------------- call tria predicate */
             _tdat._part =  _sign ;
+            _tdat._pass =    +0  ;
 
-            _cdat._pass =  _pass ;
-            _tdat._pass =  _pass ;
+            real_type _tbal[ +4] ;
 
-            mesh_pred::tria_cost (
-                _geom,_hfun, 
-                _mesh, 
+            __unreferenced(_opts);
+
+            bool_type _rBND   = 
+            rdel_pred::tria_ball (
+                _geom,_mesh,
                 _tdat._tadj,
-                _opts,_cdat,
-                _tdat._part,
-                _tdat._kind)   ;
+                _tbal,
+                _tdat._part)  ;
 
             _sign = _tdat. _part ;
 
         /*--------------------------- push tria onto mesh */
-            if (_tdat._kind 
-                    == mesh::ring_item)
-                _tscr. push_tail(_cdat) ;
+            if (_rBND) _ntri += +1 ;
 
-            if (_tdat._kind 
-                    != mesh::null_item)
-                _ntri += +1 ;
-
-            if (_tdat._kind 
-                    != mesh::null_item)
-                _tset. push_tail(_tdat) ;
+            if (_rBND)
+            _mesh.push_tria(_tdat) ;
+            
+            
+        //!!_tria_test.push(_tdat) ;  won't have repeats!
+        
         }
     }
-
+    
     /*
     --------------------------------------------------------
      * TRIA-CIRC: calc. circumball for tria.
@@ -578,7 +441,7 @@
             } ;
 
         algorithms::isort(
-            &_tnod[0], &_tnod[4] , 
+            &_tnod[0], &_tnod[4], 
                 std::less<iptr_type>()) ;
     
     /*---------------------- calc. ball in floating-point */
@@ -602,74 +465,271 @@
         _mesh._tria.tria(
         _tpos)->circ(2) =  _tbal[2] ;
     }
-
+    
     /*
     --------------------------------------------------------
-     * PUSH-RDEL: push faces onto restricted tria.
+     * INIT-MESH: init. the bounding DT. 
     --------------------------------------------------------
      */
 
+    template <
+    typename      init_type
+             >
     __static_call
-    __normal_call void_type push_rdel (
-        geom_type &_geom ,
-        hfun_type &_hfun ,
-        mesh_type &_mesh ,
-        iptr_list &_nnew ,
-        iptr_list &_tnew ,
-        escr_list &_escr ,
-        edat_list &_edat ,
-        fscr_list &_fscr ,
-        fdat_list &_fdat ,
-        tscr_list &_tscr ,
-        tdat_list &_tdat ,
-        ball_list &_bscr ,
-        ball_list &_bdat ,
-        iptr_type  _sign ,
-        iptr_type  _pass ,
-        mode_type  _dim0 ,
-        mode_type  _dim1 ,
+    __normal_call void_type init_sort (
+        init_type &_init,
+        iptr_list &_iset
+        )
+    {
+        typedef geom_tree::aabb_node_base_k     
+                           tree_node ;
+
+        typedef geom_tree::aabb_item_node_k <
+            real_type,
+            iptr_type, 3>  tree_item ;
+                    
+        typedef geom_tree::aabb_tree <
+            tree_item, 3,
+            tree_node,
+            allocator   >  tree_type ;
+                
+        containers::array<tree_item> _bbox;
+       
+    /*------------------------------ initialise aabb-tree */ 
+        iptr_type _npos  = 0 ;
+        tree_type _tree  ;
+        for (auto _node  = 
+            _init._mesh._set1.head() ; 
+                  _node != 
+            _init._mesh._set1.tend() ;
+                ++_node, ++_npos)
+        {
+            if (_node->mark() >= +0)
+            {
+            
+            _bbox.push_tail() ;
+            _bbox.tail()->
+                pval(0) = _node->pval( 0) ;
+            _bbox.tail()->
+                pval(1) = _node->pval( 1) ;
+            _bbox.tail()->
+                pval(2) = _node->pval( 2) ;
+  
+            _bbox.tail()->
+                ipos () = _npos ;
+            
+            }
+        }
+       
+        iptr_type constexpr _NBOX = +64 ;
+       
+        _tree.load(_bbox.head(),
+                   _bbox.tend(), _NBOX) ;
+        
+    /*------------------------------ randomised tree sort */    
+        _tree.brio(_iset) ;
+    }
+
+    template <
+    typename      init_type
+             >
+    __static_call
+    __normal_call void_type init_mesh (
+        geom_type &_geom,
+        init_type &_init,
+        mesh_type &_mesh,
         rdel_opts &_opts
         )
     {
+    /*------------------------------ initialise mesh bbox */
+        real_type _plen[ +3];
+        _plen[ 0] = _geom._bmax[ 0] - 
+                    _geom._bmin[ 0] ;
+        _plen[ 1] = _geom._bmax[ 1] - 
+                    _geom._bmin[ 1] ;
+        _plen[ 2] = _geom._bmax[ 2] - 
+                    _geom._bmin[ 2] ;
+
+        _plen[ 0]*= (real_type)+2.0 ;
+        _plen[ 1]*= (real_type)+2.0 ;
+        _plen[ 2]*= (real_type)+2.0 ;
+
+        real_type _pmin[ +3];
+        real_type _pmax[ +3];
+        _pmin[ 0] = _geom._bmin[ 0] - 
+                          _plen[ 0] ;
+        _pmin[ 1] = _geom._bmin[ 1] - 
+                          _plen[ 1] ;
+        _pmin[ 2] = _geom._bmin[ 2] - 
+                          _plen[ 2] ;
+
+        _pmax[ 0] = _geom._bmax[ 0] + 
+                          _plen[ 0] ;
+        _pmax[ 1] = _geom._bmax[ 1] + 
+                          _plen[ 1] ;
+        _pmax[ 2] = _geom._bmax[ 2] + 
+                          _plen[ 2] ;
+
+        _mesh.
+        _tria.push_root(_pmin, _pmax) ;
+
+    /*------------------------------ initialise mesh root */
+        _mesh.
+        _tria.node(+0)->fdim() = +4 ;
+        _mesh.
+        _tria.node(+1)->fdim() = +4 ;
+        _mesh.
+        _tria.node(+2)->fdim() = +4 ;
+        _mesh.
+        _tria.node(+3)->fdim() = +4 ;
+        
+        _mesh.
+        _tria.node(+0)->feat() = +0 ;
+        _mesh.
+        _tria.node(+1)->feat() = +0 ;
+        _mesh.
+        _tria.node(+2)->feat() = +0 ;
+        _mesh.
+        _tria.node(+3)->feat() = +0 ;
+        
+        _mesh.
+        _tria.node(+0)->topo() = +0 ;
+        _mesh.
+        _tria.node(+1)->topo() = +0 ;
+        _mesh.
+        _tria.node(+2)->topo() = +0 ;
+        _mesh.
+        _tria.node(+3)->topo() = +0 ;
+        
+    /*------------------------------ seed mesh from init. */
+        iptr_type _hint  = -1;
+        iptr_list _iset  ;
+        init_sort(_init,_iset) ;
+        for (auto _iter  = _iset.head();
+                  _iter != _iset.tend();
+                ++_iter  )
+        {
+            auto _node = &_init.
+                _mesh._set1[*_iter] ;
+        
+            iptr_type _npos = -1 ;
+            if (_mesh._tria.push_node (
+               &_node->pval(0) , 
+                _npos, _hint ) )
+            {
+            
+            _mesh._tria.node
+                (_npos)->fdim() = 0 ;
+                        
+            _mesh._tria.node
+                (_npos)->feat() 
+                    = _node->feat() ;
+                    
+            _mesh._tria.node
+                (_npos)->topo() = 2 ;  
+            
+            _hint = _mesh._tria.
+                node(_npos)->next() ;
+            
+            }
+        }
+                   
+    }
+    
+    /*
+    --------------------------------------------------------
+     * RDEL-MAKE: build an rDT in R^3 . 
+    --------------------------------------------------------
+     */
+
+    template <
+    typename      init_type ,
+    typename      jlog_file
+             >
+    __static_call
+    __normal_call void_type rdel_make (
+        geom_type &_geom ,
+        init_type &_init ,
+        mesh_type &_mesh ,
+        rdel_opts &_args ,
+        jlog_file &_dump
+        )
+    {   
+    /*------------------------------ ensure deterministic */  
+        std::srand( +1 ) ;
+
+    /*------------------------------ initialise mesh obj. */
+        init_mesh(_geom, _init, _mesh, _args) ;
+    
+        iptr_type _nbal  = +0 ;
+        iptr_type _nedg  = +0 ;
+        iptr_type _nfac  = +0 ;
+        iptr_type _ntri  = +0 ;
+        
+        iptr_type _ndup  = +0 ;
+    
     /*------------------------- init. for local hash obj. */
         typename 
             mesh_type::edge_list _eset (
         typename mesh_type::edge_hash(),
         typename mesh_type::edge_pred(), 
            +.8, _mesh._eset.get_alloc()) ;
+           
         typename 
             mesh_type::face_list _fset (
         typename mesh_type::face_hash(),
         typename mesh_type::face_pred(), 
            +.8, _mesh._fset.get_alloc()) ;
+           
         typename 
             mesh_type::tria_list _tset (
         typename mesh_type::tria_hash(),
         typename mesh_type::tria_pred(), 
            +.8, _mesh._tset.get_alloc()) ;
 
+        iptr_list _tnew, _nnew ;
+    
+    /*------------------------- face in DT for rDT checks */    
+        iptr_type _tpos  = +0 ;
+        iptr_type _npos  = +0 ;
+        
+        for (auto _iter  = 
+            _mesh._tria._tset.head() ; 
+                  _iter != 
+            _mesh._tria._tset.tend() ; 
+                ++_iter, ++_tpos)
+        {
+            if (_iter->mark() >= +0)
+            {
+                _tnew. push_tail( _tpos) ;
+            }
+        }
+        
+        for (auto _iter  = 
+            _mesh._tria._nset.head() ; 
+                  _iter != 
+            _mesh._tria._nset.tend() ; 
+                ++_iter, ++_npos)
+        {
+            if (_iter->mark() >= +0)
+            {
+                _nnew. push_tail( _npos) ;
+            }
+        }
+
     /*------------------------- push alloc. for hash obj. */
         _eset._lptr.set_count (
-            _tnew.count() * +6 , 
+            _tnew.count()*6 , 
         containers::loose_alloc, nullptr);
-        _fset._lptr.set_count (
-            _tnew.count() * +4 , 
-        containers::loose_alloc, nullptr);
-        _tset._lptr.set_count (
-            _tnew.count() * +1 , 
-        containers::loose_alloc, nullptr);
-
-    /*------------------------- no. "restricted" subfaces */
-        iptr_type _nedg = +0 ;
-        iptr_type _nfac = +0 ;
-        iptr_type _ntri = +0 ;
         
-        iptr_type _ndup = +0 ;
-
-    /*------------------------- flag if we're not testing */
-        bool_type _safe ;
-       _safe = (_dim0>=3) ? false : true ;
-
+        _fset._lptr.set_count (
+            _tnew.count()*4 , 
+        containers::loose_alloc, nullptr);
+        
+        _tset._lptr.set_count (
+            _tnew.count()*1 , 
+        containers::loose_alloc, nullptr);
+        
     /*------------------------- calc. voronoi-dual points */
         for( auto _iter  = _tnew.head(); 
                   _iter != _tnew.tend(); 
@@ -677,79 +737,122 @@
         {
             tria_circ(_mesh,*_iter) ;
         }
-    
-    /*------------- push any new protecting balls created */
-        if (_dim0 <= node_mode &&
-            _dim1 >= node_mode )
-        {
+       
+    /*------------------------- test for restricted balls */
+        if (_args.dims() >= 0  )
+        { 
         for( auto _iter  = _nnew.head(); 
                   _iter != _nnew.tend(); 
                 ++_iter  )
         {     
             char_type _kind = feat_ball;
         
-            init_ball(_mesh, _geom ,
-                      _hfun,*_iter , 
-                      _bdat, _bscr , 
-                      _kind,
-                      _pass, _opts) ;
-        } 
+            init_ball(_mesh, _geom,
+                     *_iter, 
+                      _kind, _nbal, 
+                      _args) ;
         }
-    /*------------- push any new restricted edges created */
-        if (_dim0 <= edge_mode &&
-            _dim1 >= edge_mode )
-        {
+        }
+    
+    /*------------------------- test for restricted edges */
+        if (_args.dims() >= 1  )
+        { 
         for( auto _iter  = _tnew.head(); 
                   _iter != _tnew.tend(); 
                 ++_iter  )
         {        
-            push_edge(_mesh, _geom ,
-                      _hfun,*_iter , 
-                      _edat, _escr , 
-                      _eset, _nedg , 
-                      _pass, _opts) ;
-        } 
+            test_edge(_mesh, _geom,
+                     *_iter, 
+                      _eset, _nedg, 
+                      _args) ;
         }
-    /*------------- push any new restricted faces created */
-        if (_dim0 <= face_mode &&
-            _dim1 >= face_mode )
-        {
+        }
+       
+    /*------------------------- test for restricted edges */
+        if (_args.dims() >= 2  )
+        { 
         for( auto _iter  = _tnew.head(); 
                   _iter != _tnew.tend(); 
                 ++_iter  )
-        {
-            push_face(_mesh, _geom ,
-                      _hfun,*_iter , 
-                      _fdat, _fscr , 
-                      _fset, _nfac ,
-                      _ndup,  
-                      _pass, _opts) ;
+        {        
+            test_face(_mesh, _geom,
+                     *_iter, 
+                      _fset, 
+                      _nfac, _ndup, 
+                      _args) ;
         }
         }
-    /*------------- push any new restricted trias created */
-        if (_dim0 <= tria_mode && 
-            _dim1 >= tria_mode )
-        {
         
-      //if (_nfac >= +1) _safe = false ;
+    /*------------------------- test for restricted tria. */    
+        if (_args.dims() >= 3  )
+        { 
+        bool_type _safe = true ;
+        iptr_type _sign =  -1  ;
+        
+      //if (_nedg >= +1) _safe = false ;
         if (_ndup >= +1) _safe = false ;
         
-    /*-------------------------- compute cavity tria cost */
         for( auto _iter  = _tnew.head(); 
                   _iter != _tnew.tend(); 
                 ++_iter )
         {
-           _sign =  (!_safe) ? -1 : _sign ;
+           _sign = _safe ? _sign : -1 ;
 
-            push_tria(_mesh, _geom ,
-                      _hfun,*_iter , 
-                      _sign, _tdat , 
-                      _tscr, _tset , 
-                      _ntri,
-                      _pass, _opts) ;
+            test_tria(_mesh, _geom,
+                     *_iter, _sign, 
+                      _tset, _ntri, 
+                      _args) ;
         }
         }
+        
+        /*
+        if (_args.verb() >= +2 )
+        {   
+    //------------------------- push rDEL memory metrics *
+        
+        _dump.push("\n")  ;
+        _dump.push("  rDT statistics... \n") ;
+        _dump.push("\n")  ;
+        
+        }
+         */
+        
+        if (_args.verb() >= +2 )
+        {
+    /*------------------------- push rDEL scheme metrics */
+        
+        _dump.push("\n")  ;
+        _dump.push("  rDT statistics... \n") ;
+        _dump.push("\n")  ;
+
+        _dump.push("  |rDEL-0| (node) = ") ;
+        _dump.push(std::to_string (_nbal)) ;
+        _dump.push("\n")  ;
+        
+        _dump.push("  |rDEL-1| (edge) = ") ;
+        _dump.push(std::to_string (_nedg)) ;
+        _dump.push("\n")  ;
+        
+        _dump.push("  |rDEL-2| (face) = ") ;
+        _dump.push(std::to_string (_nfac)) ;
+        _dump.push("\n")  ;
+        
+        _dump.push("  |rDEL-3| (tria) = ") ;
+        _dump.push(std::to_string (_ntri)) ;
+        _dump.push("\n")  ;
+        _dump.push("\n")  ;
+        
+        }
+        
+        _dump.push("\n")  ;
     }
     
+    } ;
     
     
+    }
+    
+#   endif   //__RDEL_MAKE_3__ 
+
+
+

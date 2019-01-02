@@ -129,7 +129,7 @@ function demo1
   
     opts.mesh_dims = +2 ;               % 2-dim. simplexes
     
-    opts.optm_qlim = 0.95 ;
+    opts.optm_qlim = +.95 ;
    
     opts.mesh_top1 = true ;             % for sharp feat's
     opts.geom_feat = true ;
@@ -245,7 +245,54 @@ function demo2
     
     opts.mesh_eps1 = 1.00 ;
     
+   %opts.optm_dual = true ;
+    
     MESH = jigsaw  (opts) ;
+    
+    
+    
+    tic
+    tri = __delaunayn__(MESH.point.coord(:,1:2));
+    toc
+    
+    
+    
+    opts = [];   
+    opts.init_file = ...                % INIT file
+        ['jigsaw/out/AUS-INIT.msh'];
+    
+    opts.geom_file = ...                % GEOM file
+        ['jigsaw/out/AUS-PROJ.msh'];
+    
+    opts.jcfg_file = ...                % JCFG file
+        ['jigsaw/out/AUS.jig'];
+            
+    opts.mesh_file = ...                % MESH file
+        ['jigsaw/out/AUS-TRIA.msh'];
+    
+    savemsh(opts.init_file,MESH);
+    
+    opts.mesh_dims = 2 ;
+        
+    MESH = [] ;
+    MESH = tripod  (opts) ;
+    
+    
+    tic
+   
+    pc = ...
+    MESH.point.coord(MESH.tria3.index(:,1),1:end-1) + ...
+    MESH.point.coord(MESH.tria3.index(:,2),1:end-1) + ...
+    MESH.point.coord(MESH.tria3.index(:,3),1:end-1) ;
+    pc = pc / 3.;
+    
+    in = inpoly2(pc, ...
+        GEOM.point.coord(:,1:2), ...
+            GEOM.edge2.index(:,1:2)) ;
+    toc
+    
+    MESH.tria3.index = MESH.tria3.index(in,:);
+    
   
     plotplanar(GEOM,MESH,HMSH) ;
     
@@ -277,15 +324,47 @@ function demo3
     fprintf(1,'  Constructing MESH...\n');
     
     opts.hfun_scal = 'absolute';
-    opts.hfun_hmax = 150. ;
+    opts.hfun_hmax = +300.;
     
     opts.mesh_dims = +2 ;               % 2-dim. simplexes
     
-    opts.optm_qlim = 0.95 ;
+    opts.optm_qlim = +.95 ;
     
     opts.verbosity = +1 ;
     
     mesh = jigsaw  (opts) ;
+    
+    
+    
+    %%{
+    for pass = 1 : 4
+        
+    mesh = muddle(mesh,.25);
+ 
+    opts = [];   
+    opts.init_file = ...                % INIT file
+        ['jigsaw/out/EARTH-CONST-INIT.msh'];
+    
+    opts.geom_file = ...                % GEOM file
+        ['jigsaw/geo/EARTH-CONST-GEOM.msh'];
+    
+    opts.jcfg_file = ...                % JCFG file
+        ['jigsaw/out/EARTH-CONST.jig'];
+            
+    opts.mesh_file = ...                % MESH file
+        ['jigsaw/out/EARTH-CONST-TRIA.msh'];
+    
+    savemsh(opts.init_file,mesh);
+    
+    opts.mesh_dims = 2;
+        
+    mesh = [] ;
+    mesh = tripod  (opts) ;
+        
+    end
+    %%}
+        
+    
     
     hfun = [] ;
     
@@ -447,6 +526,8 @@ function demo5
     opts.hfun_scal = 'absolute';
     opts.hfun_hmax = +inf ;
     opts.hfun_hmin = +0.0 ;
+    
+    opts.optm_qlim = 0.95 ;
     
     opts.mesh_dims = +2 ;               % 2-dim. simplexes
     

@@ -4,7 +4,7 @@ function [flag] = certify(mesh)
 %-----------------------------------------------------------
 %   Darren Engwirda
 %   github.com/dengwirda/jigsaw-matlab
-%   31-Jul-2018
+%   20-Dec-2018
 %   darren.engwirda@columbia.edu
 %-----------------------------------------------------------
 %
@@ -363,7 +363,38 @@ function [flag] = certify(mesh)
         end
         end
     end
-
+    
+    if (meshhas(mesh,'bound'))
+%----------------------------------------- check BOUND index
+        if (~isempty  (mesh.bound.index))
+        if (~isnumeric(mesh.bound.index))
+        error('certify:incorrectInputClass', ...
+            'Invalid BOUND.INDEX type.') ;
+        end
+        if (ndims(mesh.bound.index) ~= 2)
+        error('certify:incorrectDimensions', ...
+            'Invalid BOUND.INDEX dimensions.') ;
+        end
+        if (size(mesh.bound.index,2)~= 3)
+        error('certify:incorrectDimensions', ...
+            'Invalid BOUND.INDEX dimensions.') ;
+        end
+        if (any(isinf(mesh.bound.index)))
+        error('certify:invalidMeshIndexing', ...
+            'Invalid BOUND.INDEX indexing.') ;
+        end
+        if (any(isnan(mesh.bound.index)))
+        error('certify:invalidMeshIndexing', ...
+            'Invalid BOUND.INDEX indexing.') ;
+        end
+        if (min(min( ...
+            mesh.bound.index(:,2:2))) < +1 )
+        error('certify:invalidMeshIndexing', ...
+            'Invalid BOUND.INDEX indexing.') ;
+        end        
+        end
+    end
+    
 %----------------------------------------- ok if we get here
     flag = +1 ;
 

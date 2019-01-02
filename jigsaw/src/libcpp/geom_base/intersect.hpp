@@ -114,11 +114,10 @@ namespace geometry
                            : _qb ;
             
             dd_flt _WB = _tt[0] ;
-            dd_flt _WA = _tt[0] ;
-            
             _WB = (dd_flt)+1. + _WB;
             _WB = (dd_flt)+.5 * _WB;
             
+            dd_flt _WA = _tt[0] ;
             _WA = (dd_flt)+1. - _WA;
             _WA = (dd_flt)+.5 * _WA;
           
@@ -153,11 +152,10 @@ namespace geometry
                            : _qb ;
                            
             dd_flt _WB = _tt[1] ;
-            dd_flt _WA = _tt[1] ;
-            
             _WB = (dd_flt)+1. + _WB;
             _WB = (dd_flt)+.5 * _WB;
             
+            dd_flt _WA = _tt[1] ;
             _WA = (dd_flt)+1. - _WA;
             _WA = (dd_flt)+.5 * _WA;
           
@@ -235,11 +233,10 @@ namespace geometry
                            : _qb ;
              
             dd_flt _WB = _tt[0] ;
-            dd_flt _WA = _tt[0] ;
-            
             _WB = (dd_flt)+1. + _WB;
             _WB = (dd_flt)+.5 * _WB;
             
+            dd_flt _WA = _tt[0] ;
             _WA = (dd_flt)+1. - _WA;
             _WA = (dd_flt)+.5 * _WA;
           
@@ -279,11 +276,10 @@ namespace geometry
                            : _qb ;
            
             dd_flt _WB = _tt[1] ;
-            dd_flt _WA = _tt[1] ;
-            
             _WB = (dd_flt)+1. + _WB;
             _WB = (dd_flt)+.5 * _WB;
             
+            dd_flt _WA = _tt[1] ;
             _WA = (dd_flt)+1. - _WA;
             _WA = (dd_flt)+.5 * _WA;
           
@@ -375,65 +371,6 @@ namespace geometry
         return ( true ) ;
     }
 
-    template <
-    typename      data_type
-             >
-    __normal_call bool line_tria_3d__ (
-    __const_ptr  (data_type) _p1, // tria
-    __const_ptr  (data_type) _p2,
-    __const_ptr  (data_type) _p3,
-    __const_ptr  (data_type) _pa, // line
-    __const_ptr  (data_type) _pb,
-        data_type& _tt,
-    __write_ptr  (data_type) _qq,
-        bool _bind = false
-        )
-    {
-        data_type _nv[3] ;
-        tria_norm_3d (_p1,_p2,_p3,_nv) ;
-
-        data_type _pm[3] = {
-       (data_type)+.5 * (_pa[0]+_pb[0]),
-       (data_type)+.5 * (_pa[1]+_pb[1]),
-       (data_type)+.5 * (_pa[2]+_pb[2])
-            } ;
-        data_type _pd[3] = {
-       (data_type)+.5 * (_pb[0]-_pa[0]),
-       (data_type)+.5 * (_pb[1]-_pa[1]),
-       (data_type)+.5 * (_pb[2]-_pa[2])
-            } ;
-        data_type _pv[3] = {
-       (data_type)+1. * (_p1[0]-_pm[0]),
-       (data_type)+1. * (_p1[1]-_pm[1]),
-       (data_type)+1. * (_p1[2]-_pm[2])
-            } ;
-
-        data_type _ta = 
-            geometry::dot_3d(_pv, _nv) ; 
-        data_type _tb = 
-            geometry::dot_3d(_pd, _nv) ;
-
-        _tt = _ta/_tb ;
-
-   //!! std::numeric_limits<data_type>::epsilon();
-        data_type _rt = (data_type)+1.0E-14;
-
-        bool_type _ok = std::abs(_tb) > std::abs(_ta) * _rt ;
-
-        if (_bind)
-        {
-        _tt = std::min((data_type)+1., _tt);
-        _tt = std::max((data_type)-1., _tt);
-        }
-
-        _qq[0] = _pm[0] + _tt * _pd[0] ;
-        _qq[1] = _pm[1] + _tt * _pd[1] ;
-        _qq[2] = _pm[2] + _tt * _pd[2] ;
-        
-        return ( _ok ) ;
-        
-    //!!return ( std::isfinite(_tt) ) ;
-    }
 
     template <
     typename      data_type
@@ -474,49 +411,6 @@ namespace geometry
 
 
 
-
-
-
-template <typename _Iptr>
-    __inline_call _Iptr coin_flip (
-        _Iptr  _inum
-        )
-    {
-        double _rval = 
-            ((double) std::rand()) 
-                / (RAND_MAX + 1.0)  ;
-        double _ival = +1.0 / _inum ;
-        return(_Iptr)(_rval / _ival);
-    }
-
-
-
-template <typename _Type> 
-    __inline_call bool line_line_2d (
-        __const_ptr(_Type) _p1,
-        __const_ptr(_Type) _p2,
-        __const_ptr(_Type) _q1,
-        __const_ptr(_Type) _q2,
-        _Type &_tp,
-        _Type &_tq
-        )
-    {
-        _Type _vp[2], _vq[2], _vv[2];
-        geometry::vector_2d(_p1, _p2, _vp);
-        geometry::vector_2d(_q1, _q2, _vq);
-        geometry::vector_2d(_q1, _p1, _vv);
-
-        _Type _dd = _vq[1] * _vp[0] - 
-                    _vq[0] * _vp[1] ;
-
-        _tp = (_vq[0] * _vv[1] - 
-               _vq[1] * _vv[0]) / _dd;
-        _tq = (_vp[0] * _vv[1] - 
-               _vp[1] * _vv[0]) / _dd;      
-
-        return ( std::isfinite(_tp) &&
-                 std::isfinite(_tq) );
-    } 
 
 template <typename _Type> 
     __inline_call void point_line_2d (
@@ -653,10 +547,10 @@ template <typename _Type>
 
     typedef char_type hits_type;
 
-    hits_type null_hits = +0;
-    hits_type node_hits = +1;
-    hits_type edge_hits = +2;
-    hits_type face_hits = +3;
+    hits_type null_hits = +0 ;
+    hits_type node_hits = +1 ;
+    hits_type edge_hits = +2 ;
+    hits_type face_hits = +3 ;
 
     __normal_call hits_type line_line_2d (
     __const_ptr  (double) _pa,
@@ -665,7 +559,7 @@ template <typename _Type>
     __const_ptr  (double) _pd,
     __write_ptr  (double) _qq,
         bool _bind = true ,
-        char _part = +1
+        char _part =  +1
         )
     {
         hits_type _hits = edge_hits;
@@ -679,11 +573,9 @@ template <typename _Type>
        (double*)_pb, (double*)_pd, 
        (double*)_pc) ;
 
-    //!! all zero cases??
-
         if (_bind)
         {
-        if (_sa * _sb < (double)+.0) 
+        if (_sa * _sb < (double)0.) 
             return ( null_hits )  ;
         }
 
@@ -698,7 +590,7 @@ template <typename _Type>
 
         if (_bind)
         {
-        if (_sc * _sd < (double)+.0) 
+        if (_sc * _sd < (double)0.) 
             return ( null_hits )  ;
         }
 

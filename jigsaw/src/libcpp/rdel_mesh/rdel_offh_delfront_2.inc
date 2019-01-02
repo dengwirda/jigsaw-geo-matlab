@@ -259,12 +259,13 @@
 
             if (_dsqr < _near)
             {                       // min.-space limiter
-                _dist = 
-           +std::numeric_limits<real_type>::infinity();
+                _dist = std::numeric_limits
+                    <real_type>::infinity() ;
             }
             else
             {
-                _dist = (real_type) std::sqrt( _dsqr) ;
+                _dist = 
+                (real_type)std::sqrt(_dsqr) ;
             }
             
             if (_dist > _alth * _hmid)  

@@ -51,6 +51,19 @@ function [mesh] = loadmsh(name)
 %       "point-indices" associated with the K-TH pyra, and 
 %       INDEX(K,6) is an ID tag for the K-TH pyra.
 %
+%   MESH.BOUND.INDEX - [NBx 3] array of "boundary" indexing
+%       in the domain, indicating how elements in the 
+%       geometry are associated with various enclosed areas
+%       /volumes, herein known as "parts". INDEX(:,1) is an 
+%       array of "part" ID's, INDEX(:,2) is an array of 
+%       element numbering and INDEX(:,3) is an array of 
+%       element "tags", defining which element "kind"  is 
+%       numbered via INDEX(:,2). Element tags are defined 
+%       via a series of constants instantiated in LIBDATA. 
+%       In the default case, where BOUND is not specified, 
+%       all elements in the geometry are assumed to define
+%       the boundaries of enclosed "parts".
+%
 %   MESH.VALUE - [NPxNV] array of "values" associated with
 %       the vertices of the mesh.
 %
@@ -82,7 +95,7 @@ function [mesh] = loadmsh(name)
 %-----------------------------------------------------------
 %   Darren Engwirda
 %   github.com/dengwirda/jigsaw-matlab
-%   26-Nov-2018
+%   19-Dec-2018
 %   darren.engwirda@columbia.edu
 %-----------------------------------------------------------
 %
@@ -348,6 +361,25 @@ function [mesh] = loadmsh(name)
                 mesh.pyra5.index(:,1:5) = ...
                 mesh.pyra5.index(:,1:5) + 1;
             
+            case 'bound'
+
+        %-- read "BOUND" data
+
+                nnum = str2double(tstr{2}) ;
+
+                numr = nnum * 3;
+                
+                data = ...
+            fscanf(ffid,[repmat(ints,1,2),'%i'],numr);
+                
+                mesh.bound.index = [ ...
+                    data(1:3:end), ...
+                    data(2:3:end), ...
+                    data(3:3:end)] ;
+            
+                mesh.bound.index(:,2:2) = ...
+                mesh.bound.index(:,2:2) + 1;
+            
             case 'value'
 
         %-- read "VALUE" data
@@ -445,5 +477,6 @@ function [mesh] = loadmsh(name)
     end
 
 end
+
 
 

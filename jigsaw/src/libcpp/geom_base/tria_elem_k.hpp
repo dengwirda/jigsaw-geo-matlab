@@ -218,23 +218,6 @@
 
         return (data_type).67* _scrA +
                (data_type).33* _scrB ;
-                
-        /*
-        // 4. * std::sqrt(3.)
-        data_type static 
-            constexpr _scal = 
-       (data_type)+6.928203230275509 ;
-    
-        data_type _elen = 
-            lensqr_2d(_p1, _p2) + 
-            lensqr_2d(_p2, _p3) + 
-            lensqr_2d(_p3, _p1) ;
-
-        data_type _area = 
-        tria_area_2d(_p1, _p2, _p3);
-
-        return _scal * _area / _elen ;
-        */
     }
 
     template <
@@ -295,23 +278,6 @@
 
         return (data_type).67* _scrA +
                (data_type).33* _scrB ;
-               
-        /*
-        // 4. * std::sqrt(3.)
-        data_type static 
-            constexpr _scal = 
-       (data_type)+6.928203230275509 ;
-    
-        data_type _elen = 
-            lensqr_3d(_p1, _p2) + 
-            lensqr_3d(_p2, _p3) + 
-            lensqr_3d(_p3, _p1) ;
-
-        data_type _area = 
-        tria_area_3d(_p1, _p2, _p3);
-
-        return _scal * _area / _elen ;
-        */
     }
 
     template <

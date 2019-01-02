@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 9 August, 2018
+     * Last updated: 01 January, 2019
      *
-     * Copyright 2013-2017
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -75,10 +75,7 @@
     typedef typename 
             allocator::size_type            uint_type ;
 
-    char_type static constexpr null_ball = +0 ;
-    char_type static constexpr feat_ball = +1 ;
-
-    typedef char_type mode_type ;
+    typedef char_type  mode_type ;
     
     char_type static constexpr null_mode = +0 ;
     char_type static constexpr node_mode = +1 ;
@@ -557,6 +554,64 @@
     typename      init_type
              >
     __static_call
+    __normal_call void_type init_sort (
+        init_type &_init,
+        iptr_list &_iset
+        )
+    {
+        typedef geom_tree::aabb_node_base_k     
+                           tree_node ;
+
+        typedef geom_tree::aabb_item_node_k <
+            real_type,
+            iptr_type, 3>  tree_item ;
+                    
+        typedef geom_tree::aabb_tree <
+            tree_item, 3,
+            tree_node,
+            allocator   >  tree_type ;
+                
+        containers::array<tree_item> _bbox;
+       
+    /*------------------------------ initialise aabb-tree */ 
+        iptr_type _npos  = 0 ;
+        tree_type _tree  ;
+        for (auto _node  = 
+            _init._mesh._set1.head() ; 
+                  _node != 
+            _init._mesh._set1.tend() ;
+                ++_node, ++_npos)
+        {
+            if (_node->mark() >= +0)
+            {
+            
+            _bbox.push_tail() ;
+            _bbox.tail()->
+                pval(0) = _node->pval( 0) ;
+            _bbox.tail()->
+                pval(1) = _node->pval( 1) ;
+            _bbox.tail()->
+                pval(2) = _node->pval( 2) ;
+  
+            _bbox.tail()->
+                ipos () = _npos ;
+            
+            }
+        }
+       
+        iptr_type constexpr _NBOX = +64 ;
+       
+        _tree.load(_bbox.head(),
+                   _bbox.tend(), _NBOX) ;
+        
+    /*------------------------------ randomised tree sort */    
+        _tree.brio(_iset) ;
+    }
+
+    template <
+    typename      init_type
+             >
+    __static_call
     __normal_call void_type init_mesh (
         geom_type &_geom,
         init_type &_init,
@@ -631,30 +686,36 @@
         _geom.seed_feat(_mesh, _opts) ;
                         
     /*------------------------------ seed mesh from init. */
-        for (auto _node  = 
-            _init._mesh._set1.head(); 
-                  _node != 
-            _init._mesh._set1.tend();
-                ++_node  )
+        iptr_type _hint  = -1;
+        iptr_list _iset  ;
+        init_sort(_init,_iset) ;
+        for (auto _iter  = _iset.head();
+                  _iter != _iset.tend();
+                ++_iter  )
         {
-            if (_node->mark() >= +0)
-            {
+            auto _node = &_init.
+                _mesh._set1[*_iter] ;
+        
             iptr_type _npos = -1 ;
             if (_mesh._tria.push_node (
-               &_node->pval(0), _npos))
+               &_node->pval(0) , 
+                _npos, _hint ) )
             {
-                _mesh._tria.node
-                    (_npos)->fdim() 
-                        = _node->fdim() ;
+            
+            _mesh._tria.node
+                (_npos)->fdim() 
+                    = _node->fdim() ;
                         
-                _mesh._tria.node
-                    (_npos)->feat() 
-                        = _node->feat() ;
-                        
-                _mesh._tria.node
-                    (_npos)->topo() = 2 ; 
-      
-            }     
+            _mesh._tria.node
+                (_npos)->feat() 
+                    = _node->feat() ;
+                    
+            _mesh._tria.node
+                (_npos)->topo() = 2 ;  
+            
+            _hint = _mesh._tria.
+                node(_npos)->next() ;
+            
             }
         }
         
@@ -1237,7 +1298,6 @@
         /*
         if (_args.verb() >= +2 )
         {
-       
     //-------------------- push refinement memory metrics *
         
         _dump.push("\n")  ;
@@ -1248,8 +1308,7 @@
         */
         
         if (_args.verb() >= +2 )
-        {
-    
+        {    
     /*-------------------- push refinement scheme metrics */
         
         _dump.push("\n")  ;
