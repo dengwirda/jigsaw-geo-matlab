@@ -44,15 +44,23 @@ The first step is to compile the code! The `JIGSAW` src can be found in <a href=
 
 `JIGSAW` has been successfully built using various versions of the `g++` and `llvm` compilers. Since the build process is a simple one-liner, there's no `make` script - instead:
 
-	g++ -std=c++11 -pedantic -Wall -s -O3 -flto -D NDEBUG -static-libstdc++ 
-	jigsaw.cpp -o jigsaw64r
+	g++ -std=c++11 -pedantic -Wall -s -O3 -flto -D NDEBUG 
+	-D __cmd_jigsaw -static-libstdc++ jigsaw.cpp 
+        -o jigsaw64r
 	
-can be used to build a `JIGSAW` executable, while:
+will build the main `JIGSAW` cmd-line executable,
 
-	g++ -std=c++11 -pedantic -Wall -O3 -flto -fPIC -D NDEBUG -static-libstdc++ 
-	jigsaw.cpp -shared -o libjigsaw64r.so
+        g++ -std=c++11 -pedantic -Wall -s -O3 -flto -D NDEBUG 
+	-D __cmd_tripod -static-libstdc++ jigsaw.cpp 
+        -o tripod64r
+	
+will build the `TRIPOD` cmd-line utility (JIGSAW's tessellation infrastructure) and,
 
-can be used to build a `JIGSAW` shared library. See the headers in <a href="../master/jigsaw/inc/">`../jigsaw/inc/`</a> for details on the `API`. The `#define __lib_jigsaw` directive in `jigsaw.cpp` toggles the source between executable and shared-library modes.
+	g++ -std=c++11 -pedantic -Wall -O3 -flto -fPIC -D NDEBUG 
+	-D __lib_jigsaw -static-libstdc++ jigsaw.cpp 
+	-shared -o libjigsaw64r.so
+
+will build `JIGSAW` as a shared library. See the headers in <a href="../master/jigsaw/inc/">`../jigsaw/inc/`</a> for details on the `API`.
 
 #### `On Windows`
 
@@ -69,11 +77,12 @@ Once you have built the `JIGSAW` binaries, place them in the appropriate sub-fol
 
 After downloading and building the code, navigate to the root `JIGSAW(GEO)` directory within your <a href="http://www.mathworks.com">`MATLAB`</a> / <a href="https://www.gnu.org/software/octave">`OCTAVE`</a> installation to run the set of examples contained in `meshdemo.m`:
 ````
-meshdemo(1); % a simple, two-dimensional domain.
+meshdemo(1); % simple two-dimensional examples to get stated.
 meshdemo(2); % a multi-resolution grid for the Australian region.
-meshdemo(3); % a uniform resolution spheroidal grid.
-meshdemo(4); % a global grid with regional "patch".
-meshdemo(5); % a global grid with multi-resolution grid-spacing constraints.
+meshdemo(3); % a multi-part grid of the (contiguous) USA.
+meshdemo(4); % a uniform-resolution spheroidal grid.
+meshdemo(5); % a spheroidal grid with a regional "patch".
+meshdemo(6); % a spheroidal grid with complex grid-spacing constraints.
 ````
 Additionally, the <a href="../master/jigsaw/example.jig">`../jigsaw/example.jig`</a> file provides a description of `JIGSAW`'s configuration options, and can be used as a command-line example. A set of unit-tests and `libjigsaw` example programs are contained in <a href="../master/jigsaw/uni/">`../jigsaw/uni/`</a>. The `JIGSAW-API` is documented via the header files in <a href="../master/jigsaw/inc/">`../jigsaw/inc/`</a>.
 
