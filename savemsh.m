@@ -57,7 +57,7 @@ function savemsh(name,mesh)
 %       /volumes, herein known as "parts". INDEX(:,1) is an 
 %       array of "part" ID's, INDEX(:,2) is an array of 
 %       element numbering and INDEX(:,3) is an array of 
-%       element "tags", defining which element "kind"  is 
+%       element "tags", describing which element "kind" is 
 %       numbered via INDEX(:,2). Element tags are defined 
 %       via a series of constants instantiated in LIBDATA. 
 %       In the default case, where BOUND is not specified, 

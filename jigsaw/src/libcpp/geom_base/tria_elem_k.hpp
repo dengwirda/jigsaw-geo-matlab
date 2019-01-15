@@ -108,6 +108,19 @@
     template <
     typename      data_type
              >
+    __inline_call void_type line_norm_2d (
+    __const_ptr  (data_type) _p1,
+    __const_ptr  (data_type) _p2,
+    __write_ptr  (data_type) _nv
+         )
+    {
+        _nv[0] = _p1[1] - _p2[1];
+        _nv[1] = _p2[0] - _p1[0];
+    }
+
+    template <
+    typename      data_type
+             >
     __inline_call void_type tria_norm_3d (
     __const_ptr  (data_type) _p1,
     __const_ptr  (data_type) _p2,

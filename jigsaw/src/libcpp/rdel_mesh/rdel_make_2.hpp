@@ -39,6 +39,41 @@
      * https://github.com/dengwirda/
      *
     --------------------------------------------------------
+     *
+     * This class defines the "restricted" delaunay 
+     * tessellation algorithm for domains in R^2. A
+     * bounding DT is built for the points with the rDT
+     * constructed by evaluating the dual predicate for
+     * each node, edge, face and cell in the tessellation.
+     *
+     * My implementation is described here:
+     *
+     * D. Engwirda, (2014): "Locally-optimal Delaunay-
+     * refinement and optimisation-based mesh generation", 
+     * Ph.D. Thesis, School of Mathematics and Statistics, 
+     * Univ. of Sydney. 
+     * http://hdl.handle.net/2123/13148
+     *
+     * building on various previous works on rDT methods, 
+     * including (primarily):
+     *
+     * J.D. Boissonnat, S. Oudot, (2005): "Provably Good 
+     * Sampling and Meshing of Surfaces", Graphical Models, 
+     * 67, pp. 405-451,
+     * https://doi.org/10.1016/j.gmod.2005.01.004
+     *
+     * C. Jamin, P. Alliez, M. Yvinec, and J.D. Boissonnat, 
+     * (2015): "CGALmesh: a generic framework for Delaunay 
+     * mesh generation", ACM Transactions on Mathematical 
+     * Software (TOMS), 41, pp. 23
+     * https://doi.org/10.1145/2699463
+     *
+     * L. Rineau, M. Yvinec, (2008): "Meshing 3D Domains 
+     * Bounded by Piecewise Smooth Surfaces", Proc. of the 
+     * 16th International Meshing Roundtable, pp. 443-460,
+     * https://doi.org/10.1007/978-3-540-75103-8_25
+     *
+    --------------------------------------------------------
      */
 
 #   pragma once
@@ -90,6 +125,10 @@
     typedef mesh::rdel_params       <
                 real_type, 
                 iptr_type           >       rdel_opts ;
+
+    typedef mesh::rdel_timers       <
+                real_type ,
+                iptr_type           >       rdel_stat ;
                             
                       
     /*
@@ -196,7 +235,8 @@
             }
 
             _fdat._tadj    = _tpos;
-            _fdat._eadj    = _fpos;
+            _fdat._eadj    = 
+                (char_type)  _fpos;
             _fdat._pass    = 0 ;
             _fdat._dups    = 0 ; // count num. dup's
                                  // only in hash-set
@@ -431,6 +471,8 @@
         rdel_opts &_opts
         )
     {
+        __unreferenced(_opts) ;
+
     /*------------------------------ initialise mesh bbox */
         real_type _plen[ +2];
         _plen[ 0] = _geom._bmax[ 0] - 
@@ -535,8 +577,33 @@
     /*------------------------------ ensure deterministic */  
         std::srand( +1 ) ;
 
+        rdel_stat  _tcpu ;
+
+    #   ifdef  __use_timers
+        typename std ::chrono::
+        high_resolution_clock::
+            time_point _ttic ;
+        typename std ::chrono::
+        high_resolution_clock::
+            time_point _ttoc ;
+        typename std ::chrono::
+        high_resolution_clock _time ;
+
+        __unreferenced(_time) ; // why does MSVC need this??
+    #   endif//__use_timers
+
     /*------------------------------ initialise mesh obj. */
+    #   ifdef  __use_timers
+        _ttic = _time.now() ;
+    #   endif//__use_timers
+
         init_mesh(_geom, _init, _mesh, _args) ;
+
+    #   ifdef  __use_timers
+        _ttoc = _time.now() ;       
+        _tcpu._mesh_seed += 
+            _tcpu.time_span(_ttic,_ttoc) ;
+    #   endif//__use_timers
     
         iptr_type _nbal  = +0 ;
         iptr_type _nedg  = +0 ;
@@ -607,6 +674,11 @@
     /*------------------------- test for restricted balls */
         if (_args.dims() >= 0  )
         { 
+
+    #   ifdef  __use_timers
+        _ttic = _time.now() ;
+    #   endif//__use_timers
+
         for( auto _iter  = _nnew.head(); 
                   _iter != _nnew.tend(); 
                 ++_iter  )
@@ -618,11 +690,23 @@
                       _kind, _nbal, 
                       _args) ;
         }
+
+    #   ifdef  __use_timers
+        _ttoc = _time.now() ;       
+        _tcpu._node_init += 
+            _tcpu.time_span(_ttic,_ttoc) ;
+    #   endif//__use_timers
+
         }
        
     /*------------------------- test for restricted edges */
         if (_args.dims() >= 1  )
         { 
+
+    #   ifdef  __use_timers
+        _ttic = _time.now() ;
+    #   endif//__use_timers
+
         for( auto _iter  = _tnew.head(); 
                   _iter != _tnew.tend(); 
                 ++_iter  )
@@ -633,6 +717,13 @@
                       _nedg, _ndup, 
                       _args) ;
         }
+
+    #   ifdef  __use_timers
+        _ttoc = _time.now() ;       
+        _tcpu._edge_init += 
+            _tcpu.time_span(_ttic,_ttoc) ;
+    #   endif//__use_timers
+
         }
         
     /*------------------------- test for restricted tria. */   
@@ -644,6 +735,10 @@
       //if (_nedg >= +1) _safe = false ;
         if (_ndup >= +1) _safe = false ;
         
+    #   ifdef  __use_timers
+        _ttic = _time.now() ;
+    #   endif//__use_timers
+
         for( auto _iter  = _tnew.head(); 
                   _iter != _tnew.tend(); 
                 ++_iter )
@@ -656,6 +751,13 @@
                       _tset, _ntri, 
                       _args) ;
         }
+
+    #   ifdef  __use_timers
+        _ttoc = _time.now() ;       
+        _tcpu._tria_init += 
+            _tcpu.time_span(_ttic,_ttoc) ;
+    #   endif//__use_timers
+
         }
         
         /*
@@ -676,6 +778,25 @@
         
         _dump.push("\n")  ;
         _dump.push("  rDT statistics... \n") ;
+        _dump.push("\n")  ;
+
+        _dump.push("  MESH-SEED = ") ;
+        _dump.push(
+        std::to_string (_tcpu._mesh_seed)) ;
+        _dump.push("\n")  ;
+
+        _dump.push("  NODE-INIT = ") ;
+        _dump.push(
+        std::to_string (_tcpu._node_init)) ;
+        _dump.push("\n")  ;
+        _dump.push("  EDGE-INIT = ") ;
+        _dump.push(
+        std::to_string (_tcpu._edge_init)) ;
+        _dump.push("\n")  ;
+        _dump.push("  TRIA-INIT = ") ;
+        _dump.push(
+        std::to_string (_tcpu._tria_init)) ;
+        _dump.push("\n")  ;
         _dump.push("\n")  ;
 
         _dump.push("  |rDEL-0| (node) = ") ;

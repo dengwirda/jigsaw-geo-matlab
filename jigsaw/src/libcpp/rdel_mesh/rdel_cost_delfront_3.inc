@@ -91,7 +91,9 @@
             return  ;
                  
     /*------------------------- calc. refinement priority */
-        _edat._mark =         +0  ;
+        _edat._mark =
+        _mesh._tria.node(_enod[0])->fdim() +
+        _mesh._tria.node(_enod[1])->fdim() ;
         
         _edat._cost =    _pmax[3] ;
         
@@ -214,7 +216,7 @@
         }
     
     /*------------------------- calc. refinement priority */
-        _fdat._mark =   +0 ;
+        _fdat._mark =  +3 ;
     
     #   ifdef __bias_BNDS      
         for(_enum = +3; _enum-- != +0; )
@@ -457,7 +459,7 @@
         }
 
     /*------------------------- calc. refinement priority */
-        _tdat._mark =   +0 ;
+        _tdat._mark =  +4 ;
         
     #   ifdef __bias_BNDS
         for(_fnum = +4; _fnum-- != +0; )

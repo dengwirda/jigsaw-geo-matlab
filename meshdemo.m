@@ -7,16 +7,19 @@ function meshdemo(demo)
 % - DEMO-1: a simple example demonstrating the construction
 %   of PSLG geometry and user-defined mesh-size constraints.
 %
-% - DEMO-2: build a grid for the Australian region, using
+% - DEMO-2: generate a grid for the Australian region, using
 %   scaled ocean-depth as a mesh-spacing indicator.
 %
-% - DEMO-3: generate a uniform resolution 150km global grid.
+% - DEMO-3: generate a "multi-part" mesh of the (contiguous)
+%   USA, using state boundaries to partition the mesh.
 %
-% - DEMO-4: generate a regionlly-refined global-grid, with a 
+% - DEMO-4: generate a uniform resolution 150km global grid.
+%
+% - DEMO-5: generate a regionlly-refined global-grid, with a 
 %   high-resolution north-atlantic 25km "patch" embedded wi- 
 %   thin a uniformly resolved 150km background grid.
 %
-% - DEMO-5: generate a multi-resolution grid for the arctic 
+% - DEMO-6: generate a multi-resolution grid for the arctic 
 %   ocean basin, with local refinement along coastlines and
 %   shallow ridges. Global grid resolution is 100km, backgr-
 %   ound arctic resolution is 50km and min. adaptive resolu-
@@ -27,21 +30,21 @@ function meshdemo(demo)
 %-----------------------------------------------------------
 %   Darren Engwirda
 %   github.com/dengwirda/jigsaw-geo-matlab
-%   25-Jul-2018
-%   de2363@columbia.edu
+%   02-Jan-2019
+%   darren.engwirda@columbia.edu
 %-----------------------------------------------------------
 %
    
-    close all ; libpath ;
+    close all ; libpath ; libdata ;
     
     switch (demo)
 %------------------------------------ call the demo programs
-
         case 1, demo1() ;
         case 2, demo2() ;
         case 3, demo3() ;
         case 4, demo4() ;
         case 5, demo5() ;
+        case 6, demo6() ;
             
         otherwise
         error( ...
@@ -51,6 +54,213 @@ function meshdemo(demo)
 end
  
 function demo1
+% DEMO-1 --- a simple example demonstrating the construction
+%   of PSLG geometry and user-defined mesh-size constraints.
+
+    demoA() ;
+    demoB() ;
+    demoC() ;
+    
+    drawnow ;        
+    set(figure(1),'units','normalized', ...
+        'position',[.05,.55,.30,.35]) ;
+    set(figure(2),'units','normalized', ...
+        'position',[.05,.10,.30,.35]) ;
+    
+    set(figure(3),'units','normalized', ...
+        'position',[.35,.55,.30,.35]) ;
+    set(figure(4),'units','normalized', ...
+        'position',[.35,.10,.30,.35]) ;
+    
+    set(figure(5),'units','normalized', ...
+        'position',[.65,.55,.30,.35]) ;
+    set(figure(6),'units','normalized', ...
+        'position',[.65,.10,.30,.35]) ;    
+    drawnow ;
+
+end
+
+function demoA
+% DEMO-1 --- a simple example demonstrating the construction
+%   of PSLG geometry and user-defined mesh-size constraints.
+
+%------------------------------------ setup files for JIGSAW
+
+    opts.geom_file = ...                % GEOM file
+        ['jigsaw/geo/BOX-GEOM.msh'];
+    
+    opts.jcfg_file = ...                % JCFG file
+        ['jigsaw/out/BOX.jig'];
+    
+    opts.mesh_file = ...                % MESH file
+        ['jigsaw/out/BOX-MESH.msh'];
+ 
+%------------------------------------ define JIGSAW geometry
+    
+    geom.mshID = 'EUCLIDEAN-MESH';
+
+    geom.point.coord = [    % list of xy "node" coordinates
+        0, 0, 0             % outer square
+        9, 0, 0
+        9, 9, 0
+        0, 9, 0 
+        4, 4, 0             % inner square
+        5, 4, 0
+        5, 5, 0
+        4, 5, 0 ] ;
+    
+    geom.edge2.index = [    % list of "edges" between nodes
+        1, 2, 0             % outer square 
+        2, 3, 0
+        3, 4, 0
+        4, 1, 0 
+        5, 6, 0             % inner square
+        6, 7, 0
+        7, 8, 0
+        8, 5, 0 ] ;
+        
+    savemsh(opts.geom_file,geom) ;
+    
+%------------------------------------ build mesh via JIGSAW! 
+  
+    fprintf(1,'  Constructing MESH...\n');
+  
+    opts.hfun_hmax = 0.05 ;             % null HFUN limits
+   
+    opts.mesh_dims = +2 ;               % 2-dim. simplexes
+    
+    opts.optm_qlim = +.95 ;
+   
+    opts.mesh_top1 = true ;             % for sharp feat's
+    opts.geom_feat = true ;
+    
+    mesh = jigsaw  (opts) ;
+ 
+    figure('color','w');
+    patch ('faces',mesh.tria3.index(:,1:3), ...
+        'vertices',mesh.point.coord(:,1:2), ...
+        'facecolor',[.7,.7,.9], ...
+        'edgecolor',[.2,.2,.2]) ;
+    hold on; axis image;
+    patch ('faces',mesh.edge2.index(:,1:2), ...
+        'vertices',mesh.point.coord(:,1:2), ...
+        'facecolor','w', ...
+        'edgecolor',[.1,.1,.1], ...
+        'linewidth',1.5) ;
+    patch ('faces',geom.edge2.index(:,1:2), ...
+        'vertices',geom.point.coord(:,1:2), ...
+        'facecolor','w', ...
+        'edgecolor',[.1,.1,.8], ...
+        'linewidth',1.5) ;
+    
+    drawcost( meshcost(mesh) );
+
+end
+
+function demoB
+% DEMO-1 --- a simple example demonstrating the construction
+%   of PSLG geometry and user-defined mesh-size constraints.
+
+%------------------------------------ setup files for JIGSAW
+
+    opts.geom_file = ...                % GEOM file
+        ['jigsaw/geo/BOX-GEOM.msh'];
+    
+    opts.jcfg_file = ...                % JCFG file
+        ['jigsaw/out/BOX.jig'];
+    
+    opts.mesh_file = ...                % MESH file
+        ['jigsaw/out/BOX-MESH.msh'];
+ 
+%------------------------------------ define JIGSAW geometry
+    
+    global JIGSAW_EDGE2_TAG ;
+
+    geom.mshID = 'EUCLIDEAN-MESH';
+
+    geom.point.coord = [    % list of xy "node" coordinates
+        0, 0, 0             % outer square
+        9, 0, 0
+        9, 9, 0
+        0, 9, 0 
+        2, 2, 0             % inner square
+        7, 2, 0
+        7, 7, 0
+        2, 7, 0 
+        3, 3, 0
+        6, 6, 0 ] ;
+    
+    geom.edge2.index = [    % list of "edges" between nodes
+        1, 2, 0             % outer square 
+        2, 3, 0
+        3, 4, 0
+        4, 1, 0 
+        5, 6, 0             % inner square
+        6, 7, 0
+        7, 8, 0
+        8, 5, 0
+        9,10, 0] ;          % inner const.
+    
+    geom.bound.index = [
+        1, 1, JIGSAW_EDGE2_TAG
+        1, 2, JIGSAW_EDGE2_TAG
+        1, 3, JIGSAW_EDGE2_TAG
+        1, 4, JIGSAW_EDGE2_TAG
+        1, 5, JIGSAW_EDGE2_TAG
+        1, 6, JIGSAW_EDGE2_TAG
+        1, 7, JIGSAW_EDGE2_TAG
+        1, 8, JIGSAW_EDGE2_TAG
+        2, 5, JIGSAW_EDGE2_TAG
+        2, 6, JIGSAW_EDGE2_TAG
+        2, 7, JIGSAW_EDGE2_TAG
+        2, 8, JIGSAW_EDGE2_TAG
+            ] ;
+        
+    savemsh(opts.geom_file,geom) ;
+    
+%------------------------------------ build mesh via JIGSAW! 
+  
+    fprintf(1,'  Constructing MESH...\n');
+  
+    opts.hfun_hmax = 0.05 ;             % null HFUN limits
+    
+    opts.mesh_dims = +2 ;               % 2-dim. simplexes
+    
+    opts.optm_qlim = +.95 ;
+   
+    opts.mesh_top1 = true ;             % for sharp feat's
+    opts.geom_feat = true ;
+    
+    mesh = jigsaw  (opts) ;
+ 
+    figure('color','w');
+    I = mesh.tria3.index(:,4) == +1;
+    patch ('faces',mesh.tria3.index(I,1:3), ...
+        'vertices',mesh.point.coord(:,1:2), ...
+        'facecolor',[.7,.9,.7], ...
+        'edgecolor',[.2,.2,.2]) ;
+    hold on; axis image;
+    I = mesh.tria3.index(:,4) == +2;
+    patch ('faces',mesh.tria3.index(I,1:3), ...
+        'vertices',mesh.point.coord(:,1:2), ...
+        'facecolor',[.9,.7,.9], ...
+        'edgecolor',[.2,.2,.2]) ;
+    patch ('faces',mesh.edge2.index(:,1:2), ...
+        'vertices',mesh.point.coord(:,1:2), ...
+        'facecolor','w', ...
+        'edgecolor',[.1,.1,.1], ...
+        'linewidth',1.5) ;
+    patch ('faces',geom.edge2.index(:,1:2), ...
+        'vertices',geom.point.coord(:,1:2), ...
+        'facecolor','w', ...
+        'edgecolor',[.1,.1,.8], ...
+        'linewidth',1.5) ;
+    
+    drawcost( meshcost(mesh) );
+
+end
+
+function demoC
 % DEMO-1 --- a simple example demonstrating the construction
 %   of PSLG geometry and user-defined mesh-size constraints.
 
@@ -108,9 +318,9 @@ function demo1
     
    [XPOS,YPOS] = meshgrid(xpos,ypos) ;
     
-    hfun =-.3*exp(-.1*(XPOS-4.5).^2 ...
+    hfun =-.4*exp(-.1*(XPOS-4.5).^2 ...
                   -.1*(YPOS-4.5).^2 ...
-            ) + .4 ;
+            ) + .6 ;
     
     hmat.mshID = 'EUCLIDEAN-GRID';
     hmat.point.coord{1} = xpos ;
@@ -136,12 +346,29 @@ function demo1
     
     mesh = jigsaw  (opts) ;
  
-    plotplanar(geom,mesh,hmat) ;
+    figure('color','w');
+    patch ('faces',mesh.tria3.index(:,1:3), ...
+        'vertices',mesh.point.coord(:,1:2), ...
+        'facecolor',[.9,.7,.7], ...
+        'edgecolor',[.2,.2,.2]) ;
+    hold on; axis image;
+    patch ('faces',mesh.edge2.index(:,1:2), ...
+        'vertices',mesh.point.coord(:,1:2), ...
+        'facecolor','w', ...
+        'edgecolor',[.1,.1,.1], ...
+        'linewidth',1.5) ;
+    patch ('faces',geom.edge2.index(:,1:2), ...
+        'vertices',geom.point.coord(:,1:2), ...
+        'facecolor','w', ...
+        'edgecolor',[.1,.1,.8], ...
+        'linewidth',1.5) ;
+    
+    drawcost( meshcost(mesh) );
 
 end
  
 function demo2
-% DEMO-2 --- build a grid for the Australian region, using
+% DEMO-2 -- generate a grid for the Australian region, using
 %   scaled ocean-depth as a mesh-spacing indicator.
  
 %------------------------------------ setup files for JIGSAW
@@ -245,61 +472,68 @@ function demo2
     
     opts.mesh_eps1 = 1.00 ;
     
-   %opts.optm_dual = true ;
-    
     MESH = jigsaw  (opts) ;
     
-    
-    
-    tic
-    tri = __delaunayn__(MESH.point.coord(:,1:2));
-    toc
-    
-    
-    
-    opts = [];   
-    opts.init_file = ...                % INIT file
-        ['jigsaw/out/AUS-INIT.msh'];
-    
-    opts.geom_file = ...                % GEOM file
-        ['jigsaw/out/AUS-PROJ.msh'];
-    
-    opts.jcfg_file = ...                % JCFG file
-        ['jigsaw/out/AUS.jig'];
-            
-    opts.mesh_file = ...                % MESH file
-        ['jigsaw/out/AUS-TRIA.msh'];
-    
-    savemsh(opts.init_file,MESH);
-    
-    opts.mesh_dims = 2 ;
-        
-    MESH = [] ;
-    MESH = tripod  (opts) ;
-    
-    
-    tic
-   
-    pc = ...
-    MESH.point.coord(MESH.tria3.index(:,1),1:end-1) + ...
-    MESH.point.coord(MESH.tria3.index(:,2),1:end-1) + ...
-    MESH.point.coord(MESH.tria3.index(:,3),1:end-1) ;
-    pc = pc / 3.;
-    
-    in = inpoly2(pc, ...
-        GEOM.point.coord(:,1:2), ...
-            GEOM.edge2.index(:,1:2)) ;
-    toc
-    
-    MESH.tria3.index = MESH.tria3.index(in,:);
-    
-  
     plotplanar(GEOM,MESH,HMSH) ;
     
 end
 
 function demo3
-% DEMO-3: generate a uniform resolution (150km) global grid. 
+%DEMO-3 --- generate a "multi-part" mesh of the (contiguous)
+%USA, using state boundaries to partition the mesh.
+
+%------------------------------------ setup files for JIGSAW
+
+    opts.geom_file = ...                % GEOM file
+        ['jigsaw/out/us48-PROJ.msh'];
+    
+    opts.jcfg_file = ...                % JCFG file
+        ['jigsaw/out/us48.jig'];
+    
+    opts.mesh_file = ...                % MESH file
+        ['jigsaw/out/us48-MESH.msh'];
+    
+%------------------------------------ import GEOM. from file
+    
+    geom = loadmsh('jigsaw/geo/us48.msh');
+   
+%------------------------------------ do stereographic proj.    
+   
+    geom.point.coord(:,1:2) = ...
+    geom.point.coord(:,1:2) * pi/180;
+    
+    proj.kind  = 'STEREOGRAPHIC' ;
+    proj.rrad  = 6371.E+00;
+    proj.xmid  = ...
+        mean(geom.point.coord(:, 1));
+    proj.ymid  = ...
+        mean(geom.point.coord(:, 2));
+  
+   [GEOM] = projmsh(geom,proj,'fwd');
+    
+    savemsh(opts.geom_file,GEOM) ;
+    
+%------------------------------------ create mesh via JIGSAW
+    
+    fprintf(1,'  Constructing MESH...\n');
+    
+    opts.hfun_hmax = .005 ;
+    
+    opts.mesh_dims = +2 ;               % 2-dim. simplexes
+    opts.mesh_eps1 = +1/6 ;
+    
+    opts.optm_qlim = +.95 ;
+    
+    MESH = jigsaw  (opts) ;
+    
+    HFUN = [] ;
+    
+    plotplanar(GEOM,MESH,HFUN) ;
+
+end
+
+function demo4
+% DEMO-4: generate a uniform resolution (150km) global grid. 
 
 %------------------------------------ setup files for JIGSAW
 
@@ -324,47 +558,13 @@ function demo3
     fprintf(1,'  Constructing MESH...\n');
     
     opts.hfun_scal = 'absolute';
-    opts.hfun_hmax = +300.;
+    opts.hfun_hmax = +150;
     
     opts.mesh_dims = +2 ;               % 2-dim. simplexes
-    
+
     opts.optm_qlim = +.95 ;
     
-    opts.verbosity = +1 ;
-    
     mesh = jigsaw  (opts) ;
-    
-    
-    
-    %%{
-    for pass = 1 : 4
-        
-    mesh = muddle(mesh,.25);
- 
-    opts = [];   
-    opts.init_file = ...                % INIT file
-        ['jigsaw/out/EARTH-CONST-INIT.msh'];
-    
-    opts.geom_file = ...                % GEOM file
-        ['jigsaw/geo/EARTH-CONST-GEOM.msh'];
-    
-    opts.jcfg_file = ...                % JCFG file
-        ['jigsaw/out/EARTH-CONST.jig'];
-            
-    opts.mesh_file = ...                % MESH file
-        ['jigsaw/out/EARTH-CONST-TRIA.msh'];
-    
-    savemsh(opts.init_file,mesh);
-    
-    opts.mesh_dims = 2;
-        
-    mesh = [] ;
-    mesh = tripod  (opts) ;
-        
-    end
-    %%}
-        
-    
     
     hfun = [] ;
     
@@ -372,8 +572,8 @@ function demo3
     
 end
 
-function demo4
-% DEMO-4 -- generate a regionlly-refined global-grid, with a 
+function demo5
+% DEMO-5 -- generate a regionlly-refined global-grid, with a 
 %   high-resolution north-atlantic 25km "patch" embedded wi- 
 %   thin a uniformly resolved 150km background grid.
 
@@ -435,9 +635,7 @@ function demo4
     
     opts.mesh_dims = +2 ;               % 2-dim. simplexes
     
-    opts.optm_qlim = 0.95 ;
-    
-    opts.verbosity = +1 ;
+    opts.optm_qlim = +.95 ;
     
     mesh = jigsaw  (opts) ;
     
@@ -445,8 +643,8 @@ function demo4
     
 end
 
-function demo5
-% DEMO-5 --- generate a multi-resolution grid for the arctic 
+function demo6
+% DEMO-6 --- generate a multi-resolution grid for the arctic 
 %   ocean basin, with local refinement along coastlines and
 %   shallow ridges. Global grid resolution is 100km, backgr-
 %   ound arctic resolution is 50km and min. adaptive resolu-
@@ -527,11 +725,9 @@ function demo5
     opts.hfun_hmax = +inf ;
     opts.hfun_hmin = +0.0 ;
     
-    opts.optm_qlim = 0.95 ;
-    
     opts.mesh_dims = +2 ;               % 2-dim. simplexes
     
-    opts.verbosity = +1 ;
+    opts.optm_qlim = +.95 ;
     
     mesh = jigsaw  (opts) ;
 
@@ -664,21 +860,36 @@ function plotplanar(geom,mesh,hfun)
     if (~isempty(mesh))
 %------------------------------------ draw unstructured mesh
     figure('color','w');
+  
+    P = mesh.tria3.index (:,4);
+    if ( all (P == +0))
     patch ('faces',mesh.tria3.index(:,1:3), ...
         'vertices',mesh.point.coord(:,1:2), ...
         'facecolor','w', ...
         'edgecolor',[.2,.2,.2]) ;
+    hold on; axis image;    
+    else
+    for ip = 1 : max(P)
+    I = P == ip;
+    patch ('faces',mesh.tria3.index(I,1:3), ...
+        'vertices',mesh.point.coord(:,1:2), ...
+        'facecolor', rand(1,3), ...
+        'edgecolor',[.2,.2,.2]) ;
     hold on; axis image;
+    end
+    end
     patch ('faces',mesh.edge2.index(:,1:2), ...
         'vertices',mesh.point.coord(:,1:2), ...
         'facecolor','w', ...
         'edgecolor',[.1,.1,.1], ...
         'linewidth',1.5) ;
+    if (~isempty(geom))
     patch ('faces',geom.edge2.index(:,1:2), ...
         'vertices',geom.point.coord(:,1:2), ...
         'facecolor','w', ...
         'edgecolor',[.1,.1,.8], ...
         'linewidth',1.5) ;
+    end
     title('JIGSAW TRIA mesh') ;
 
     drawcost( ...

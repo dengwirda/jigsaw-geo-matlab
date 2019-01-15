@@ -33,10 +33,10 @@
      * JIGSAW: an unstructured mesh generation library.
     --------------------------------------------------------
      *
-     * JIGSAW release 0.9.7.x
-     * Last updated: 28 December, 2018
+     * JIGSAW release 0.9.8.x
+     * Last updated: 12 January, 2019
      *
-     * Copyright 2013 -- 2018
+     * Copyright 2013 -- 2019
      * Darren Engwirda
      * darren.engwirda@columbia.edu
      * https://github.com/dengwirda
@@ -84,8 +84,8 @@
      * JIGSAW's 'frontal' Delaunay-refinement algorithms
      * are described here:
      *
-     * D. Engwirda and D. Ivers, (2016): Off-centre Steiner 
-     * points for Delaunay-refinement on curved surfaces, 
+     * D. Engwirda, D. Ivers, (2016): "Off-centre Steiner 
+     * points for Delaunay-refinement on curved surfaces", 
      * Computer-Aided Design, 72, pp. 157-171, 
      * http://dx.doi.org/10.1016/j.cad.2015.10.007
      *
@@ -119,8 +119,57 @@
      *
     --------------------------------------------------------
      *
-     * JIGSAW builds on a variety of "standard" algorithms,
-     * expanding on technqiues described in, for instance:
+     * JIGSAW's "restricted" Delaunay refinement strategies
+     * are generalisations of the methods developed in:
+     *
+     * J.D. Boissonnat, S. Oudot, (2005): "Provably Good 
+     * Sampling and Meshing of Surfaces", Graphical Models, 
+     * 67, pp. 405-451,
+     * https://doi.org/10.1016/j.gmod.2005.01.004
+     *
+     * L. Rineau, M. Yvinec, (2008): "Meshing 3D Domains 
+     * Bounded by Piecewise Smooth Surfaces", Proc. of the 
+     * 16th International Meshing Roundtable, pp. 443-460,
+     * https://doi.org/10.1007/978-3-540-75103-8_25
+     *
+     * C. Jamin, P. Alliez, M. Yvinec, and J.D. Boissonnat, 
+     * (2015): "CGALmesh: a generic framework for Delaunay 
+     * mesh generation", ACM Transactions on Mathematical 
+     * Software (TOMS), 41, pp. 23
+     * https://doi.org/10.1145/2699463
+     *
+     * S.W. Cheng, T.K. Dey, E.A. Ramos, (2010): "Delaunay 
+     * Refinement for Piecewise Smooth Complexes", 
+     * Discrete & Computational Geometry, 43, pp. 121-166,
+     * https://doi.org/10.1007/s00454-008-9109-3
+     *
+     * JIGSAW employs a "hybrid" mesh-optimisation approach
+     * based on a combination of ODT techniques and direct
+     * gradient-based optimisation:
+     *
+     * L. Chen, J.C. Xu, (2004): "Optimal Delaunay 
+     * triangulations, J. Comp. Math., 22, pp. 299–308,
+     * https://www.jstor.org/stable/43693155
+     *
+     * L.A. Freitag, C. Ollivier-Gooch, (1997): "Tetrahedral 
+     * mesh improvement using swapping and smoothing", 
+     * International Journal for Numerical Methods in 
+     * Engineering 40 (21), pp. 3979-4002,
+     * https://doi.org/10.1002/(SICI)1097-0207
+     * (19971115)40:21<3979::AID-NME251>3.0.CO;2-9 
+     *
+     * B.M. Klingner, J.R. Shewchuk, (2008)" "Aggressive 
+     * Tetrahedral Mesh Improvement", Proc. of the 16th 
+     * International Meshing Roundtable, pp. 3-23,
+     * https://doi.org/10.1007/978-3-540-75103-8_1
+     *
+     * P. Mullen, P. Memari, F. de Goes, M. Desbrun, (2011): 
+     * "HOT: Hodge-optimized triangulations", ACM 
+     * Transactions on Graphics (TOG), 30 (4) pp. 103,
+     * https://doi.org/10.1145/2010324.1964998
+     *
+     * Core theory and techniques for Delaunay tessellation
+     * and refinement can be found (for example) here:
      *
      * S. Cheng, T. Dey and J. Shewchuk, (2012): "Delaunay 
      * mesh generation", CRC Press.
@@ -132,11 +181,26 @@
      */
 
 
-#   define __JGSWVSTR "JIGSAW VERSION 0.9.7.2"
-
 #   define __jloglndv   \
 "#------------------------------------------------------------\n"
 
+//  define __cmd_jigsaw               // the cmd-ln exe's
+//  define __cmd_tripod
+//  define __cmd_marche
+
+//  define __lib_jigsaw               // a shared library
+
+#   if !defined(__cmd_jigsaw) && \
+       !defined(__cmd_tripod) && \
+       !defined(__cmd_marche) && \
+       !defined(__lib_jigsaw)
+
+    /*---------------------------------- build by default */
+#       define  __cmd_jigsaw
+
+#   endif
+
+#   define __JGSWVSTR "JIGSAW VERSION 0.9.8"
 
     /*---------------------------------- for i/o on files */
    
@@ -168,13 +232,6 @@
 
 #   include "libcpp/rdelmesh.hpp"
 #   include "libcpp/itermesh.hpp"
-
-    /*---------------------------------- JIGSAW's userlib */
-
-//  define __cmd_jigsaw
-//  define __cmd_tripod
-
-//  define __lib_jigsaw               // define makes lib
 
     extern  "C" 
     {

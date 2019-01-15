@@ -242,7 +242,8 @@
             _fdat._pass    = _pass;
 
             _fdat._tadj    = _tpos;
-            _fdat._eadj    = _fpos;
+            _fdat._eadj    = 
+                (char_type)  _fpos;
             _fdat._dups    = +0; // count num. dup's
                                  // only in hash-set
             

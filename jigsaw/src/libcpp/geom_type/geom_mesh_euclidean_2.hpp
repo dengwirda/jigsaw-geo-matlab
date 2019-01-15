@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 31 December, 2018
+     * Last updated: 09 January, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -53,7 +53,8 @@
     typename I ,
     typename A = allocators::basic_alloc
              >
-    class geom_mesh_euclidean_2d
+    class geom_mesh_euclidean_2d : 
+            public  geom_base_2d<R, I>
     {
     public  :
     
@@ -67,6 +68,15 @@
                 real_type ,
                 iptr_type ,
                 allocator    >      geom_type ;
+                
+    typedef geom_base_3d     <
+                real_type ,
+                iptr_type    >      base_type ;
+    
+    typedef typename 
+            base_type::line_type    line_type ;
+    typedef typename 
+            base_type::ball_type    ball_type ;
                 
     typedef containers::fixed_array <
                 iptr_type , 2   >   part_data ;
@@ -501,7 +511,11 @@
         geom_opts &_opts
         )
     {
-        containers::array<iptr_type> _mark ;
+        containers::array <
+                typename 
+            iptr_list::size_type> _mark ;
+
+        __unreferenced (_opts) ;
     
     /*----------------------------- extrema for PART id's */
         iptr_type _imin = 
@@ -539,8 +553,13 @@
             "INIT-PART: -ve part index");
         
     /*----------------------------- push unique PART id's */
+        auto _flag = 
+            std::numeric_limits <
+                typename 
+            iptr_list::size_type>::max();
+        
         _mark.set_count(_imax+1, 
-            containers::tight_alloc, -1);
+        containers::tight_alloc, _flag) ;
     
         for (auto _iter  = 
              this->_part._lptr.head() ; 
@@ -557,10 +576,11 @@
                 iptr_type _ppos  = 
                     _next->_data[ +0];
 
-                if (_mark[_ppos] < 0)
+                if (_mark[_ppos] == _flag)
                 {
                     _mark[_ppos] = 
-                 this->_ptag.push_tail(_ppos) ;
+                        this->
+                    _ptag.push_tail(_ppos) ;
                 }
             }
         }
@@ -601,8 +621,6 @@
                 auto _jptr = &this->
                     _tria._set1[_jnod];
         
-                iptr_type _pmap = _mark[_ppos];
-        
                 real_type _xmin = std:: min (
                     _iptr->pval(0) ,
                     _jptr->pval(0)) ;
@@ -616,7 +634,9 @@
                 real_type _ymax = std:: max (
                     _iptr->pval(1) ,
                     _jptr->pval(1)) ;
-                    
+        
+                auto _pmap = _mark[_ppos] ;
+
                 this->_pmin[_pmap][0] = 
                     std::min(
                 this->_pmin[_pmap][0],_xmin) ;
@@ -1176,8 +1196,7 @@
     typename      hits_func
              >
     __normal_call bool_type intersect (
-        real_type *_cmid,
-        real_type  _rsiz,
+        ball_type &_ball,
         hits_func &_hfun
         )
     {
@@ -1194,17 +1213,18 @@
              hits_func >  hits_pred ;
 
     /*------------------ call actual intersection testing */      
-        real_type _bmin[ 2] = {
-            _cmid[ 0] - _rsiz ,
-            _cmid[ 1] - _rsiz
+        real_type _rmin[ 2] = {
+        _ball._pmid[0] - _ball._rrad  ,
+        _ball._pmid[1] - _ball._rrad
             } ;
-        real_type _bmax[ 2] = {
-            _cmid[ 0] + _rsiz ,
-            _cmid[ 1] + _rsiz
+        real_type _rmax[ 2] = {
+        _ball._pmid[0] + _ball._rrad  ,
+        _ball._pmid[1] + _ball._rrad
             } ;
       
-        tree_pred _pred(_bmin, _bmax) ;
-        hits_pred _func(_cmid, _rsiz,
+        tree_pred _pred(_rmin, _rmax) ;
+        hits_pred _func(_ball. _pmid, 
+                        _ball. _rrad,
                         *this, _hfun) ;
 
         this->_ebox.find(_pred,_func) ;
@@ -1223,8 +1243,7 @@
     typename      hits_func
              >
     __normal_call bool_type intersect (
-        real_type *_ipos,
-        real_type *_jpos,
+        line_type &_line,
         hits_func &_hfun
         )
     {
@@ -1241,8 +1260,10 @@
              hits_func >  hits_pred ; 
 
     /*------------------ call actual intersection testing */ 
-        tree_pred _pred(_ipos, _jpos) ;
-        hits_pred _func(_ipos, _jpos, 
+        tree_pred _pred(_line. _ipos, 
+                        _line. _jpos) ;
+        hits_pred _func(_line. _ipos, 
+                        _line. _jpos, 
                         *this, _hfun) ;
 
         this->_ebox.find(_pred,_func) ;

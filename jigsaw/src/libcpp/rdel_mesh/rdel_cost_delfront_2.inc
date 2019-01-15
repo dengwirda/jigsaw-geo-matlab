@@ -89,10 +89,12 @@
             return  ;
                
     /*------------------------- calc. refinement priority */
-        _edat._mark =         +0  ;
-        
+        _edat._mark =
+        _mesh._tria.node(_enod[0])->fdim() +
+        _mesh._tria.node(_enod[1])->fdim() ;
+
         _edat._cost =    _pmax[2] ;
-        
+
         _edat._imax =    _enod[0] ;
         _edat._imax = std::max(
             _edat._imax, _enod[1]);
@@ -206,9 +208,9 @@
         }
     
     /*------------------------- calc. refinement priority */
-        _tdat._mark  =  +0 ;
-    
-    #   ifdef __bias_BNDS      
+        _tdat._mark  = +3 ;
+
+    #   ifdef __bias_BNDS     
         for(_enum = +3; _enum-- != +0; )
         {
             iptr_type  _enod[ +3];

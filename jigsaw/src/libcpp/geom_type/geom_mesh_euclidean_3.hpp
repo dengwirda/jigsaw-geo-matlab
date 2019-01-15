@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 31 December, 2018
+     * Last updated: 09 January, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -53,7 +53,8 @@
     typename I ,
     typename A = allocators::basic_alloc
              >
-    class geom_mesh_euclidean_3d
+    class geom_mesh_euclidean_3d : 
+            public  geom_base_3d<R, I>
     {
     public  :
     /*---------- discrete geometry in R^3 via nodes/faces */
@@ -65,7 +66,20 @@
                 real_type ,
                 iptr_type ,
                 allocator    >      geom_type ;
-                
+
+    typedef geom_base_3d     <
+                real_type ,
+                iptr_type    >      base_type ;
+    
+    typedef typename 
+            base_type::line_type    line_type ;
+    typedef typename 
+            base_type::flat_type    flat_type ;
+    typedef typename 
+            base_type::disc_type    disc_type ;
+    typedef typename 
+            base_type::ball_type    ball_type ;
+
     typedef containers::fixed_array <
                 iptr_type , 2   >   part_data ;
 
@@ -227,7 +241,7 @@
         } ;
         
     #undef __hashscal
-    
+   
     iptr_type static 
         constexpr pool_byte_size = 96 * 1024 ;
 
@@ -881,8 +895,12 @@
         geom_opts &_opts
         )
     {
-        containers::array<iptr_type> _mark ;
+        containers::array <
+                typename 
+            iptr_list::size_type> _mark ;
     
+        __unreferenced (_opts) ;
+
     /*----------------------------- extrema for PART id's */
         iptr_type _imin = 
             +std::numeric_limits
@@ -916,11 +934,16 @@
         if (_imin < (iptr_type) +0 &&
             _imax < (iptr_type) +0 )
             __assert( _imin >=  +0 && 
-            "INIT-PART: -ve part index");
+            "INIT-PART:-ve part index") ;
         
     /*----------------------------- push unique PART id's */
+        auto _flag = 
+            std::numeric_limits <
+                typename 
+            iptr_list::size_type>::max();
+        
         _mark.set_count(_imax+1, 
-            containers::tight_alloc, -1);
+        containers::tight_alloc, _flag) ;
     
         for (auto _iter  = 
              this->_part._lptr.head() ; 
@@ -937,10 +960,11 @@
                 iptr_type _ppos  = 
                     _next->_data[ +0];
 
-                if (_mark[_ppos] < 0)
+                if (_mark[_ppos] == _flag)
                 {
                     _mark[_ppos] = 
-                 this->_ptag.push_tail(_ppos) ;
+                        this->
+                    _ptag.push_tail(_ppos) ;
                 }
             }
         }
@@ -981,8 +1005,6 @@
                 auto _jptr = &this->
                     _tria._set1[_jnod];
         
-                iptr_type _pmap = _mark[_ppos];
-        
                 real_type _xmin = std:: min (
                     _iptr->pval(0) ,
                     _jptr->pval(0)) ;
@@ -1002,7 +1024,9 @@
                 real_type _zmax = std:: max (
                     _iptr->pval(2) ,
                     _jptr->pval(2)) ;
-                    
+        
+                auto _pmap = _mark[_ppos] ;
+
                 this->_pmin[_pmap][0] = 
                     std::min(
                 this->_pmin[_pmap][0],_xmin) ;
@@ -1353,6 +1377,112 @@
     template <
     typename   hits_func
              >
+    class flat_line_pred
+        {
+    /*------------------ flat-line intersection predicate */
+        public  :
+        real_type      _pmid[3] ;
+        real_type      _nvec[3] ;
+       
+        geom_type     &_geom ;
+        
+        hits_func     &_hfun ;
+        
+        bool_type      _find ;   
+        iptr_type      _hnum ;
+        
+        geometry::
+        hits_type      _hits ;
+        
+        public  :
+        flat_line_pred operator = (
+            flat_line_pred & 
+            )                   =   delete ;
+        flat_line_pred operator = (
+            flat_line_pred&& 
+            )                   =   delete ;
+
+        public  :
+    /*------------------------------ construct from _src. */
+        __normal_call flat_line_pred (
+            real_type *_qsrc ,
+            real_type *_vsrc ,
+            geom_type &_gsrc ,
+            hits_func &_hsrc
+            ) : _geom( _gsrc), 
+                _hfun( _hsrc)
+        {
+            this->_hits    = 
+                geometry ::null_hits ;
+
+            this->_pmid[0] = _qsrc[0];
+            this->_pmid[1] = _qsrc[1];
+            this->_pmid[2] = _qsrc[2];
+           
+            this->_nvec[0] = _vsrc[0];
+            this->_nvec[1] = _vsrc[1];
+            this->_nvec[2] = _vsrc[2];
+
+            this->_hnum    = + 0   ;
+            this->_find    = false ;
+        }
+    /*----------------------- all intersection about node */
+        __normal_call  void_type operator()  (
+            typename  
+            tree_type::item_data *_iptr
+            )
+        {
+            for ( ; _iptr != nullptr; 
+                        _iptr = _iptr->_next )
+            {
+                geometry::hits_type 
+                    _hits = geometry::face_hits ;
+            
+            /*--------------- line-tria intersection test */
+                iptr_type  _epos = 
+                    _iptr->_data.ipos() ;
+                
+                iptr_type _enod[2];
+                _enod[0] =_geom.
+                    _tria._set2[_epos].node(0) ;
+                _enod[1] =_geom.
+                    _tria._set2[_epos].node(1) ;
+            
+                real_type _xpos[3];
+                bool_type _okay = 
+                    geometry::line_flat_3d (
+                     this->_pmid, 
+                     this->_nvec, 
+                    &this->_geom.
+                _tria._set1[_enod[0]].pval(0) , 
+                    &this->_geom.
+                _tria._set1[_enod[1]].pval(0) , 
+                    _xpos, true);
+
+                if (_okay)
+                {
+            /*--------------- call output function on hit */
+                    this->_hfun (_xpos, _hits ,
+                        _geom._tria .
+                        _set2[_epos].feat() ,
+                        _geom._tria .
+                        _set2[_epos].topo() ,
+                        _geom._tria .
+                        _set2[_epos].itag() ) ;
+                    
+                    this->_hnum+= +1 ;
+                    
+                    this->_find = true ;
+                    this->_hits =_hits ;
+                }
+            }
+        }
+        
+        } ;
+
+    template <
+    typename   hits_func
+             >
     class line_tria_pred
         {
     /*------------------ line-tria intersection predicate */
@@ -1491,124 +1621,13 @@
         }
         
         } ;
-    
-    template <
-    typename   poly_list,
-    typename   hits_func
-             >
-    class poly_line_pred
-        {
-    /*------------------ poly-line intersection predicate */
-        public  :
-        real_type      _ppos[3] ;
-        real_type      _nvec[3] ;
-        
-        poly_list     &_poly ;
-
-        geom_type     &_geom ;
-        
-        hits_func     &_hfun ;
-        
-        bool_type      _find ;   
-        iptr_type      _hnum ;
-        
-        geometry::
-        hits_type      _hits ;
-        
-        public  :
-        poly_line_pred operator = (
-            poly_line_pred & 
-            )                   =   delete ;
-        poly_line_pred operator = (
-            poly_line_pred&& 
-            )                   =   delete ;
-
-        public  :
-    /*------------------------------ construct from _src. */
-        __normal_call poly_line_pred (
-            real_type *_qsrc ,
-            real_type *_vsrc ,
-            poly_list &_psrc ,
-            geom_type &_gsrc ,
-            hits_func &_hsrc
-            ) : _poly( _psrc),
-                _geom( _gsrc), 
-                _hfun( _hsrc)
-        {
-            this->_hits    = 
-                geometry ::null_hits ;
-
-            this->_ppos[0] = _qsrc[0];
-            this->_ppos[1] = _qsrc[1];
-            this->_ppos[2] = _qsrc[2];
-           
-            this->_nvec[0] = _vsrc[0];
-            this->_nvec[1] = _vsrc[1];
-            this->_nvec[2] = _vsrc[2];
-
-            this->_hnum    = + 0   ;
-            this->_find    = false ;
-        }
-    /*----------------------- all intersection about node */
-        __normal_call  void_type operator()  (
-            typename  
-            tree_type::item_data *_iptr
-            )
-        {
-            for ( ; _iptr != nullptr; 
-                        _iptr = _iptr->_next )
-            {
-                geometry::hits_type 
-                    _hits = geometry::null_hits ;
-            
-            /*--------------- line-tria intersection test */
-                iptr_type  _epos = 
-                    _iptr->_data.ipos() ;
-                
-                iptr_type _enod[2];
-                _enod[0] =_geom.
-                    _tria._set2[_epos].node(0) ;
-                _enod[1] =_geom.
-                    _tria._set2[_epos].node(1) ;
-            
-                real_type _xpos[3];
-                _hits = geometry::line_poly_3d (
-                   &_geom._tria.
-                    _set1[_enod[0]].pval(0) ,
-                   &_geom._tria.
-                    _set1[_enod[1]].pval(0) ,
-                    this->_ppos,
-                    this->_nvec,
-                    this->_poly, _xpos) ;
-
-                if(_hits != geometry::null_hits)
-                {
-            /*--------------- call output function on hit */
-                    this->_hfun (_xpos, _hits ,
-                        _geom._tria .
-                        _set2[_epos].feat() ,
-                        _geom._tria .
-                        _set2[_epos].topo() ,
-                        _geom._tria .
-                        _set2[_epos].itag() ) ;
-                    
-                    this->_hnum+= +1 ;
-                    
-                    this->_find = true ;
-                    this->_hits =_hits ;
-                }
-            }
-        }
-        
-        } ;
-
 
     template <
     typename   hits_func
              >
     class ball_line_pred
         {
-    /*------------------ tria-line intersection predicate */
+    /*------------------ ball-line intersection predicate */
         public  :
         real_type      _ball[3] ;
         real_type      _rsiz ;
@@ -1723,12 +1742,11 @@
         }
         
         } ;
-  
-  
+   
     template <
     typename   hits_func
              >
-    class circ_tria_pred
+    class disc_tria_pred
         {
     /*------------------ circ-tria intersection predicate */
         public  :
@@ -1743,16 +1761,16 @@
         bool_type      _find ;
 
         public  :
-        circ_tria_pred operator = (
-            circ_tria_pred & 
+        disc_tria_pred operator = (
+            disc_tria_pred & 
             )                   =   delete ;
-        circ_tria_pred operator = (
-            circ_tria_pred&& 
+        disc_tria_pred operator = (
+            disc_tria_pred&& 
             )                   =   delete ;
 
         public  :
     /*------------------------------ construct from _src. */
-        __normal_call circ_tria_pred (
+        __normal_call disc_tria_pred (
             real_type *_csrc ,
             real_type *_nsrc ,
             real_type  _rsrc ,
@@ -1850,181 +1868,38 @@
         
         } ;
 
+    
     /*
     --------------------------------------------------------
-     * INTERSECT: compute poly-edge intersections.
+     * INTERSECT: find FLAT/1-GEOM. intersections.
     --------------------------------------------------------
      */
     
-    
     template <
-    typename      mesh_type,
-    typename      iptr_list,
-    typename      hits_func
-             >
-    __normal_call bool_type intersect___ (
-        mesh_type &_mesh,
-        iptr_type *_enod,
-        iptr_list &_tset,
-        hits_func &_hfun
-        )
-    {
-    /*------------------ tree-line intersection predicate */
-        typedef 
-        geom_tree::aabb_pred_rect_k <
-             real_type, 
-             iptr_type, 
-             +3        >    tree_pred ; 
-
-    /*------------------ tria-line intersection predicate */
-        /*
-        typedef 
-        poly_line_pred <
-             poly_list ,
-             hits_func >    hits_pred ; 
-        */
-
-    /*------------------ call actual intersection testing */
-        real_type _rmin[3] ;
-        real_type _rmax[3] ;
-        
-        /*
-        _rmin [ +0] = _poly[ +0][ +0];
-        _rmin [ +1] = _poly[ +0][ +1];
-        _rmin [ +2] = _poly[ +0][ +2];
-        
-        _rmax [ +0] = _poly[ +0][ +0];
-        _rmax [ +1] = _poly[ +0][ +1];
-        _rmax [ +2] = _poly[ +0][ +2];
-
-        for(auto _iter  = _poly.head() ;
-                 _iter != _poly.tend() ;
-               ++_iter  )
-        {
-        _rmin [ +0] =  std::min (
-        _rmin [ +0] , (*_iter)[ +0]) ;
-        _rmin [ +1] =  std::min (
-        _rmin [ +1] , (*_iter)[ +1]) ;
-        _rmin [ +2] =  std::min (
-        _rmin [ +2] , (*_iter)[ +2]) ;
-
-        _rmax [ +0] =  std::max (
-        _rmax [ +0] , (*_iter)[ +0]) ;
-        _rmax [ +1] =  std::max (
-        _rmax [ +1] , (*_iter)[ +1]) ;
-        _rmax [ +2] =  std::max (
-        _rmax [ +2] , (*_iter)[ +2]) ;
-        }
-        
-        */
-
-        real_type _rtol = +1.0E-08 ;
-
-        _rmin[0] -= _rtol * 
-       (this->_bmax[0]-this->_bmin[0]);
-        _rmin[1] -= _rtol * 
-       (this->_bmax[1]-this->_bmin[1]);
-        _rmin[2] -= _rtol * 
-       (this->_bmax[2]-this->_bmin[2]);
-       
-        _rmax[0] += _rtol * 
-       (this->_bmax[0]-this->_bmin[0]);
-        _rmax[1] += _rtol * 
-       (this->_bmax[1]-this->_bmin[1]);
-        _rmax[2] += _rtol * 
-       (this->_bmax[2]-this->_bmin[2]);
-
-        tree_pred _pred(_rmin, _rmax) ;     
-        
-        /*
-        hits_pred _func(_ppos, _nvec,
-                        _poly, 
-                        *this, _hfun) ;
-        */
-
-      //this->_ebox.find(_pred,_func) ;
-
-    /*------------------ _TRUE if any intersections found */
-        return false;
-      //return (   _func._find ) ;
-    }
-    
-     
-    template <
-    typename      poly_list,
     typename      hits_func
              >
     __normal_call bool_type intersect (
-        real_type *_ppos,
-        real_type *_nvec,
-        poly_list &_poly,
+        flat_type &_flat,
         hits_func &_hfun
         )
     {
-    /*------------------ tree-line intersection predicate */
+    /*------------------ tree-rect intersection predicate */
         typedef 
         geom_tree::aabb_pred_rect_k <
              real_type, 
              iptr_type, 
              +3        >    tree_pred ; 
 
-    /*------------------ tria-line intersection predicate */
+    /*------------------ dual-face intersection predicate */
         typedef 
-        poly_line_pred <
-             poly_list ,
+        flat_line_pred <
              hits_func >    hits_pred ; 
 
     /*------------------ call actual intersection testing */
-        if (_poly.empty()) return false ;
-
-        real_type _rmin[3] ;
-        real_type _rmax[3] ;
-        _rmin [ +0] = _poly[ +0][ +0];
-        _rmin [ +1] = _poly[ +0][ +1];
-        _rmin [ +2] = _poly[ +0][ +2];
-        
-        _rmax [ +0] = _poly[ +0][ +0];
-        _rmax [ +1] = _poly[ +0][ +1];
-        _rmax [ +2] = _poly[ +0][ +2];
-
-        for(auto _iter  = _poly.head() ;
-                 _iter != _poly.tend() ;
-               ++_iter  )
-        {
-        _rmin [ +0] =  std::min (
-        _rmin [ +0] , (*_iter)[ +0]) ;
-        _rmin [ +1] =  std::min (
-        _rmin [ +1] , (*_iter)[ +1]) ;
-        _rmin [ +2] =  std::min (
-        _rmin [ +2] , (*_iter)[ +2]) ;
-
-        _rmax [ +0] =  std::max (
-        _rmax [ +0] , (*_iter)[ +0]) ;
-        _rmax [ +1] =  std::max (
-        _rmax [ +1] , (*_iter)[ +1]) ;
-        _rmax [ +2] =  std::max (
-        _rmax [ +2] , (*_iter)[ +2]) ;
-        }
-
-        real_type _rtol = +1.0E-08 ;
-
-        _rmin[0] -= _rtol * 
-       (this->_bmax[0]-this->_bmin[0]);
-        _rmin[1] -= _rtol * 
-       (this->_bmax[1]-this->_bmin[1]);
-        _rmin[2] -= _rtol * 
-       (this->_bmax[2]-this->_bmin[2]);
-       
-        _rmax[0] += _rtol * 
-       (this->_bmax[0]-this->_bmin[0]);
-        _rmax[1] += _rtol * 
-       (this->_bmax[1]-this->_bmin[1]);
-        _rmax[2] += _rtol * 
-       (this->_bmax[2]-this->_bmin[2]);
-
-        tree_pred _pred(_rmin, _rmax) ;     
-        hits_pred _func(_ppos, _nvec,
-                        _poly, 
+        tree_pred _pred(_flat. _rmin, 
+                        _flat. _rmax) ;     
+        hits_pred _func(_flat. _ppos, 
+                        _flat. _nvec,
                         *this, _hfun) ;
 
         this->_ebox.find(_pred,_func) ;
@@ -2035,7 +1910,46 @@
 
     /*
     --------------------------------------------------------
-     * INTERSECT: compute ball-edge intersections.
+     * INTERSECT: find LINE/2-GEOM. intersections.
+    --------------------------------------------------------
+     */
+    
+    template <
+    typename      hits_func
+             >
+    __normal_call bool_type intersect (
+        line_type &_line,
+        hits_func &_hfun
+        )
+    {
+    /*------------------ tree-line intersection predicate */
+        typedef 
+        geom_tree::aabb_pred_line_k <
+             real_type, 
+             iptr_type, 
+             +3        >    tree_pred ;
+             
+    /*------------------ tria-line intersection predicate */
+        typedef 
+        line_tria_pred <
+             hits_func >    hits_pred ; 
+
+    /*------------------ call actual intersection testing */
+        tree_pred _pred(_line. _ipos, 
+                        _line. _jpos) ;
+        hits_pred _func(_line. _ipos, 
+                        _line. _jpos, 
+                        *this, _hfun) ;
+
+        this->_tbox.find(_pred,_func) ;
+
+    /*------------------ _TRUE if any intersections found */
+        return (   _func._find ) ;
+    }
+    
+    /*
+    --------------------------------------------------------
+     * INTERSECT: find BALL/1-GEOM. intersections.
     --------------------------------------------------------
      */
      
@@ -2043,8 +1957,7 @@
     typename      hits_func
              >
     __normal_call bool_type intersect (
-        real_type *_cmid,
-        real_type  _rsiz,
+        ball_type &_ball,
         hits_func &_hfun
         )
     {
@@ -2062,18 +1975,19 @@
 
     /*------------------ call actual intersection testing */      
         real_type _rmin[ 3] = {
-            _cmid[ 0] - _rsiz ,
-            _cmid[ 1] - _rsiz ,
-            _cmid[ 2] - _rsiz
+        _ball._pmid[0] - _ball._rrad  ,
+        _ball._pmid[1] - _ball._rrad  ,
+        _ball._pmid[2] - _ball._rrad
             } ;
         real_type _rmax[ 3] = {
-            _cmid[ 0] + _rsiz ,
-            _cmid[ 1] + _rsiz ,
-            _cmid[ 2] + _rsiz
+        _ball._pmid[0] + _ball._rrad  ,
+        _ball._pmid[1] + _ball._rrad  ,
+        _ball._pmid[2] + _ball._rrad
             } ;
       
         tree_pred _pred(_rmin, _rmax) ;
-        hits_pred _func(_cmid, _rsiz,
+        hits_pred _func(_ball. _pmid, 
+                        _ball. _rrad,
                         *this, _hfun) ;
 
         this->_ebox.find(_pred,_func) ;
@@ -2084,45 +1998,7 @@
 
     /*
     --------------------------------------------------------
-     * INTERSECT: compute line-face intersections.
-    --------------------------------------------------------
-     */
-    
-    template <
-    typename      hits_func
-             >
-    __normal_call bool_type intersect (
-        real_type *_ipos,
-        real_type *_jpos,
-        hits_func &_hfun
-        )
-    {
-    /*------------------ tree-line intersection predicate */
-        typedef 
-        geom_tree::aabb_pred_line_k <
-             real_type, 
-             iptr_type, 
-             +3        >    tree_pred ; 
-
-    /*------------------ tria-line intersection predicate */
-        typedef 
-        line_tria_pred <
-             hits_func >    hits_pred ; 
-
-    /*------------------ call actual intersection testing */ 
-        tree_pred _pred(_ipos, _jpos) ;
-        hits_pred _func(_ipos, _jpos, 
-                        *this, _hfun) ;
-
-        this->_tbox.find(_pred,_func) ;
-
-    /*------------------ _TRUE if any intersections found */
-        return (   _func._find ) ;
-    }
-    
-    /*
-    --------------------------------------------------------
-     * INTERSECT: compute disk-face intersections.
+     * INTERSECT: find DISC/2-GEOM. intersections.
     --------------------------------------------------------
      */
      
@@ -2130,15 +2006,11 @@
     typename      hits_func
              >
     __normal_call bool_type intersect (
-        real_type *_cmid,
-        real_type *_nvec,
-        real_type  _rsiz,
-        real_type *_ball,
+        disc_type &_disc,
+        real_type *_sbal,
         hits_func &_hfun
         )
     {
-        __unreferenced(_ball);
-
     /*------------------ tree-rect intersection predicate */
         typedef 
         geom_tree::aabb_pred_rect_k <
@@ -2148,24 +2020,27 @@
 
     /*------------------ circ_tria intersection predicate */
         typedef 
-        circ_tria_pred <
+        disc_tria_pred <
              hits_func >    hits_pred ;
+
+        __unreferenced(_sbal) ;
 
     /*------------------ call actual intersection testing */ 
         real_type _rmin[ 3] = {
-            _cmid[ 0] - _rsiz ,
-            _cmid[ 1] - _rsiz ,
-            _cmid[ 2] - _rsiz
+        _disc._pmid[0] - _disc._rrad  ,
+        _disc._pmid[1] - _disc._rrad  ,
+        _disc._pmid[2] - _disc._rrad
             } ;
         real_type _rmax[ 3] = {
-            _cmid[ 0] + _rsiz ,
-            _cmid[ 1] + _rsiz ,
-            _cmid[ 2] + _rsiz
+        _disc._pmid[0] + _disc._rrad  ,
+        _disc._pmid[1] + _disc._rrad  ,
+        _disc._pmid[2] + _disc._rrad
             } ;
             
         tree_pred _pred(_rmin, _rmax) ;
-        hits_pred _func(_cmid, _nvec, 
-                        _rsiz, 
+        hits_pred _func(_disc. _pmid, 
+                        _disc. _nvec, 
+                        _disc. _rrad, 
                         *this, _hfun) ;
 
         this->_tbox.find(_pred,_func) ;

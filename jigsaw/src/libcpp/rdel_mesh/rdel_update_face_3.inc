@@ -281,7 +281,8 @@
             _edat._pass    = _pass;
 
             _edat._tadj    = _tpos;
-            _edat._eadj    = _fpos;
+            _edat._eadj    = 
+                (char_type)  _fpos;
             
         /*--------------------------- call edge predicate */
             char_type _hits;
@@ -409,7 +410,8 @@
             _fdat._pass    = _pass;
 
             _fdat._tadj    = _tpos;
-            _fdat._fadj    = _fpos;
+            _fdat._fadj    = 
+                (char_type)  _fpos;
             _fdat._dups    = +0; // count num. dup's
                                  // only in hash-set
             

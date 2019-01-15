@@ -500,6 +500,8 @@
         iptr_type static 
             constexpr _ITER = (iptr_type)+5 ;
     
+        __unreferenced(_DMIN) ;
+
         _move = (iptr_type)+0 ;
         
         real_type _line [_dims] = {
@@ -757,8 +759,6 @@
         iptr_list &_aset ,
         iptr_list &_amrk ,
         iptr_list &_nmrk ,
-        iptr_list &_emrk ,
-        iptr_list &_tmrk ,
         iptr_type  _iout , 
         iptr_type  _isub ,
         iter_opts &_opts ,
@@ -798,8 +798,8 @@
         __unreferenced(_hfun) ;
         __unreferenced(_pred) ;
         __unreferenced(_hval) ;
-        __unreferenced(_emrk) ;
-        __unreferenced(_tmrk) ;
+        __unreferenced(_opts) ;
+        __unreferenced(_DLIM) ;
  
         if (_isub == (iptr_type) +0)
         {
@@ -988,9 +988,8 @@
         sort_node( _geom, _mesh, _hfun, 
             _pred, _hval, _qscr, 
             _nset, _aset, 
-            _amrk, _nmrk, _emrk, _tmrk, 
-            _iout, _isub, _opts, 
-            _TLIM, _DLIM ) ;
+            _amrk, _nmrk, _iout, _isub, 
+            _opts, _TLIM, _DLIM ) ;
     
     /*-------------------- GAUSS-SEIDEL iteration on DUAL */
         if (_opts .dual())
