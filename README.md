@@ -44,20 +44,20 @@ The first step is to compile the code! The `JIGSAW` src can be found in <a href=
 
 `JIGSAW` has been successfully built using various versions of the `g++` and `llvm` compilers. Since the build process is a simple one-liner, there's no `make` script - instead:
 
-	g++ -std=c++11 -pedantic -Wall -s -O3 -flto -D NDEBUG 
-	-D __cmd_jigsaw -static-libstdc++ jigsaw.cpp 
-        -o jigsaw64r
+	g++ -std=c++11 -pedantic -Wall -s -O3 -flto -D NDEBUG
+	-D __cmd_jigsaw -static-libstdc++ jigsaw.cpp
+	-o jigsaw64r
 	
 will build the main `JIGSAW` cmd-line executable,
 
-        g++ -std=c++11 -pedantic -Wall -s -O3 -flto -D NDEBUG 
-	-D __cmd_tripod -static-libstdc++ jigsaw.cpp 
-        -o tripod64r
+	g++ -std=c++11 -pedantic -Wall -s -O3 -flto -D NDEBUG
+	-D __cmd_tripod -static-libstdc++ jigsaw.cpp
+	-o tripod64r
 	
 will build the `TRIPOD` cmd-line utility (`JIGSAW`'s tessellation infrastructure) and,
 
-	g++ -std=c++11 -pedantic -Wall -O3 -flto -fPIC -D NDEBUG 
-	-D __lib_jigsaw -static-libstdc++ jigsaw.cpp 
+	g++ -std=c++11 -pedantic -Wall -O3 -flto -fPIC -D NDEBUG
+	-D __lib_jigsaw -static-libstdc++ jigsaw.cpp
 	-shared -o libjigsaw64r.so
 
 will build `JIGSAW` as a shared library. See the headers in <a href="../master/jigsaw/inc/">`../jigsaw/inc/`</a> for details on the `API`.
