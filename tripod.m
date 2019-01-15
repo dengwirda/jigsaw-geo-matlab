@@ -34,6 +34,26 @@ function [varargout] = tripod(opts)
 %       various 1-, 2- and/or 3-dimensional sub-meshes that
 %       approximate the geometry definition.
 %
+%   OPTS.GEOM_FEAT - {default=false} attempt to auto-detect 
+%       "sharp-features" in the input geometry. Features can 
+%       lie adjacent to 1-dim. entities, (i.e. geometry 
+%       "edges") and/or 2-dim. entities, (i.e. geometry 
+%       "faces") based on both geometrical and/or topologic-
+%       al constraints. Geometrically, features are located 
+%       between any neighbouring entities that subtend 
+%       angles less than GEOM_ETAX degrees, where "X" is the 
+%       (topological) dimension of the feature. Topological-
+%       ly, features are located at the apex of any non-man-
+%       ifold connections.
+%
+%   OPTS.GEOM_ETA1 - {default=45deg} 1-dim. feature-angle, 
+%       features are located between any neighbouring 
+%       "edges" that subtend angles less than ETA1 deg.
+%
+%   OPTS.GEOM_ETA2 - {default=45deg} 2-dim. feature angle, 
+%       features are located between any neighbouring 
+%       "faces" that subtend angles less than ETA2 deg.
+%
 %   OPTIONAL fields (MESH):
 %   ----------------------
 %
