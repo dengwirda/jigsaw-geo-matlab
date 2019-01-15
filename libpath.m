@@ -5,10 +5,9 @@ function libpath
 %   See also JIGSAW, MESHDEMO
 
 %-----------------------------------------------------------
-%   JIGSAW-0.9.6.x
 %   Darren Engwirda
 %   github.com/dengwirda/jigsaw-matlab
-%   24-Jul-2018
+%   07-Sep-2018
 %   darren.engwirda@columbia.edu
 %-----------------------------------------------------------
 %
@@ -17,6 +16,8 @@ function libpath
     
     filename = mfilename('fullpath') ;
     filepath = fileparts( filename ) ;
+    
+    libdata;
     
     addpath([filepath,'/script/aabb-tree']) ;
     addpath([filepath,'/script/draw-util']) ;

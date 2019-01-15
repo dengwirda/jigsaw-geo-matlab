@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 25 November, 2018
+     * Last updated: 27 December, 2018
      *
      * Copyright 2013-2018
      * Darren Engwirda
@@ -237,15 +237,31 @@
      */
     
     __static_call
-    __normal_call void_type move_okay (
+    __inline_call void_type move_okay (
         real_list &_cdst ,
         real_list &_csrc ,
         bool_type &_okay , 
-        real_type  _good = +9.25E-01 ,
+        real_type  _good = +9.25E-01,
         real_type  _qtol = +1.00E-04
         )
     {
-        _okay = false ;
+        iptr_type _move; 
+        move_okay(_cdst, _csrc, _move , 
+            _good,_qtol) ;
+            
+        _okay = ( _move>(iptr_type)0 );
+    }
+    
+    __static_call
+    __normal_call void_type move_okay (
+        real_list &_cdst ,
+        real_list &_csrc ,
+        iptr_type &_move , 
+        real_type  _good = +9.25E-01,
+        real_type  _qtol = +1.00E-04
+        )
+    {
+        _move = (iptr_type) -1;
         
         if (_cdst.empty()) return ;
         if (_csrc.empty()) return ;
@@ -293,18 +309,23 @@
         if ( true )
         {  
     /*--------------------- okay if all are improving */        
-            _okay  = _0dst > _0src &&
-                     _mdst > _msrc ;
-        
-            if (_okay) return;
+            if (_0dst > _0src &&
+                _mdst > _msrc )
+                _move = +1;
+                
+            if (_move > +0) return ;
         }
             
         if ( true )
         {  
     /*--------------------- okay if min. is improving */        
-            _okay  = _0dst > _0src+_qtol;
-        
-            if (_okay) return;
+            if (_0dst > _0src+_qtol)
+                _move = +1;
+            else
+            if (_0dst > _0src)
+                _move = +0;
+    
+            if (_move > +0) return ;
         }
         
         _qtol /= _cdst.count() ;
@@ -312,7 +333,13 @@
         if (_0dst >= _good)
         {
     /*--------------------- okay if mean is improving */
-            _okay  = _mdst > _msrc+_qtol;
+            if (_mdst > _msrc+_qtol)
+                _move = +1;
+            else
+            if (_mdst > _msrc)
+                _move = +0;
+             
+            if (_move > +0) return ;
         } 
              
     }
@@ -413,7 +440,7 @@
         typename  node_iter
              >
     __static_call
-    __normal_call void_type move_node (
+    __inline_call void_type move_node (
         geom_type &_geom ,
         mesh_type &_mesh ,
         size_type &_hfun ,
@@ -434,11 +461,49 @@
         real_type  _DLIM
         )
     {
+        iptr_type  _move;
+        move_node( _geom, _mesh, _hfun, 
+            _pred, _hval, _opts, _node, 
+            _kind, _move, _tset, 
+            _told, _tnew, _dold, _dnew, 
+            _TMIN, _TLIM,
+            _DMIN, _DLIM) ;
+            
+        _okay = ( _move>(iptr_type)0 );
+    }
+    
+    template <
+        typename  node_iter
+             >
+    __static_call
+    __normal_call void_type move_node (
+        geom_type &_geom ,
+        mesh_type &_mesh ,
+        size_type &_hfun ,
+        pred_type &_pred ,
+        real_list &_hval ,
+        iter_opts &_opts ,
+        node_iter  _node ,
+        iptr_type  _kind ,
+        iptr_type &_move ,
+        iptr_list &_tset ,
+        real_list &_told ,
+        real_list &_tnew ,
+        real_list &_dold ,
+        real_list &_dnew ,
+        real_type  _TMIN ,
+        real_type  _TLIM ,
+        real_type  _DMIN , 
+        real_type  _DLIM
+        )
+    {
         iptr_type static 
             constexpr _ITER = (iptr_type)+5 ;
     
-        _okay = false ;
-    
+        __unreferenced(_DMIN) ;
+
+        _move = (iptr_type)+0 ;
+        
         real_type _line [_dims] = {
        (real_type) +0.0 } ;
         real_type _save [_dims] = {
@@ -521,10 +586,10 @@
                        _tnew) ;
             
             move_okay( _tnew, 
-                _told, _okay, 
+                _told, _move,
             std::sqrt( _TLIM) , _opts.qtol()) ;
                 
-            if (!_okay) continue ;
+            if (_move < 0) continue ;
                   
             if ( _TMIN>=_TLIM)
             {
@@ -534,16 +599,14 @@
                        _dnew) ;
             
             move_okay( _dnew, 
-                _dold, _okay, 
+                _dold, _move,
             std::sqrt( _DLIM) , _opts.qtol()) ;
             }
                   
-            if (!_okay) continue ;
-
-            break ;            
+            if (_move >= +0)  break ;            
         }
  
-        if (!_okay)
+        if (_move <= (iptr_type)0)
         {
             for (auto _idim = _dims; _idim-- != +0; )
             {
@@ -566,7 +629,7 @@
         typename  node_iter
              >
     __static_call
-    __normal_call void_type move_dual (
+    __inline_call void_type move_dual (
         geom_type &_geom ,
         mesh_type &_mesh ,
         size_type &_hfun ,
@@ -582,12 +645,42 @@
         real_type  _DLIM
         )
     {
+        iptr_type  _move;
+        move_dual( _geom, _mesh, _hfun, 
+            _pred, _hval, _opts, _node, 
+            _move, _tset, 
+            _dold, _dnew, 
+            _DMIN, _DLIM) ;
+            
+        _okay = ( _move>(iptr_type)0 );
+    }
+    
+    template <
+        typename  node_iter
+             >
+    __static_call
+    __normal_call void_type move_dual (
+        geom_type &_geom ,
+        mesh_type &_mesh ,
+        size_type &_hfun ,
+        pred_type &_pred ,
+        real_list &_hval ,
+        iter_opts &_opts ,
+        node_iter  _node ,
+        iptr_type &_move ,
+        iptr_list &_tset ,
+        real_list &_dold ,
+        real_list &_dnew ,
+        real_type  _DMIN , 
+        real_type  _DLIM
+        )
+    {
         iptr_type static 
             constexpr _ITER = (iptr_type)+5 ;
     
         __unreferenced(_hval);
 
-        _okay = false ;
+        _move = (iptr_type)+0;
     
         real_type  _wadj, _line, _save ;
  
@@ -620,39 +713,29 @@
     
     /*---------------- do backtracking line search iter's */
     
-        for (auto _iter = +0 ; 
+        for (auto _iter  = +0  ; 
                 _iter != _ITER; ++_iter )
         {
             _node->pval(_dims) =  
                     _save + _scal*_line ;
             
-            /*
-            _node->pval(_dims) =    // finite-sized weights
-                std::max(-_wmax,
-                    _node->pval(_dims)) ;
-              
-            _node->pval(_dims) =    // finite-sized weights
-                std::min(+_wmax,
-                    _node->pval(_dims)) ;
-             */
-             
             _dnew.set_count(0) ;
-        
+            
+            _scal *= (real_type)+.5 ;
+            
     /*---------------- test quasi-monotonicity w.r.t. Q^D */
             loop_dscr( _mesh, _pred , 
                        _tset, 
                        _dnew) ;
             
             move_okay( _dnew, 
-                _dold, _okay, 
+                _dold, _move, 
             std::sqrt( _DLIM) , _opts.qtol()) ;
                   
-            if (_okay) break  ;
-            
-            _scal *= (real_type)+.5 ;
+            if (_move >= +0)  break ;
         }
  
-        if (!_okay)
+        if (_move <= (iptr_type) +0)
         {
             _node->pval(_dims) = _save ;
         }
@@ -676,8 +759,6 @@
         iptr_list &_aset ,
         iptr_list &_amrk ,
         iptr_list &_nmrk ,
-        iptr_list &_emrk ,
-        iptr_list &_tmrk ,
         iptr_type  _iout , 
         iptr_type  _isub ,
         iter_opts &_opts ,
@@ -692,7 +773,7 @@
             iptr_type           _node ;
             real_type           _cost ;
             } ;
-        
+       
         class cost_less
             {
             public  :
@@ -717,13 +798,12 @@
         __unreferenced(_hfun) ;
         __unreferenced(_pred) ;
         __unreferenced(_hval) ;
-        __unreferenced(_emrk) ;
-        __unreferenced(_tmrk) ;
+        __unreferenced(_opts) ;
+        __unreferenced(_DLIM) ;
  
         if (_isub == (iptr_type) +0)
         {
     /*-------------------- 1ST SUB-ITER: build full init. */
-        iptr_type _inum  = 0 ;
         for (auto _tria  = _mesh._set3.head();
                   _tria != _mesh._set3.tend();
                 ++_tria  )
@@ -742,74 +822,82 @@
                &_mesh._set1[_jnod].pval(0),
                &_mesh._set1[_knod].pval(0)
                     ) ;
+                    
+                iptr_type _flag = _iout-2 ;
        
-                if (_qscr[_inod] >= _cost)
+                if (_cost <= _TLIM ||
+                        std::abs(
+                    _nmrk[_inod])>= _flag ||
+                        std::abs(
+                    _nmrk[_jnod])>= _flag ||
+                        std::abs(
+                    _nmrk[_knod])>= _flag )
                 {
-                    _qscr[_inod]  = _cost;
-                }
-                if (_qscr[_jnod] >= _cost)
+                
+                if (_amrk[_inod] != _isub )
                 {
-                    _qscr[_jnod]  = _cost;
+                    _amrk[_inod]  = _isub ;
+                    _sset.push_tail() ;
+                    _sset.tail()->
+                        _node = _inod ;
                 }
-                if (_qscr[_knod] >= _cost)
+                
+                if (_amrk[_jnod] != _isub )
                 {
-                    _qscr[_knod]  = _cost;
+                    _amrk[_jnod]  = _isub ;
+                    _sset.push_tail() ;
+                    _sset.tail()->
+                        _node = _jnod ;
                 }
+                
+                if (_amrk[_knod] != _isub )
+                {
+                    _amrk[_knod]  = _isub ;
+                    _sset.push_tail() ;
+                    _sset.tail()->
+                        _node = _knod ;
+                }
+                
+                }
+       
+                _qscr[_inod] = std::min (
+                    _cost,_qscr[_inod]) ;
+                
+                _qscr[_jnod] = std::min (
+                    _cost,_qscr[_jnod]) ;
+                
+                _qscr[_knod] = std::min (
+                    _cost,_qscr[_knod]) ;
             }
         }
         
-        for (auto _node  = _mesh._set1.head();
-                  _node != _mesh._set1.tend();
-                ++_node , ++_inum)
+        for (auto _iter  = _sset.head() ;
+                  _iter != _sset.tend() ;
+                ++_iter  )
         {
-        /*-------------------- push if - non-bnd + recent */
-            if (_node->mark() >= +0 && 
-                    std::abs(
-                _nmrk[_inum]) >= _iout -4)
-            {
-                if (_amrk[_inum] != _isub)
-                {
-                    _sset.push_tail();
-                    _sset.tail()->
-                        _node =   _inum;
-                    _sset.tail()->
-                    _cost = _qscr[_inum] ;
-                }
-            }
-            else
-        /*-------------------- push if - in "low-Q" tria. */
-            if (_node->mark() >= +0 &&
-                    _qscr[_inum] <= _TLIM)
-            {
-                if (_amrk[_inum] != _isub)
-                {
-                    _sset.push_tail();
-                    _sset.tail()->
-                        _node =   _inum;
-                    _sset.tail()->
-                    _cost = _qscr[_inum] ;
-                }
-            }
+    /*------------------------ assign min.-cost for nodes */
+            _iter->_cost = 
+                _qscr[_iter->_node];
         }
         
-        algorithms::qsort( _sset.head(), 
-                           _sset.tend(), 
+        algorithms::qsort( _sset.head() , 
+                           _sset.tend() , 
             cost_less () ) ;
         
-        for (auto _iter  = _sset.head();
-                  _iter != _sset.tend();
+        for (auto _iter  = _sset.head() ;
+                  _iter != _sset.tend() ;
                 ++_iter  )
         {
     /*------------------------ push sorted wrt. min.-cost */
-            _aset.push_tail( _iter->_node );
+            _aset.push_tail(_iter->_node) ;
         }
    
         }
         else
         {
     /*-------------------- NTH sub-iter: init. from prev. */
-        for (auto _iter  = _nset.head();
-                  _iter != _nset.tend();
+        for (auto _iter  = _nset.head() ;
+                  _iter != _nset.tend() ;
                 ++_iter  )
         {   
             _eset.set_count(0) ;
@@ -840,10 +928,24 @@
                     _aset.push_tail(_jnod) ;
                 }
             }      
-        }  
-                       
         }
         
+    /*-------------------- weak, stochastic randomisation */
+        for (auto _iter  = _aset.head(); 
+                  _iter != _aset.tend();
+                ++_iter  )
+        {
+            auto _sift = std::min (
+                (size_t) +8 , 
+           (size_t) (_aset.tend()-_iter) ) ;
+        
+            auto _next = _iter + 
+                std::rand() % _sift ;
+            
+            std::swap(*_iter,*_next);          
+        }                   
+        }
+      
     }
     
     /*
@@ -883,29 +985,70 @@
         _nmov = (iptr_type)  +0 ;   
             
     /*-------------------- permute nodes for optimisation */
-        sort_node( _geom, _mesh ,
-            _hfun, _pred, _hval , 
-            _qscr, 
-            _nset, _aset, _amrk , 
-            _nmrk, _emrk, _tmrk , 
-            _iout, _isub, 
-            _opts, _TLIM, _DLIM) ;
-  
-    /*-------------------- weak, stochastic randomisation */
-        for (auto _iter  = _aset.head(); 
-                  _iter != _aset.tend();
-                ++_iter  )
+        sort_node( _geom, _mesh, _hfun, 
+            _pred, _hval, _qscr, 
+            _nset, _aset, 
+            _amrk, _nmrk, _iout, _isub, 
+            _opts, _TLIM, _DLIM ) ;
+    
+    /*-------------------- GAUSS-SEIDEL iteration on DUAL */
+        if (_opts .dual())
         {
-            auto _sift = std::min (
-                (size_t) +8 , 
-           (size_t)(_aset.tend()-_iter)) ;
-        
-            auto _next = _iter + 
-                std::rand() % _sift ;
+        for (auto _apos  = _aset.head() ;
+                  _apos != _aset.tend() ;
+                ++_apos  )
+        {
+             auto _node  = 
+            _mesh._set1.head() + *_apos ;
             
-            std::swap(*_iter,*_next);          
-        }
+            _tset.set_count( +0);
+            
+        /*---------------- assemble a local tria. stencil */
+            _mesh.node_tri3(
+                &_node->node(+0), _tset);
 
+            if (_tset.empty()) continue ;
+            
+        /*---------------- attempt to optimise DUAL geom. */    
+            _dold.set_count( +0);
+            _dnew.set_count( +0);
+            
+            real_type _DMIN = 
+                loop_dscr( _mesh, 
+                    _pred, _tset, _dold);
+            
+            bool_type _okay = false;
+            
+            if(!_okay)
+            {
+        /*---------------- attempt a GRAD-based smoothing */
+                move_dual( _geom, _mesh ,
+                    _hfun, _pred, _hval , 
+                    _opts, _node, 
+                    _okay, _tset, 
+                    _dold, _dnew, 
+                    _DMIN, _DLIM ) ;
+            }  
+                     
+            if (_okay) 
+            {
+        /*---------------- update when state is improving */
+            if (std::abs(
+               _nmrk[*_apos]) != _iout)
+            {
+                if (_nmrk[*_apos] >= 0)
+                _nmrk[*_apos] = +_iout;
+                else
+                _nmrk[*_apos] = -_iout;
+                
+                _nset.push_tail(*_apos) ;
+            }
+            
+            _nmov += +1 ;
+            }
+        }
+        }
+    
     /*-------------------- GAUSS-SEIDEL iteration on TRIA */
         if (_opts .tria())
         {
@@ -987,64 +1130,6 @@
             }
             }
         }     
-        }
-        
-    /*-------------------- GAUSS-SEIDEL iteration on DUAL */
-        if (_opts .dual())
-        {
-        for (auto _apos  = _aset.head() ;
-                  _apos != _aset.tend() ;
-                ++_apos  )
-        {
-             auto _node  = 
-            _mesh._set1.head() + *_apos ;
-            
-            _tset.set_count( +0);
-            
-        /*---------------- assemble a local tria. stencil */
-            _mesh.node_tri3(
-                &_node->node(+0), _tset);
-
-            if (_tset.empty()) continue ;
-            
-        /*---------------- attempt to optimise DUAL geom. */    
-            _dold.set_count( +0);
-            _dnew.set_count( +0);
-            
-            real_type _DMIN = 
-                loop_dscr( _mesh, 
-                    _pred, _tset, _dold);
-            
-            bool_type _okay = false;
-            
-            if(!_okay)
-            {
-        /*---------------- attempt a GRAD-based smoothing */
-                move_dual( _geom, _mesh ,
-                    _hfun, _pred, _hval , 
-                    _opts, _node, 
-                    _okay, _tset, 
-                    _dold, _dnew, 
-                    _DMIN, _DLIM ) ;
-            }  
-                     
-            if (_okay) 
-            {
-        /*---------------- update when state is improving */
-            if (std::abs(
-               _nmrk[*_apos]) != _iout)
-            {
-                if (_nmrk[*_apos] >= 0)
-                _nmrk[*_apos] = +_iout;
-                else
-                _nmrk[*_apos] = -_iout;
-                
-                _nset.push_tail(*_apos) ;
-            }
-            
-            _nmov += +1 ;
-            }
-        }
         }
         
     }
@@ -1252,6 +1337,8 @@
         iptr_list &_tmrk ,
         iptr_type  _imrk ,
         iter_opts &_opts ,
+        real_type  _TLIM ,
+        real_type  _DLIM ,
         iptr_type &_nzip ,
         iptr_type &_ndiv
         )
@@ -1263,7 +1350,7 @@
             
     #   define __markedge                   \
             init_mark( _mesh, _nmrk, _emrk, \
-                _tmrk, std::max(_imrk - 1, +0) ) ;  \
+                _tmrk, std::max(_imrk - 0, +0) ) ;  \
             if (std::abs(               \
                 _nmrk[_enod[0]])!= _imrk)   \
             {                           \
@@ -1350,8 +1437,6 @@
                     {
                     if (_eset.count() > _DEG_MAX)
                     {
-                        real_type _good = 
-                            (real_type) +1.000 ;
                         real_type _qinc = 
                             (real_type) -0.500 ;
                         real_type _ltol = 
@@ -1363,8 +1448,9 @@
                             _hval, _opts,*_eadj, 
                             _move, _iset, _jset,
                             _told, _tnew, _ttmp,
-                            _dold, _dnew, _ltol, 
-                            _good, _qinc) ;    
+                            _dold, _dnew,
+                            _TLIM, _DLIM, 
+                            _ltol, _qinc) ;    
                         
                         if (_move)
                         {
@@ -1379,7 +1465,8 @@
                             _hval, _opts,*_eadj, 
                             _move, _iset, _jset,
                             _told, _tnew, _ttmp,
-                            _dold, _dnew) ;
+                            _dold, _dnew,
+                            _TLIM, _DLIM) ;
                             
                         if (_move)
                         {
@@ -1394,8 +1481,6 @@
                     {
                     if (_eset.count() < _DEG_MIN)
                     {
-                        real_type _good = 
-                            (real_type) +1.000 ;
                         real_type _qinc = 
                             (real_type) -0.500 ;
                         real_type _ltol = 
@@ -1408,8 +1493,9 @@
                             _move, _iset, _jset,
                             _aset, _bset, _cset,
                             _told, _tnew, _ttmp,
-                            _dold, _dnew, _ltol,
-                            _good, _qinc) ;
+                            _dold, _dnew,
+                            _TLIM, _DLIM, 
+                            _ltol, _qinc) ;
                             
                         if (_move)
                         {                       
@@ -1425,7 +1511,8 @@
                             _move, _iset, _jset,
                             _aset, _bset, _cset,
                             _told, _tnew, _ttmp,
-                            _dold, _dnew) ;
+                            _dold, _dnew,
+                            _TLIM, _DLIM) ;
                             
                         if (_move)
                         {   
@@ -1570,22 +1657,22 @@
             }
         }
         
+        flip_sign(_mesh , _pred) ;
+        
     /*------------------------------ do optimisation loop */
         iptr_type static constexpr
             ITER_MIN_ = +  3 ;
         iptr_type static constexpr
             ITER_MAX_ = +  8 ;
-        
+     
         bool_type static constexpr
             ITER_FLIP = true ;
         
-        real_type _Qmax = _opts.qlim();
-        real_type _Qmin = 
-            _Qmax*(real_type).75 ;
-        real_type _Qinc =
-           (_Qmax - _Qmin) / + 5 ;
-   
-        flip_sign(_mesh , _pred) ;
+        real_type _TLIM = _opts.qlim() ;
+                
+      //real_type _DLIM = + 0.99250 ;
+        real_type _DLIM = 
+            std::pow(_TLIM, +1./8.) ;
    
         for (auto _iter = +1 ; 
             _iter <= _opts.iter(); ++_iter)
@@ -1619,19 +1706,10 @@
             iptr_type _nsub = _iter + 0 ;
                 
             _nsub = std::min(
-                ITER_MAX_, _nsub);
+                ITER_MAX_, _nsub) ;
             _nsub = std::max(
-                ITER_MIN_, _nsub);
+                ITER_MIN_, _nsub) ;
             
-            real_type _TLIM = 
-                std::min (_Qmax, 
-                    _Qmin + _iter * _Qinc
-                        ) ;
-            
-          //real_type _DLIM = + 0.99250 ;
-            real_type _DLIM = 
-                std::pow(_TLIM, +1./8.) ;
-    
     /*------------------------------ update mesh geometry */
     #       ifdef  __use_timers
             _ttic = _time.now() ;
@@ -1707,6 +1785,7 @@
                     _hval, _nset, 
                     _nmrk, _emrk, _tmrk , 
                     _iter, _opts,
+                    _TLIM, _DLIM,
                     _nzip, _ndiv) ;
             }
 

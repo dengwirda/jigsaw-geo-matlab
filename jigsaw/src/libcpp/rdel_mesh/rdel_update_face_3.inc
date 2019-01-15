@@ -136,17 +136,17 @@
         {
     /*--------------------------------- get tria indexing */
             tria_data _tdat, _same;
-            _tdat._node[0] = 
-            _mesh._tria.tria(_tpos)->node(+0);
-            _tdat._node[1] = 
-            _mesh._tria.tria(_tpos)->node(+1);
-            _tdat._node[2] = 
-            _mesh._tria.tria(_tpos)->node(+2);
-            _tdat._node[3] = 
-            _mesh._tria.tria(_tpos)->node(+3);
+            _tdat._node[0] = _mesh.
+                _tria.tria(_tpos)->node(0);
+            _tdat._node[1] = _mesh.
+                _tria.tria(_tpos)->node(1);
+            _tdat._node[2] = _mesh.
+                _tria.tria(_tpos)->node(2);
+            _tdat._node[3] = _mesh.
+                _tria.tria(_tpos)->node(3);
 
     /*--------------------------------- remove if present */
-            _mesh._pop_tria(_tdat, _same)  ;
+            _mesh._pop_tria(_tdat, _same) ;
         }
     }
     
@@ -169,9 +169,8 @@
         rdel_opts &_opts
         )
     {
-        __unreferenced (_geom) ;
-        __unreferenced (_pass) ;
-        __unreferenced (_opts) ;
+        __unreferenced ( _geom ) ;
+        __unreferenced ( _opts ) ;
     
         if (_mesh._tria.
              node(_npos)->feat()==hard_feat)
@@ -225,8 +224,8 @@
         )
     {
     /*-------------------------------- correct node dims? */       
-        iptr_type _fdim =+0 ;
-        for(iptr_type _node =+4; _node-- != +0; )
+        iptr_type _fdim =+0;
+        for (auto _node =+4; _node-- != +0; )
         {
         if (_mesh._tria.node (
             _mesh._tria.tria (
@@ -237,23 +236,23 @@
         if (_fdim  < +2 ) return ;
 
     /*-------------------------------- check "restricted" */
-        for(char_type _fpos =+6; _fpos-- != +0; )
+        for (auto _fpos =+6; _fpos-- != +0; )
         {
         /*---------------------------- extract edge nodes */
             iptr_type _tnod[ +4] ;
             mesh_type::tria_type::
                 tria_type::
-            face_node(_tnod, _fpos, +3, +1);
+            face_node(_tnod, _fpos, +3, +1) ;
             _tnod[0] = _mesh._tria.
-                tria(_tpos)->node(_tnod[0]);
+            tria(_tpos)->node(_tnod[0]);
             _tnod[1] = _mesh._tria.
-                tria(_tpos)->node(_tnod[1]);
+            tria(_tpos)->node(_tnod[1]);
 
         /*--------------- face contains higher dim. nodes */
-            if (_mesh._tria.
-                 node(_tnod[0])->fdim()>1 ||
-                _mesh._tria.
-                 node(_tnod[1])->fdim()>1 )
+            if (_mesh._tria.node(
+                _tnod[0])->fdim() > 1 ||
+                _mesh._tria.node(
+                _tnod[1])->fdim() > 1 )
                 continue   ;
             
             algorithms::isort (
@@ -261,12 +260,12 @@
                     std::less<iptr_type>()) ;
 
             edge_data _edat;
-            _edat._node[0] = _tnod[0] ;
-            _edat._node[1] = _tnod[1] ;
+            _edat._node[0] = _tnod[ 0] ;
+            _edat._node[1] = _tnod[ 1] ;
 
             edge_cost _cdat;
-            _cdat._node[0] = _tnod[0] ;
-            _cdat._node[1] = _tnod[1] ;
+            _cdat._node[0] = _tnod[ 0] ;
+            _cdat._node[1] = _tnod[ 1] ;
 
             typename mesh_type::
                      edge_list::
@@ -282,7 +281,8 @@
             _edat._pass    = _pass;
 
             _edat._tadj    = _tpos;
-            _edat._eadj    = _fpos;
+            _edat._eadj    = 
+                (char_type)  _fpos;
             
         /*--------------------------- call edge predicate */
             char_type _hits;
@@ -317,7 +317,7 @@
                 
             _edge_test.push( _edat) ;
 
-        } // for(iptr_type _fpos = +6 ; _fpos-- != +0 ; )
+        } // for (auto _fpos = +6; _fpos-- != +0; )
     }
     
     /*
@@ -343,8 +343,8 @@
         )
     {
     /*-------------------------------- correct node dims? */       
-        iptr_type _fdim =+0 ;
-        for(iptr_type _node =+4; _node-- != +0; )
+        iptr_type _fdim =+0;
+        for (auto _node =+4; _node-- != +0; )
         {
         if (_mesh._tria.node (
             _mesh._tria.tria (
@@ -355,27 +355,27 @@
         if (_fdim  < +3 ) return ;
 
     /*-------------------------------- check "restricted" */
-        for(char_type _fpos =+4; _fpos-- != +0; )
+        for (auto _fpos =+4; _fpos-- != +0; )
         {
         /*---------------------------- extract face nodes */
             iptr_type _tnod[ +4] ;
             mesh_type::tria_type::
                 tria_type::
-            face_node(_tnod, _fpos, +3, +2);
+            face_node(_tnod, _fpos, +3, +2) ;
             _tnod[0] = _mesh._tria.
-                tria(_tpos)->node(_tnod[0]);
+            tria(_tpos)->node(_tnod[0]);
             _tnod[1] = _mesh._tria.
-                tria(_tpos)->node(_tnod[1]);
+            tria(_tpos)->node(_tnod[1]);
             _tnod[2] = _mesh._tria.
-                tria(_tpos)->node(_tnod[2]);
+            tria(_tpos)->node(_tnod[2]);
 
         /*--------------- face contains higher dim. nodes */
-            if (_mesh._tria.
-                 node(_tnod[0])->fdim()>2 ||
-                _mesh._tria.
-                 node(_tnod[1])->fdim()>2 ||
-                _mesh._tria.
-                 node(_tnod[2])->fdim()>2 )
+            if (_mesh._tria.node(
+                _tnod[0])->fdim() > 2 ||
+                _mesh._tria.node(
+                _tnod[1])->fdim() > 2 ||
+                _mesh._tria.node(
+                _tnod[2])->fdim() > 2 )
                 continue   ;
 
             algorithms::isort (
@@ -383,14 +383,14 @@
                     std::less<iptr_type>()) ;
 
             face_data _fdat;
-            _fdat._node[0] = _tnod[0] ;
-            _fdat._node[1] = _tnod[1] ;
-            _fdat._node[2] = _tnod[2] ;
+            _fdat._node[0] = _tnod[ 0] ;
+            _fdat._node[1] = _tnod[ 1] ;
+            _fdat._node[2] = _tnod[ 2] ;
 
             face_cost _cdat;
-            _cdat._node[0] = _tnod[0] ;
-            _cdat._node[1] = _tnod[1] ;
-            _cdat._node[2] = _tnod[2] ;
+            _cdat._node[0] = _tnod[ 0] ;
+            _cdat._node[1] = _tnod[ 1] ;
+            _cdat._node[2] = _tnod[ 2] ;
 
             typename mesh_type::
                      face_list::
@@ -410,7 +410,8 @@
             _fdat._pass    = _pass;
 
             _fdat._tadj    = _tpos;
-            _fdat._fadj    = _fpos;
+            _fdat._fadj    = 
+                (char_type)  _fpos;
             _fdat._dups    = +0; // count num. dup's
                                  // only in hash-set
             
@@ -450,7 +451,7 @@
 
             _face_test.push( _fdat) ;
 
-        } // for(iptr_type _fpos = +4 ; _fpos-- != +0 ; )
+        } // for (auto _fpos = +4; _fpos-- != +0; )
     }
         
     /*
@@ -499,18 +500,18 @@
                 return ;
                 
             tria_data _tdat;
-            _tdat._node[0] = _tnod[0] ;
-            _tdat._node[1] = _tnod[1] ;
-            _tdat._node[2] = _tnod[2] ;
-            _tdat._node[3] = _tnod[3] ;
+            _tdat._node[0] = _tnod[ 0] ;
+            _tdat._node[1] = _tnod[ 1] ;
+            _tdat._node[2] = _tnod[ 2] ;
+            _tdat._node[3] = _tnod[ 3] ;
 
             _tdat._tadj    = _tpos;
 
             tria_cost _cdat;
-            _cdat._node[0] = _tnod[0] ;
-            _cdat._node[1] = _tnod[1] ;
-            _cdat._node[2] = _tnod[2] ;
-            _cdat._node[3] = _tnod[3] ;
+            _cdat._node[0] = _tnod[ 0] ;
+            _cdat._node[1] = _tnod[ 1] ;
+            _cdat._node[2] = _tnod[ 2] ;
+            _cdat._node[3] = _tnod[ 3] ;
 
             typename mesh_type::
                      tria_list::
@@ -540,7 +541,7 @@
 
             _sign = _tdat. _part ;
 
-        /*--------------------------- push edge onto mesh */
+        /*--------------------------- push tria onto mesh */
             if (_tdat._kind 
                     == mesh::ring_item)
                 _tscr. push_tail(_cdat) ;
