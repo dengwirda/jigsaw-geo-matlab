@@ -54,7 +54,7 @@ will build the main `JIGSAW` cmd-line executable,
 	-D __cmd_tripod -static-libstdc++ jigsaw.cpp 
         -o tripod64r
 	
-will build the `TRIPOD` cmd-line utility (JIGSAW's tessellation infrastructure) and,
+will build the `TRIPOD` cmd-line utility (`JIGSAW`'s tessellation infrastructure) and,
 
 	g++ -std=c++11 -pedantic -Wall -O3 -flto -fPIC -D NDEBUG 
 	-D __lib_jigsaw -static-libstdc++ jigsaw.cpp 
