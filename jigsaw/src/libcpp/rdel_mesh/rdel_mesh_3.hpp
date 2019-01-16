@@ -664,7 +664,7 @@
             }
         }
        
-        iptr_type constexpr _NBOX = +64 ;
+        iptr_type constexpr _NBOX = 512 ;
        
         _tree.load(_bbox.head(),
                    _bbox.tend(), _NBOX) ;
