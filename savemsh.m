@@ -96,7 +96,7 @@ function savemsh(name,mesh)
 %-----------------------------------------------------------
 %   Darren Engwirda
 %   github.com/dengwirda/jigsaw-matlab
-%   19-Dec-2018
+%   15-Jan-2019
 %   darren.engwirda@columbia.edu
 %-----------------------------------------------------------
 %
@@ -645,8 +645,14 @@ function save_grid_format(ffid,nver,mesh,kind)
             nval = size(mesh.value);
         end
         
+        if (isvector(mesh.value))
+        if (prod(nval(1:end-1)) ~= prod(dims))
+            error('Incorrect dimensions!') ;
+        end 
+        else
         if (~all(nval(1:end-1) == dims))
             error('Incorrect dimensions!') ;
+        end
         end
            
         if (isa(mesh.value, 'double')) 

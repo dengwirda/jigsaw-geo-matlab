@@ -4,7 +4,7 @@ function [flag] = certify(mesh)
 %-----------------------------------------------------------
 %   Darren Engwirda
 %   github.com/dengwirda/jigsaw-matlab
-%   20-Dec-2018
+%   15-Jan-2019
 %   darren.engwirda@columbia.edu
 %-----------------------------------------------------------
 %
@@ -157,6 +157,14 @@ function [flag] = certify(mesh)
         
         if (length(mesh.point.coord) == 2)
         
+        if (isvector(mesh.value))
+        if (length(mesh.point.coord{2}) ...
+           *length(mesh.point.coord{1}) ...
+            ~= numel(mesh.value))
+        error('certify:incorrectDimensions', ...
+            'Invalid VALUE dimensions.') ;
+        end
+        else
         if (length(mesh.point.coord{2}) ...
             ~= size(mesh.value,1) || ...
             length(mesh.point.coord{1}) ...
@@ -164,11 +172,21 @@ function [flag] = certify(mesh)
         error('certify:incorrectDimensions', ...
             'Invalid VALUE dimensions.') ;
         end
-
+        end
+        
         end
         
         if (length(mesh.point.coord) == 3)
         
+        if (isvector(mesh.value))
+        if (length(mesh.point.coord{2}) ...
+           *length(mesh.point.coord{1}) ...
+           *length(mesh.point.coord{3}) ...
+            ~= numel(mesh.value))
+        error('certify:incorrectDimensions', ...
+            'Invalid VALUE dimensions.') ;
+        end    
+        else
         if (length(mesh.point.coord{2}) ...
             ~= size(mesh.value,1) || ...
             length(mesh.point.coord{1}) ...
@@ -177,6 +195,7 @@ function [flag] = certify(mesh)
             ~= size(mesh.value,3) )
         error('certify:incorrectDimensions', ...
             'Invalid VALUE dimensions.') ;
+        end
         end
 
         end
