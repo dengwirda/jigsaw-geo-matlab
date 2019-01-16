@@ -58,7 +58,7 @@ function ensembleA
 
     opts.optm_qlim = +.95 ;
     
-    mesh = bisect_sphere(opts,+2) ;
+    mesh = bisect_sphere(opts,+1) ;
     plotsphere(mesh) ;
 
 %------------------------------------ "random" perturbations 
@@ -134,7 +134,7 @@ function ensembleB
 
     opts.optm_qlim = +.95 ;
     
-    mesh = bisect_sphere(opts,+2) ;
+    mesh = bisect_sphere(opts,+1) ;
     plotsphere(mesh) ;
 
 %------------------------------------ "random" perturbations 
