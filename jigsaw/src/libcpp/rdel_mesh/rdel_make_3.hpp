@@ -42,7 +42,7 @@
      *
      * This class defines the "restricted" delaunay 
      * tessellation algorithm for domains in R^3. A
-     * bounding DT is built for the points with the rDT
+     * bounding DT is built for the points, and the rDT
      * constructed by evaluating the dual predicate for
      * each node, edge, face and cell in the tessellation.
      *
@@ -562,7 +562,7 @@
             }
         }
        
-        iptr_type constexpr _NBOX = +64 ;
+        iptr_type constexpr _NBOX = 512 ;
        
         _tree.load(_bbox.head(),
                    _bbox.tend(), _NBOX) ;
