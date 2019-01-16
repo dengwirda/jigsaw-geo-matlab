@@ -14,7 +14,7 @@ function [mesh] = jumble_sphere(opts,mesh, ...
 %   See also JIGSAW, TRIPOD
  
 %------------------------------------ run perturbation iter.
-    OPTS = opts; imax = +12 ;
+    OPTS = opts; imax = +16 ;
     
     geom = loadmsh(OPTS.geom_file) ;
     
@@ -82,11 +82,11 @@ function [mesh] = jumble_points(mesh,frac)
            mesh.point.coord(:,1:3), ...
            mesh.tria3.index(:,1:3)) ;
             
-    pmid = mesh.point.coord(
+    pmid = mesh.point.coord( ...
            mesh.tria3.index(:,1),:) ...
-         + mesh.point.coord(
+         + mesh.point.coord( ...
            mesh.tria3.index(:,2),:) ...
-         + mesh.point.coord(
+         + mesh.point.coord( ...
            mesh.tria3.index(:,3),:) ;
     pmid = pmid / +3. ;
 
