@@ -558,10 +558,11 @@ function demo4
     fprintf(1,'  Constructing MESH...\n');
     
     opts.hfun_scal = 'absolute';
-    opts.hfun_hmax = +150;
+    opts.hfun_hmax = +33;
     
     opts.mesh_dims = +2 ;               % 2-dim. simplexes
 
+    opts.optm_dual = true ;
     opts.optm_qlim = +.95 ;
     
     mesh = jigsaw  (opts) ;
@@ -793,7 +794,7 @@ function plotsphere(mesh,hfun)
     set(figure(2),'units','normalized', ...
         'position',[.05,.50,.25,.30]) ;
     set(figure(3),'units','normalized', ...
-        'position',[.05,.15,.25,.30]) ;
+        'position',[.05,.10,.25,.30]) ;
 
 end
 
@@ -901,9 +902,9 @@ function plotplanar(geom,mesh,hfun)
     set(figure(2),'units','normalized', ...
         'position',[.30,.50,.25,.30]) ;
     set(figure(3),'units','normalized', ...
-        'position',[.30,.15,.25,.30]) ;
+        'position',[.30,.10,.25,.30]) ;
     set(figure(4),'units','normalized', ...
-        'position',[.05,.15,.25,.30]) ;
+        'position',[.05,.10,.25,.30]) ;
 
 end
 
