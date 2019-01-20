@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 09 January, 2019
+     * Last updated: 16 January, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -119,6 +119,25 @@
         
     //!! blah something about coastlines...
         
+    }
+    
+    /*
+    --------------------------------------------------------
+     * HAVE-FEAT: TRUE if has k-dim. FEAT.
+    --------------------------------------------------------
+     */
+    
+    __inline_call bool_type have_feat (
+        iptr_type _fdim
+        )
+    {
+        if (_fdim == +2)
+            return (  true ) ;
+        else
+        if (_fdim == +1)
+            return ( false ) ;
+        else
+            return ( false ) ;
     }
     
     /*

@@ -31,9 +31,9 @@
  *
 ------------------------------------------------------------
  *
- * Last updated: 31 December, 2018
+ * Last updated: 16 January, 2019
  *
- * Copyright 2013-2018
+ * Copyright 2013-2019
  * Darren Engwirda
  * de2363@columbia.edu
  * https://github.com/dengwirda/
@@ -265,6 +265,14 @@
 
     // pool'd alloc. takes care of dealloc...
 
+
+/*------------- return container count / empty statistics */
+    __inline_call bool_type empty (
+        ) const { return 
+              nullptr == this->_root ; }
+
+    __inline_call iptr_type count (
+        ) const { return this->_size ; }
 
 /*------------- helper - find min-enclosing aabb for node */
     __static_call
@@ -637,11 +645,32 @@
             
             if (_node->lower(0) != nullptr)
             {
+                uint32_t  _rsiz = 
+                    sizeof(real_type) * +K ;
+                uint32_t  _usiz = 
+                    sizeof(uint32_t ) * +1 ;
+            
+                uint32_t  _hash ;
+                _hash = hash::hashword (
+               (uint32_t*)_node->_pmin, 
+                    _rsiz / _usiz, +13) ;
+             
+                if (_hash % 2 == +0 )
+                {
                 this->_work.push_tail (
                     _node->lower( 0)) ;
                 
                 this->_work.push_tail (
                     _node->lower( 1)) ;
+                }
+                else
+                {
+                this->_work.push_tail (
+                    _node->lower( 1)) ;
+                
+                this->_work.push_tail (
+                    _node->lower( 0)) ;
+                }
             }
         }
        
