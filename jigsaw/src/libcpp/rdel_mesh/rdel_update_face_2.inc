@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 08 April, 2018
+     * Last updated: 17 January, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -436,9 +436,10 @@
         geom_type &_geom ,
         hfun_type &_hfun ,
         mesh_type &_mesh ,
+        bool_type  _init ,      // true to init. circball
         iptr_list &_nnew ,
         iptr_list &_tnew ,
-        escr_list &_escr ,
+        escr_list &_escr ,      // lists of new rDT faces
         edat_list &_edat ,
         tscr_list &_tscr ,
         tdat_list &_tdat ,
@@ -446,8 +447,8 @@
         ball_list &_bdat ,
         iptr_type  _sign ,
         iptr_type  _pass ,
-        mode_type  _dim0 ,
-        mode_type  _dim1 ,
+        mode_type  _dim0 ,      // lo rDT dim. to examine 
+        mode_type  _dim1 ,      // hi rDT dim. to examine
         rdel_opts &_opts
         )
     {
@@ -486,6 +487,7 @@
                   _iter != _tnew.tend(); 
                 ++_iter  )
         {
+            if (_init)
             tria_circ(_mesh,*_iter) ;
         }
     

@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 08 January, 2019
+     * Last updated: 16 January, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -89,6 +89,19 @@
         )
     {
         __unreferenced(_opts) ;
+    }
+    
+    /*
+    --------------------------------------------------------
+     * HAVE-FEAT: TRUE if has k-dim. FEAT.
+    --------------------------------------------------------
+     */
+
+    __inline_call bool_type have_feat (
+        iptr_type _fdim
+        )
+    {
+        return ( false ) ;
     }
 
     /*

@@ -30,7 +30,7 @@ function meshdemo(demo)
 %-----------------------------------------------------------
 %   Darren Engwirda
 %   github.com/dengwirda/jigsaw-geo-matlab
-%   02-Jan-2019
+%   19-Jan-2019
 %   darren.engwirda@columbia.edu
 %-----------------------------------------------------------
 %
@@ -63,19 +63,19 @@ function demo1
     
     drawnow ;        
     set(figure(1),'units','normalized', ...
-        'position',[.05,.55,.30,.35]) ;
+        'position',[.05,.50,.25,.30]) ;
     set(figure(2),'units','normalized', ...
-        'position',[.05,.10,.30,.35]) ;
+        'position',[.05,.15,.25,.25]) ;
     
     set(figure(3),'units','normalized', ...
-        'position',[.35,.55,.30,.35]) ;
+        'position',[.30,.50,.25,.30]) ;
     set(figure(4),'units','normalized', ...
-        'position',[.35,.10,.30,.35]) ;
+        'position',[.30,.15,.25,.25]) ;
     
     set(figure(5),'units','normalized', ...
-        'position',[.65,.55,.30,.35]) ;
+        'position',[.55,.50,.25,.30]) ;
     set(figure(6),'units','normalized', ...
-        'position',[.65,.10,.30,.35]) ;    
+        'position',[.55,.15,.25,.25]) ;    
     drawnow ;
 
 end
@@ -558,10 +558,11 @@ function demo4
     fprintf(1,'  Constructing MESH...\n');
     
     opts.hfun_scal = 'absolute';
-    opts.hfun_hmax = +150;
+    opts.hfun_hmax = +33;
     
     opts.mesh_dims = +2 ;               % 2-dim. simplexes
 
+    opts.optm_dual = true ;
     opts.optm_qlim = +.95 ;
     
     mesh = jigsaw  (opts) ;
@@ -789,12 +790,11 @@ function plotsphere(mesh,hfun)
          
     drawnow ;        
     set(figure(1),'units','normalized', ...
-        'position',[.35,.55,.30,.35]) ;
+        'position',[.30,.50,.25,.30]) ;
     set(figure(2),'units','normalized', ...
-        'position',[.05,.55,.30,.35]) ;
+        'position',[.05,.50,.25,.30]) ;
     set(figure(3),'units','normalized', ...
-        'position',[.05,.10,.30,.35]) ;
-    drawnow ;
+        'position',[.05,.10,.25,.30]) ;
 
 end
 
@@ -898,14 +898,13 @@ function plotplanar(geom,mesh,hfun)
     
     drawnow ;        
     set(figure(1),'units','normalized', ...
-        'position',[.05,.55,.30,.35]) ;
+        'position',[.05,.50,.25,.30]) ;
     set(figure(2),'units','normalized', ...
-        'position',[.35,.55,.30,.35]) ;
+        'position',[.30,.50,.25,.30]) ;
     set(figure(3),'units','normalized', ...
-        'position',[.35,.10,.30,.35]) ;
+        'position',[.30,.10,.25,.30]) ;
     set(figure(4),'units','normalized', ...
-        'position',[.05,.10,.30,.35]) ;
-    drawnow ;
+        'position',[.05,.10,.25,.30]) ;
 
 end
 

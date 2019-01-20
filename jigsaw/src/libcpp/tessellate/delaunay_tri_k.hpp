@@ -45,17 +45,17 @@
      * Watson type implemetation, based on:
      *
      * A. Bowyer, (1981): "Computing Dirichlet 
-     * Tessellations", Comput. J. 24 (2), pp. 162–166, 
+     * Tessellations", Comput. J. 24 (2), pp. 162-166, 
      * https://doi.org/10.1093/comjnl/24.2.162
      *
      * D. Watson, (1981): "Computing the n-dimensional 
      * Delaunay tessellation with application to Voronoi 
-     * polytopes". Comput. J. 24 (2), pp. 167–172, 
+     * polytopes". Comput. J. 24 (2), pp. 167-172, 
      * https://doi.org/10.1093/comjnl/24.2.167
      *
      * J.D. Boissonnat, O. Devillers, S. Pion, M. Teillaud, 
      * M. Yvinec, (2002): "Triangulations in CGAL". Comput. 
-     * Geom. Theory Appl., 22, pp. 5–19,
+     * Geom. Theory Appl., 22, pp. 5-19,
      * https://doi.org/10.1016/S0925-7721(01)00054-2 
      *
      * My implementation is described here:
@@ -530,7 +530,7 @@
                         _pred, _work) ;
                         
     /*------------------------------ push index lists */
-        _list.push_tail(_work.head(),
+       _list.push_tail (_work.head(),
                         _work.tend()) ;
                         
         return (  true ) ;
@@ -624,8 +624,8 @@
         walk_tria_list(_elem, +1   , 
                        _pred, _work) ;
         else
-        _work.push_tail(_circ->head(), 
-                        _circ->tend()
+       _work.push_tail(_circ->head() , 
+                       _circ->tend()
                        ) ;
             
         star_tria_void(_work, _node, 
@@ -748,7 +748,7 @@
                  +1   , _pred, _work) ;
 
     /*----------------------------------- push index list */
-        _list.push_tail(_work.head(),
+       _list.push_tail (_work.head(),
                         _work.tend()) ;
         }
     }
@@ -775,7 +775,7 @@
                         _pred, _work) ;
                         
     /*----------------------------------- push index list */
-        _list.push_tail(_work.head(),
+       _list.push_tail (_work.head(),
                         _work.tend()) ;
     }
 

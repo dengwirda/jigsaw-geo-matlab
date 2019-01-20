@@ -2,7 +2,7 @@
     
     /*
     --------------------------------------------------------
-     * RUN-RDEL: do the restricted tessellation step. 
+     * RUN-TRIA: do the restricted tessellation step. 
     --------------------------------------------------------
      *
      * This program may be freely redistributed under the 
@@ -44,8 +44,8 @@
 
 #   pragma once
 
-#   ifndef __RUN_RDEL__
-#   define __RUN_RDEL__
+#   ifndef __RUN_TRIA__
+#   define __RUN_TRIA__
 
     /*
     --------------------------------------------------------
@@ -199,7 +199,7 @@
     }
 
 
-#   endif   // __RUN_RDEL__
+#   endif   // __RUN_TRIA__
 
 
 

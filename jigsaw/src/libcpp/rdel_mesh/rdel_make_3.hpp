@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 29 December, 2018
+     * Last updated: 17 January, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -562,13 +562,134 @@
             }
         }
        
-        iptr_type constexpr _NBOX = 512 ;
+        iptr_type _NBOX = 
+            (iptr_type) std::pow (8, 3) ;       // 8^ndim
        
         _tree.load(_bbox.head(),
                    _bbox.tend(), _NBOX) ;
         
     /*------------------------------ randomised tree sort */    
         _tree.brio(_iset) ;
+    }
+
+    template <
+    typename      init_type
+             >
+    __static_call
+    __normal_call void_type init_init (
+        init_type &_init,
+        mesh_type &_mesh
+        )
+    {
+    /*------------------------------ form insertion order */
+        iptr_type _hint  = -1 ;
+        iptr_list _iset  ;
+        init_sort(_init, _iset) ;
+        
+    /*------------------------------ find "central" point */
+        iptr_type _imid  = -1 ;
+        real_type _dmin  = 
+            std::numeric_limits
+                <real_type>::infinity();
+                        
+        real_type _pmid[3] ;
+        _pmid[0] = (real_type) +0. ;
+        _pmid[1] = (real_type) +0. ;
+        _pmid[2] = (real_type) +0. ;
+        
+        for (auto _iter  = _iset.head();
+                  _iter != _iset.tend();
+                ++_iter  )
+        {
+             auto _node = 
+           &_init._mesh._set1 [*_iter] ;
+            
+            _pmid[0] += _node->pval(0) ;
+            _pmid[1] += _node->pval(1) ;
+            _pmid[2] += _node->pval(2) ;
+        }
+        
+        _pmid[0] /= _iset.count () ;
+        _pmid[1] /= _iset.count () ;
+        _pmid[2] /= _iset.count () ;
+        
+        for (auto _iter  = _iset.head();
+                  _iter != _iset.tend();
+                ++_iter  )
+        {
+             auto _node = 
+           &_init._mesh._set1 [*_iter] ;
+        
+            real_type _dsqr = 
+            geometry::lensqr_3d(
+               &_node->pval(0), _pmid) ;
+                   
+            if (_dsqr < _dmin)
+            {
+                _dmin = _dsqr;
+                _imid =*_iter;
+            }
+        }
+    
+    /*------------------------------ seed mesh from init. */
+        if (_imid > -1)
+        {
+             auto _node = 
+           &_init._mesh._set1 [ _imid] ;
+        
+            iptr_type _npos = -1 ;
+            if (_mesh._tria.push_node(
+               &_node->pval(0) , 
+                _npos, _hint ) )
+            {
+            
+            _mesh._tria.node
+                (_npos)->fdim() = 0 ;
+                        
+            _mesh._tria.node
+                (_npos)->feat() 
+                    = _node->feat() ;
+                    
+            _mesh._tria.node
+                (_npos)->topo() = 2 ;  
+            
+            _hint = _mesh._tria.
+                node(_npos)->next() ;
+            
+            }
+        }
+        
+    /*------------------------------ seed mesh from init. */
+        for (auto _iter  = _iset.head();
+                  _iter != _iset.tend();
+                ++_iter  )
+        {
+            if (*_iter == _imid) continue;
+            
+             auto _node = 
+           &_init._mesh._set1 [*_iter] ;
+        
+            iptr_type _npos = -1 ;
+            if (_mesh._tria.push_node(
+               &_node->pval(0) , 
+                _npos, _hint ) )
+            {
+            
+            _mesh._tria.node
+                (_npos)->fdim() = 0 ;
+                        
+            _mesh._tria.node
+                (_npos)->feat() 
+                    = _node->feat() ;
+                    
+            _mesh._tria.node
+                (_npos)->topo() = 2 ;  
+            
+            _hint = _mesh._tria.
+                node(_npos)->next() ;
+            
+            }
+        }
     }
 
     template <
@@ -585,33 +706,55 @@
         __unreferenced(_opts) ;
 
     /*------------------------------ initialise mesh bbox */
-        real_type _plen[ +3];
-        _plen[ 0] = _geom._bmax[ 0] - 
-                    _geom._bmin[ 0] ;
-        _plen[ 1] = _geom._bmax[ 1] - 
-                    _geom._bmin[ 1] ;
-        _plen[ 2] = _geom._bmax[ 2] - 
-                    _geom._bmin[ 2] ;
-
+        real_type _pmin[ 3] ;
+        real_type _pmax[ 3] ;
+        _pmin[ 0] = _geom._bmin[ 0] ;
+        _pmin[ 1] = _geom._bmin[ 1] ;
+        _pmin[ 2] = _geom._bmin[ 2] ;
+        _pmax[ 0] = _geom._bmax[ 0] ;
+        _pmax[ 1] = _geom._bmax[ 1] ;
+        _pmax[ 2] = _geom._bmax[ 2] ;
+        
+        for (auto _node  = 
+            _init._mesh._set1.head(); 
+                  _node != 
+            _init._mesh._set1.tend();
+                ++_node  )
+        {
+        if (_node->mark() >= + 0 )
+        {
+        _pmin[ 0] = std::min(
+        _pmin[ 0], _node->pval(0)) ;
+        _pmax[ 0] = std::max(
+        _pmax[ 0], _node->pval(0)) ;
+        
+        _pmin[ 1] = std::min(
+        _pmin[ 1], _node->pval(1)) ;
+        _pmax[ 1] = std::max(
+        _pmax[ 1], _node->pval(1)) ;
+        
+        _pmin[ 2] = std::min(
+        _pmin[ 2], _node->pval(2)) ;
+        _pmax[ 2] = std::max(
+        _pmax[ 2], _node->pval(2)) ;     
+        }
+        }
+  
+        real_type _plen[ 3] = {
+        _pmax[ 0] - _pmin[ 0] ,
+        _pmax[ 1] - _pmin[ 1] ,
+        _pmax[ 2] - _pmin[ 2] ,
+            } ;  
         _plen[ 0]*= (real_type)+2.0 ;
         _plen[ 1]*= (real_type)+2.0 ;
         _plen[ 2]*= (real_type)+2.0 ;
-
-        real_type _pmin[ +3];
-        real_type _pmax[ +3];
-        _pmin[ 0] = _geom._bmin[ 0] - 
-                          _plen[ 0] ;
-        _pmin[ 1] = _geom._bmin[ 1] - 
-                          _plen[ 1] ;
-        _pmin[ 2] = _geom._bmin[ 2] - 
-                          _plen[ 2] ;
-
-        _pmax[ 0] = _geom._bmax[ 0] + 
-                          _plen[ 0] ;
-        _pmax[ 1] = _geom._bmax[ 1] + 
-                          _plen[ 1] ;
-        _pmax[ 2] = _geom._bmax[ 2] + 
-                          _plen[ 2] ;
+        
+        _pmin[ 0]-= _plen[ 0] ;
+        _pmin[ 1]-= _plen[ 1] ;
+        _pmin[ 2]-= _plen[ 2] ;
+        _pmax[ 0]+= _plen[ 0] ;
+        _pmax[ 1]+= _plen[ 1] ;
+        _pmax[ 2]+= _plen[ 2] ;
 
         _mesh.
         _tria.push_root(_pmin, _pmax) ;
@@ -645,38 +788,7 @@
         _tria.node(+3)->topo() = +0 ;
         
     /*------------------------------ seed mesh from init. */
-        iptr_type _hint  = -1;
-        iptr_list _iset  ;
-        init_sort(_init,_iset) ;
-        for (auto _iter  = _iset.head();
-                  _iter != _iset.tend();
-                ++_iter  )
-        {
-            auto _node = &_init.
-                _mesh._set1[*_iter] ;
-        
-            iptr_type _npos = -1 ;
-            if (_mesh._tria.push_node (
-               &_node->pval(0) , 
-                _npos, _hint ) )
-            {
-            
-            _mesh._tria.node
-                (_npos)->fdim() = 0 ;
-                        
-            _mesh._tria.node
-                (_npos)->feat() 
-                    = _node->feat() ;
-                    
-            _mesh._tria.node
-                (_npos)->topo() = 2 ;  
-            
-            _hint = _mesh._tria.
-                node(_npos)->next() ;
-            
-            }
-        }
-                   
+        init_init(_init, _mesh);
     }
     
     /*
@@ -721,7 +833,8 @@
         _ttic = _time.now() ;
     #   endif//__use_timers
 
-        init_mesh(_geom, _init, _mesh, _args) ;
+        init_mesh (
+            _geom , _init, _mesh, _args) ;
 
     #   ifdef  __use_timers
         _ttoc = _time.now() ;       
@@ -756,6 +869,10 @@
            +.8, _mesh._tset.get_alloc()) ;
 
         iptr_list _tnew, _nnew ;
+        _tnew.set_alloc (
+            _mesh._tria._tset.count()) ;
+        _nnew.set_alloc (
+            _mesh._tria._nset.count()) ;
     
     /*------------------------- face in DT for rDT checks */    
         iptr_type _tpos  = +0 ;
@@ -785,25 +902,16 @@
             }
         }
 
-    /*------------------------- push alloc. for hash obj. */
-        _eset._lptr.set_count (
-            _tnew.count()*6 , 
-        containers::loose_alloc, nullptr);
-        
-        _fset._lptr.set_count (
-            _tnew.count()*4 , 
-        containers::loose_alloc, nullptr);
-        
-        _tset._lptr.set_count (
-            _tnew.count()*1 , 
-        containers::loose_alloc, nullptr);
-        
+        if (_geom.have_feat(1) ||
+            _geom.have_feat(2) )
+        {        
     /*------------------------- calc. voronoi-dual points */
         for( auto _iter  = _tnew.head(); 
                   _iter != _tnew.tend(); 
                 ++_iter  )
         {
             tria_circ(_mesh,*_iter) ;
+        }
         }
        
     /*------------------------- test for restricted balls */
@@ -835,13 +943,18 @@
         }
     
     /*------------------------- test for restricted edges */
-        if (_args.dims() >= 1  )
+        if (_args.dims() >= 1 &&
+            _geom.have_feat(1) )
         {
+
+        _eset._lptr.set_count (
+            _tnew.count()*6 , 
+        containers::loose_alloc,nullptr) ;
 
     #   ifdef  __use_timers
         _ttic = _time.now() ;
     #   endif//__use_timers
-
+    
         for( auto _iter  = _tnew.head(); 
                   _iter != _tnew.tend(); 
                 ++_iter  )
@@ -861,8 +974,13 @@
         }
        
     /*------------------------- test for restricted edges */
-        if (_args.dims() >= 2  )
+        if (_args.dims() >= 2 &&
+            _geom.have_feat(2) )
         { 
+
+        _fset._lptr.set_count (
+            _tnew.count()*4 , 
+        containers::loose_alloc,nullptr) ;
 
     #   ifdef  __use_timers
         _ttic = _time.now() ;
@@ -888,13 +1006,18 @@
         }
         
     /*------------------------- test for restricted tria. */    
-        if (_args.dims() >= 3  )
+        if (_args.dims() >= 3 &&
+            _geom.have_feat(2) )
         { 
         bool_type _safe = true ;
         iptr_type _sign =  -1  ;
         
       //if (_nedg >= +1) _safe = false ;
         if (_ndup >= +1) _safe = false ;
+        
+        _tset._lptr.set_count (
+            _tnew.count()*1 , 
+        containers::loose_alloc,nullptr) ;
         
     #   ifdef  __use_timers
         _ttic = _time.now() ;

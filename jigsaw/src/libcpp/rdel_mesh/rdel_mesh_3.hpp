@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 01 January, 2019
+     * Last updated: 17 January, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -559,6 +559,7 @@
         geom_type &_geom ,
         hfun_type &_hfun ,
         mesh_type &_mesh ,
+        bool_type  _init ,
         iptr_list &_nnew ,
         iptr_list &_tnew ,
         edat_list &_ecav ,
@@ -600,7 +601,8 @@
         }
     /*-------------------- init. restricted triangulation */
         push_rdel( _geom, _hfun, 
-            _mesh, _nnew, _tnew, 
+            _mesh, _init,
+            _nnew, _tnew, 
             _escr, _ecav, 
             _fscr, _fcav, 
             _tscr, _tcav,
@@ -664,13 +666,136 @@
             }
         }
        
-        iptr_type constexpr _NBOX = 512 ;
+        iptr_type _NBOX = 
+            (iptr_type) std::pow (8, 3) ;       // 8^ndim
        
         _tree.load(_bbox.head(),
                    _bbox.tend(), _NBOX) ;
         
     /*------------------------------ randomised tree sort */    
         _tree.brio(_iset) ;
+    }
+
+    template <
+    typename      init_type
+             >
+    __static_call
+    __normal_call void_type init_init (
+        init_type &_init,
+        mesh_type &_mesh
+        )
+    {
+    /*------------------------------ form insertion order */
+        iptr_type _hint  = -1 ;
+        iptr_list _iset  ;
+        init_sort(_init, _iset) ;
+        
+    /*------------------------------ find "central" point */
+        iptr_type _imid  = -1 ;
+        real_type _dmin  = 
+            std::numeric_limits
+                <real_type>::infinity();
+                        
+        real_type _pmid[3] ;
+        _pmid[0] = (real_type) +0. ;
+        _pmid[1] = (real_type) +0. ;
+        _pmid[2] = (real_type) +0. ;
+        
+        for (auto _iter  = _iset.head();
+                  _iter != _iset.tend();
+                ++_iter  )
+        {
+             auto _node = 
+           &_init._mesh._set1 [*_iter] ;
+            
+            _pmid[0] += _node->pval(0) ;
+            _pmid[1] += _node->pval(1) ;
+            _pmid[2] += _node->pval(2) ;
+        }
+        
+        _pmid[0] /= _iset.count () ;
+        _pmid[1] /= _iset.count () ;
+        _pmid[2] /= _iset.count () ;
+        
+        for (auto _iter  = _iset.head();
+                  _iter != _iset.tend();
+                ++_iter  )
+        {
+             auto _node = 
+           &_init._mesh._set1 [*_iter] ;
+        
+            real_type _dsqr = 
+            geometry::lensqr_3d(
+               &_node->pval(0), _pmid) ;
+                   
+            if (_dsqr < _dmin)
+            {
+                _dmin = _dsqr;
+                _imid =*_iter;
+            }
+        }
+    
+    /*------------------------------ seed mesh from init. */
+        if (_imid > -1)
+        {
+             auto _node = 
+           &_init._mesh._set1 [ _imid] ;
+        
+            iptr_type _npos = -1 ;
+            if (_mesh._tria.push_node(
+               &_node->pval(0) , 
+                _npos, _hint ) )
+            {
+            
+            _mesh._tria.node
+                (_npos)->fdim() 
+                    = _node->fdim() ;
+                        
+            _mesh._tria.node
+                (_npos)->feat() 
+                    = _node->feat() ;
+                    
+            _mesh._tria.node
+                (_npos)->topo() = 2 ;  
+            
+            _hint = _mesh._tria.
+                node(_npos)->next() ;
+            
+            }
+        }
+        
+    /*------------------------------ seed mesh from init. */
+        for (auto _iter  = _iset.head();
+                  _iter != _iset.tend();
+                ++_iter  )
+        {
+            if (*_iter == _imid) continue;
+            
+             auto _node = 
+           &_init._mesh._set1 [*_iter] ;
+        
+            iptr_type _npos = -1 ;
+            if (_mesh._tria.push_node(
+               &_node->pval(0) , 
+                _npos, _hint ) )
+            {
+            
+            _mesh._tria.node
+                (_npos)->fdim() 
+                    = _node->fdim() ;
+                        
+            _mesh._tria.node
+                (_npos)->feat() 
+                    = _node->feat() ;
+                    
+            _mesh._tria.node
+                (_npos)->topo() = 2 ;  
+            
+            _hint = _mesh._tria.
+                node(_npos)->next() ;
+            
+            }
+        }
     }
 
     template <
@@ -688,33 +813,55 @@
         __unreferenced(_hfun) ;
 
     /*------------------------------ initialise mesh bbox */
-        real_type _plen[ +3];
-        _plen[ 0] = _geom._bmax[ 0] - 
-                    _geom._bmin[ 0] ;
-        _plen[ 1] = _geom._bmax[ 1] - 
-                    _geom._bmin[ 1] ;
-        _plen[ 2] = _geom._bmax[ 2] - 
-                    _geom._bmin[ 2] ;
-
+        real_type _pmin[ 3] ;
+        real_type _pmax[ 3] ;
+        _pmin[ 0] = _geom._bmin[ 0] ;
+        _pmin[ 1] = _geom._bmin[ 1] ;
+        _pmin[ 2] = _geom._bmin[ 2] ;
+        _pmax[ 0] = _geom._bmax[ 0] ;
+        _pmax[ 1] = _geom._bmax[ 1] ;
+        _pmax[ 2] = _geom._bmax[ 2] ;
+        
+        for (auto _node  = 
+            _init._mesh._set1.head(); 
+                  _node != 
+            _init._mesh._set1.tend();
+                ++_node  )
+        {
+        if (_node->mark() >= + 0 )
+        {
+        _pmin[ 0] = std::min(
+        _pmin[ 0], _node->pval(0)) ;
+        _pmax[ 0] = std::max(
+        _pmax[ 0], _node->pval(0)) ;
+        
+        _pmin[ 1] = std::min(
+        _pmin[ 1], _node->pval(1)) ;
+        _pmax[ 1] = std::max(
+        _pmax[ 1], _node->pval(1)) ;
+        
+        _pmin[ 2] = std::min(
+        _pmin[ 2], _node->pval(2)) ;
+        _pmax[ 2] = std::max(
+        _pmax[ 2], _node->pval(2)) ;     
+        }
+        }
+  
+        real_type _plen[ 3] = {
+        _pmax[ 0] - _pmin[ 0] ,
+        _pmax[ 1] - _pmin[ 1] ,
+        _pmax[ 2] - _pmin[ 2] ,
+            } ;  
         _plen[ 0]*= (real_type)+2.0 ;
         _plen[ 1]*= (real_type)+2.0 ;
         _plen[ 2]*= (real_type)+2.0 ;
-
-        real_type _pmin[ +3];
-        real_type _pmax[ +3];
-        _pmin[ 0] = _geom._bmin[ 0] - 
-                          _plen[ 0] ;
-        _pmin[ 1] = _geom._bmin[ 1] - 
-                          _plen[ 1] ;
-        _pmin[ 2] = _geom._bmin[ 2] - 
-                          _plen[ 2] ;
-
-        _pmax[ 0] = _geom._bmax[ 0] + 
-                          _plen[ 0] ;
-        _pmax[ 1] = _geom._bmax[ 1] + 
-                          _plen[ 1] ;
-        _pmax[ 2] = _geom._bmax[ 2] + 
-                          _plen[ 2] ;
+        
+        _pmin[ 0]-= _plen[ 0] ;
+        _pmin[ 1]-= _plen[ 1] ;
+        _pmin[ 2]-= _plen[ 2] ;
+        _pmax[ 0]+= _plen[ 0] ;
+        _pmax[ 1]+= _plen[ 1] ;
+        _pmax[ 2]+= _plen[ 2] ;
 
         _mesh.
         _tria.push_root(_pmin, _pmax) ;
@@ -748,45 +895,16 @@
         _tria.node(+3)->topo() = +0 ;
         
     /*------------------------------ seed feat from geom. */
-        _geom.seed_feat(_mesh, _opts) ;
+        _geom.
+         seed_feat(_mesh, _opts) ;
                         
     /*------------------------------ seed mesh from init. */
-        iptr_type _hint  = -1;
-        iptr_list _iset  ;
-        init_sort(_init,_iset) ;
-        for (auto _iter  = _iset.head();
-                  _iter != _iset.tend();
-                ++_iter  )
-        {
-            auto _node = &_init.
-                _mesh._set1[*_iter] ;
-        
-            iptr_type _npos = -1 ;
-            if (_mesh._tria.push_node (
-               &_node->pval(0) , 
-                _npos, _hint ) )
-            {
-            
-            _mesh._tria.node
-                (_npos)->fdim() 
-                    = _node->fdim() ;
-                        
-            _mesh._tria.node
-                (_npos)->feat() 
-                    = _node->feat() ;
-                    
-            _mesh._tria.node
-                (_npos)->topo() = 2 ;  
-            
-            _hint = _mesh._tria.
-                node(_npos)->next() ;
-            
-            }
-        }
+         
+         init_init(_init, _mesh) ;
         
     /*------------------------------ seed mesh from geom. */
-        _geom.seed_mesh(_mesh, _opts) ;
-                        
+        _geom.
+         seed_mesh(_mesh, _opts) ; 
     }
     
     /*
@@ -981,7 +1099,8 @@
                 _mode  = node_mode;
              
                 init_rdel( _geom, _hfun, 
-                    _mesh, _nnew, _tnew, 
+                    _mesh, false,
+                    _nnew, _tnew, 
                     _edat, _escr, 
                     _fdat, _fscr, 
                     _tdat, _tscr,
@@ -1008,7 +1127,8 @@
                 _mode  = edge_mode;
                
                 init_rdel( _geom, _hfun, 
-                    _mesh, _nnew, _tnew, 
+                    _mesh,  true,// init. circum. for rDT
+                    _nnew, _tnew, 
                     _edat, _escr, 
                     _fdat, _fscr, 
                     _tdat, _tscr,
@@ -1043,7 +1163,8 @@
                 _mode  = face_mode;
                  
                 init_rdel( _geom, _hfun, 
-                    _mesh, _nnew, _tnew, 
+                    _mesh, false,
+                    _nnew, _tnew, 
                     _edat, _escr, 
                     _fdat, _fscr, 
                     _tdat, _tscr,
@@ -1079,7 +1200,8 @@
                 _mode  = tria_mode;
         
                 init_rdel( _geom, _hfun, 
-                    _mesh, _nnew, _tnew, 
+                    _mesh, false,
+                    _nnew, _tnew, 
                     _edat, _escr, 
                     _fdat, _fscr, 
                     _tdat, _tscr,
@@ -1268,8 +1390,7 @@
         /*----------------------------- output to logfile */
                 std::stringstream _sstr ;
                 _sstr << std::setw(11) <<
-                    _pass
-                      << std::setw(13) << 
+                _pass << std::setw(13) << 
                     _mesh._eset.count()
                       << std::setw(13) << 
                     _mesh._fset.count()
