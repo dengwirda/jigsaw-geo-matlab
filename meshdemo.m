@@ -558,11 +558,10 @@ function demo4
     fprintf(1,'  Constructing MESH...\n');
     
     opts.hfun_scal = 'absolute';
-    opts.hfun_hmax = +33;
+    opts.hfun_hmax = +150.;
     
     opts.mesh_dims = +2 ;               % 2-dim. simplexes
 
-    opts.optm_dual = true ;
     opts.optm_qlim = +.95 ;
     
     mesh = jigsaw  (opts) ;
