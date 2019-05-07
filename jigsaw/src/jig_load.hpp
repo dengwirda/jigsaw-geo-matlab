@@ -31,7 +31,7 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 02 January, 2019
+     * Last updated: 10 April, 2019
      *
      * Copyright 2013-2019
      * Darren Engwirda
@@ -136,7 +136,16 @@
             this->_jjig->
            _rdel_opts.eta2() = _eta2; 
         }
-        
+ 
+    /*------------------------------------- INIT keywords */
+        __normal_call void_type push_init_near (
+            double        _near
+            ) 
+        {
+            this->_jjig->
+           _rdel_opts.near() = _near; 
+        }
+       
     /*------------------------------------- HFUN keywords */
         __normal_call void_type push_hfun_file (
             std::string   _file
@@ -230,6 +239,13 @@
         { 
             this->_jjig->
            _rdel_opts.iter() = _iter;
+        }
+        __normal_call void_type push_mesh_rule (
+            std::int32_t  _rule
+            ) 
+        { 
+            this->_jjig->
+           _rdel_opts.rule() = _rule;
         }
         __normal_call void_type push_mesh_siz1 (
             double        _siz1
@@ -391,7 +407,7 @@
             jcfg_reader   _read;
             std::ifstream _file; 
             _file. open(
-            _jcfg._jcfg_file, std::ifstream::in);
+            _jcfg._jcfg_file, std::ifstream::in) ;
 
             if (_file.is_open())
             {
@@ -399,7 +415,10 @@
                 _file, jcfg_loader(&_jcfg));
             }
             else
-            {           
+            {   
+                _jlog.push(
+            "**parse error: file not found!\n" ) ;
+                    
                 _errv = __file_not_located ;
             }
             _file.close ();
@@ -411,7 +430,7 @@
                     ++_iter  )
             {
                 _jlog.push(
-            "**parse error: " + * _iter + "\n") ;
+            "**parse error: " + * _iter + "\n" ) ;
             }        
         }
         catch (...)
@@ -438,8 +457,11 @@
         )
     {
         iptr_type _errv  = __no_error ;
+
         try
         {
+            __unreferenced(_jlog) ;
+
     /*------------------------------------- MISC keywords */
             _jcfg._verbosity = 
                          _jjig._verbosity ;
@@ -468,6 +490,10 @@
                 eta1() = _jjig._geom_eta1 ;
             _jcfg._rdel_opts.
                 eta2() = _jjig._geom_eta2 ;
+
+    /*------------------------------------- INIT keywords */
+            _jcfg._rdel_opts.
+                near() = _jjig._init_near ;
             
     /*------------------------------------- HFUN keywords */
             if (_jjig._hfun_scal == 
@@ -579,7 +605,7 @@
                 _sstr.str("");                  \
                 _sstr.clear();                  \
                 _sstr <<                        \
-                "  **input error: " __tag "="   \
+                "**input error: " __tag " = "   \
                       << std::setw(+9)          \
                       << std::setfill(' ')      \
                       << __var << "\n";         \
@@ -595,7 +621,7 @@
                 _sstr.str("");                  \
                 _sstr.clear();                  \
                 _sstr <<                        \
-                "  **input error: " __tag "="   \
+                "**input error: " __tag " = "   \
                       << std::scientific        \
                       << std::setprecision(2)   \
                       << __var << "\n";         \
@@ -610,7 +636,7 @@
                 _sstr.str("");                  \
                 _sstr.clear();                  \
                 _sstr <<                        \
-              "  **input warning: " __tag "="   \
+              "**input warning: " __tag " = "   \
                       << std::scientific        \
                       << std::setprecision(2)   \
                       << __var << "\n";         \
@@ -643,6 +669,12 @@
             _jcfg._rdel_opts.eta2(), 
             (real_type)  0., 
             (real_type)180.)
+
+    /*---------------------------- test INIT keywords */
+        __testREAL("INIT-NEAR", 
+            _jcfg._rdel_opts.near(), 
+            (real_type)  0., 
+            (real_type)  1.)
 
     /*---------------------------- test HFUN keywords */
         __testREAL("HFUN-HMAX", 
@@ -850,6 +882,12 @@
         
         __dumpBOOL("GEOM-FEAT", 
             _jcfg._rdel_opts.feat())
+
+        _jlog.push("\n") ;
+
+    /*---------------------------- push INIT keywords */
+        __dumpREAL("INIT-NEAR", 
+            _jcfg._rdel_opts.near())
 
         _jlog.push("\n") ;
 

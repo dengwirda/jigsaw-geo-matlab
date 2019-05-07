@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 24 July, 2018
+     * Last updated: 30 April, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -127,9 +127,8 @@
     containers::
         fixed_array<real_type,3>   _bmax ;
    
-    real_type                      _vtol ;
-   
     mesh_type                      _mesh ;
+
     tree_type                      _tree ;
   
     public  :
@@ -207,161 +206,149 @@
         constexpr _NBOX=(iptr_type)+8  ;
 
         real_type _BTOL[3] ;
-        _BTOL[0] = this->_bmax[0] - 
-                   this->_bmin[0] ;
-        _BTOL[1] = this->_bmax[1] - 
-                   this->_bmin[1] ;
-        _BTOL[2] = this->_bmax[2] - 
-                   this->_bmin[2] ;
-  
-        real_type _vbox =_BTOL[0] * 
-                         _BTOL[1] *
-                         _BTOL[2] ;
+        _BTOL[0] = this->_bmax [ 0 ] - 
+                   this->_bmin [ 0 ] ;
+        _BTOL[1] = this->_bmax [ 1 ] - 
+                   this->_bmin [ 1 ] ;
+        _BTOL[2] = this->_bmax [ 2 ] - 
+                   this->_bmin [ 2 ] ;
   
         _BTOL[0]*=_RTOL ;
         _BTOL[1]*=_RTOL ;
         _BTOL[2]*=_RTOL ;
 
-        this->_vtol = _vbox*_RTOL ;
-  
     /*-------------------- make aabb-tree and init. bbox. */
-        aabb_mesh(this->_mesh._set1 , 
-                  this->_mesh._set4 , 
-                  this->_tree,_BTOL ,
-                 _NBOX , tria_pred()) ;
-    
-   /*--------------------- flip node order - orientations */    
-        for (auto _tpos  = 
-             this->_mesh._set4.head() ;
-                  _tpos != 
-             this->_mesh._set4.tend() ;
-                ++_tpos  )
-        {
-            if (_tpos->mark() >= +0)
-            {
-            real_type _tvol = 
-                geometry::tetra_vol_3d (
-           &this->_mesh._set1[
-                _tpos->node(0)].pval(0),
-           &this->_mesh._set1[
-                _tpos->node(1)].pval(0),
-           &this->_mesh._set1[
-                _tpos->node(2)].pval(0),
-           &this->_mesh._set1[
-                _tpos->node(3)].pval(0)
-                ) ;
-        
-            if (_tvol < (real_type) +0.)
-            std::swap(_tpos->node (0),
-                      _tpos->node (1)) ;
-            }
-        }
+        aabb_mesh( this->_mesh._set1 , 
+                   this->_mesh._set4 , 
+                   this->_tree,_BTOL ,
+                  _NBOX , tria_pred()) ;
     }
     
     /*
     --------------------------------------------------------
-     * FIND-TRIA: scan for enclosing tria.
+     * NEAR-TRIA: scan for nearest tria.
     --------------------------------------------------------
      */  
      
-    class find_tria
+    class near_tria
         {
         public  :
-        real_type            *_ppos ;
+        real_type              *_ppos ;
+        real_type              *_qpos ;
+
+        real_type               _dsqr ;
         
-        mesh_type            *_mesh ;
+        mesh_type              *_mesh ;
         
-        real_type             _vtol ;
-        bool_type             _find ;
-        iptr_type             _tpos ;
+        bool_type               _find ;
+        iptr_type               _tpos ;
         
         public  :
     
     /*------------------------ make a tree-tria predicate */
-        __inline_call find_tria (
+        __inline_call near_tria (
             real_type*_psrc = nullptr ,
-            mesh_type*_msrc = nullptr ,
-            real_type _vsrc = 
-                (real_type) + 0.0
+            real_type*_qsrc = nullptr ,
+            mesh_type*_msrc = nullptr
             ) : _ppos(_psrc) ,
+                _qpos(_qsrc) ,
+           _dsqr(+std::numeric_limits
+           <real_type>::infinity()) ,
                 _mesh(_msrc) ,
-                _vtol(_vsrc) ,
                 _find(false) ,
                 _tpos(   -1)   {}
 
     /*------------------------ call pred. on tree matches */
         __inline_call 
-            void_type operator () (
-            typename  
-        tree_type::item_data *_iptr
+            real_type operator () (
+                typename  
+            tree_type::item_data  *_iptr
             )
         {
-            if (this->_find)  return;
+            if (this->_find) return +0. ;
         
             for ( ; _iptr != nullptr; 
                     _iptr = _iptr->_next)
             {
+                real_type  _qtmp[+3];
                 iptr_type  _tpos = 
                     _iptr->_data.ipos() ;
                 
-                if (find_pred ( _ppos ,
-                        _mesh , _tpos ,
-                        _vtol ) )
+                if (near_pred ( _ppos ,
+                        _qtmp ,*_mesh , 
+                        _tpos ) )
                 {
-                    this->_find =  true ;
-                    this->_tpos = _tpos ;
-                    
-                    break ;
+    /*------------------------ is fully inside: finished! */
+                this->_dsqr = 
+                    (real_type) +0. ;
+
+                this->_find =  true ;
+                this->_tpos = _tpos ;
+                
+                break ;
+
+                }
+                else
+                {
+    /*------------------------ projected match: keep best */
+                real_type _dtmp = 
+            geometry::lensqr_3d(_ppos, _qtmp);
+
+                if (_dtmp<_dsqr )
+                {
+                _qpos[0] = _qtmp[0] ;
+                _qpos[1] = _qtmp[1] ;
+                _qpos[2] = _qtmp[2] ;
+
+                this->_dsqr = _dtmp ;
+                this->_tpos = _tpos ;
+                }
+
                 }
             }
+
+            return ( this->_dsqr )  ;
         }
         
         } ;
    
-    typedef geom_tree::aabb_pred_node_k <
-            real_type , 
-            iptr_type , 3 > tree_pred ;
-   
     /*
     --------------------------------------------------------
-     * TRIA-PRED: TRUE if PPOS is in TPOS.
+     * NEAR-PRED: TRUE if PPOS is in TPOS.
     --------------------------------------------------------
      */
      
     __static_call
-    __normal_call bool_type find_pred (
+    __normal_call bool_type near_pred (
         real_type*_ppos ,
-        mesh_type*_mesh ,
-        iptr_type _tpos ,
-        real_type _vtol
+        real_type*_qpos ,
+        mesh_type&_mesh ,
+        iptr_type _tpos
         )
     {
-        for (auto _fpos = +4; _fpos-- != +0; )
+        geometry::hits_type _hits ;
+        if (geometry::proj_tria_3d(_ppos, 
+           &_mesh._set1[
+            _mesh._set4[
+            _tpos].node(0)].pval(0) ,
+           &_mesh._set1[
+            _mesh._set4[
+            _tpos].node(1)].pval(0) ,
+           &_mesh._set1[
+            _mesh._set4[
+            _tpos].node(2)].pval(0) ,
+           &_mesh._set1[
+            _mesh._set4[
+            _tpos].node(3)].pval(0) ,
+            _qpos,_hits) )
         {
-            iptr_type _fnod[ 4];
-            mesh_type::tri4_type::
-                face_node(_fnod, _fpos, 3, 2);
-            _fnod[0] = _mesh->
-            _set4[_tpos].node(_fnod[0]);
-            _fnod[1] = _mesh->
-            _set4[_tpos].node(_fnod[1]);
-            _fnod[2] = _mesh->
-            _set4[_tpos].node(_fnod[2]);
-            
-            real_type _tvol = 
-                geometry::tetra_vol_3d (
-               &_mesh->
-               _set1[ _fnod[0]].pval(0),
-               &_mesh->
-               _set1[ _fnod[1]].pval(0),
-               &_mesh->
-               _set1[ _fnod[2]].pval(0),
-               _ppos) ;
-            
-            if (_tvol < -_vtol) return false ;
+            return (_hits ==
+                 geometry::tria_hits) ;
         }
-        
-        return  true ;
+        else
+        {
+            return ( false ) ;
+        } 
     }
    
     /*
@@ -394,15 +381,16 @@
         )
     /*------------------------ find tria + linear interp. */
     {
+        real_type _QPOS[ 3] ;
         real_type _hval = 
     +std::numeric_limits<real_type>::infinity() ;
     
         if (hint_okay(_hint))
         {
     /*------------------------ test whether hint is valid */
-            if(!find_pred( _ppos, 
-                   &_mesh, _hint,
-                this->_vtol ) )
+            if(!near_pred( _ppos, 
+                    _QPOS, _mesh, 
+                    _hint)  )
             {
             _hint =  this->null_hint();
             }
@@ -416,17 +404,19 @@
         if (_hint == this->null_hint())
         {
     /*------------------------ scan to find bounding tria */
-            tree_pred _pred (_ppos) ;
-            find_tria _func (_ppos,
-                            &_mesh,
-                       this->_vtol) ;
+            near_tria _proj (_ppos,
+                      _QPOS,&_mesh) ;
         
-            this->
-           _tree.find(_pred, _func) ;
+            this->_tree.near(_ppos, 
+                             _proj) ;
         
-           _hint = _func._find ? 
-                   _func._tpos : 
-            hfun_type::null_hint () ;
+            _hint = _proj._tpos ;
+        }
+        else
+        {
+            _QPOS[0] = _ppos[0] ;
+            _QPOS[1] = _ppos[1] ;
+            _QPOS[2] = _ppos[2] ;
         }
     
         if (_hint != this->null_hint())
@@ -440,6 +430,7 @@
             iptr_type  _fnod [4] ;
             tri4_type::
             face_node(_fnod, _fpos, 3, 2) ;
+
             _fnod[0] = this->_mesh.
             _set4[_hint].node(_fnod[0]);
             _fnod[1] = this->_mesh.
@@ -452,92 +443,24 @@
             real_type _tvol = 
                 geometry::tetra_vol_3d (
                &this->_mesh.
-               _set1[ _fnod[0]].pval(0),
+               _set1[_fnod[0]].pval(0) ,
                &this->_mesh.
-               _set1[ _fnod[1]].pval(0),
+               _set1[_fnod[1]].pval(0) ,
                &this->_mesh.
-               _set1[ _fnod[2]].pval(0),
-               _ppos) ;
+               _set1[_fnod[2]].pval(0) ,
+               _QPOS) ;
 
             _hsum += _tvol * this-> 
-            _mesh._set1[_fnod[3]].hval() ; 
+            _mesh._set1[_fnod[3]].hval()  ; 
             
             _vsum += _tvol ;
         }
 
 
         _hval = _hsum / _vsum ;
-        
+
         }
-        else
-        {
-    /*------------------------- inv-dist. weighted extrap */
-        typename tree_type::item_data 
-             *_nptr = nullptr ;    
-    
-        this->_tree.
-             near(_ppos, _nptr) ;   // find nearest tria.
-    
-        if (_nptr  != nullptr )
-        {      
-    /*------------------------- extrap. using tria. nodes */
-        iptr_type  _tpos = 
-            _nptr->_data.ipos() ;
-            
-        iptr_type  _inod = 
-          _mesh._set4[_tpos].node(0) ;
-        iptr_type  _jnod = 
-          _mesh._set4[_tpos].node(1) ;
-        iptr_type  _knod = 
-          _mesh._set4[_tpos].node(2) ;
-        iptr_type  _lnod = 
-          _mesh._set4[_tpos].node(3) ;
-            
-        real_type _isqr  = 
-            geometry::lensqr_3d(_ppos, 
-       &_mesh._set1[_inod].pval( +0));
-        real_type _jsqr  = 
-            geometry::lensqr_3d(_ppos, 
-       &_mesh._set1[_jnod].pval( +0));
-        real_type _ksqr  = 
-            geometry::lensqr_3d(_ppos, 
-       &_mesh._set1[_knod].pval( +0));
-        real_type _lsqr  = 
-            geometry::lensqr_3d(_ppos, 
-       &_mesh._set1[_lnod].pval( +0));
-    
-    /*------------------------- extrap. as inv-dist. fun. */   
-        real_type _wsum = (real_type)0. ;
-        real_type _hsum = (real_type)0. ;
-       
-        real_type _iwsc = 
-            (real_type)+1. / _isqr ;
-        real_type _jwsc = 
-            (real_type)+1. / _jsqr ;
-        real_type _kwsc = 
-            (real_type)+1. / _ksqr ;
-        real_type _lwsc = 
-            (real_type)+1. / _lsqr ;
-       
-        _wsum +=  _iwsc + _jwsc + 
-                  _kwsc + _lwsc ;
- 
-        _hsum +=  _iwsc * 
-            _mesh._set1[_inod].hval();
-        _hsum +=  _jwsc * 
-            _mesh._set1[_jnod].hval();
-        _hsum +=  _kwsc * 
-            _mesh._set1[_knod].hval();
-        _hsum +=  _lwsc * 
-            _mesh._set1[_lnod].hval();
-      
-      
-        _hval = _hsum / _wsum ;
-        
-        }
-        
-        }  
-          
+
     /*------------------------- size-fun interp. to ppos. */
         return  _hval ;  
     }
