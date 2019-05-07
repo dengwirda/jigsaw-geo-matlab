@@ -4,7 +4,7 @@ function [opts] = loadjig(name)
 %-----------------------------------------------------------
 %   Darren Engwirda
 %   github.com/dengwirda/jigsaw-matlab
-%   30-Dec-2018
+%   15-Apr-2019
 %   darren.engwirda@columbia.edu
 %-----------------------------------------------------------
 %
@@ -46,6 +46,9 @@ function [opts] = loadjig(name)
         %-------------------------------------- INIT options
             case 'init_file'
             opts .init_file = strtrim(tstr{2});
+
+            case 'init_near'
+            opts .init_near = str2double(tstr{2});
             
         %-------------------------------------- GEOM options
             case 'geom_file'
@@ -91,6 +94,9 @@ function [opts] = loadjig(name)
             
             case 'mesh_iter'
             opts .mesh_iter = str2double(tstr{2});
+            
+            case 'mesh_rule'
+            opts .mesh_rule = str2double(tstr{2});
             
             case 'mesh_dims'
             opts .mesh_dims = str2double(tstr{2});

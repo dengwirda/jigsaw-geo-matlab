@@ -31,9 +31,9 @@
      *
     --------------------------------------------------------
      *
-     * Last updated: 31 July, 2018
+     * Last updated: 10 April, 2019
      *
-     * Copyright 2013-2018
+     * Copyright 2013-2019
      * Darren Engwirda
      * de2363@columbia.edu
      * https://github.com/dengwirda/
@@ -91,6 +91,10 @@
     __normal_call void_type push_geom_eta2 (
         double       /*_eta2*/
         ) { }
+
+    __normal_call void_type push_init_near (
+        double       /*_near*/
+        ) { }
         
     __normal_call void_type push_hfun_scal (
         std::int32_t /*_scal*/
@@ -113,6 +117,9 @@
         ) { }
     __normal_call void_type push_mesh_iter (
         std::int32_t /*_iter*/
+        ) { }
+    __normal_call void_type push_mesh_rule (
+        std::int32_t /*_rule*/
         ) { }
     __normal_call void_type push_mesh_siz1 (
         double       /*_siz1*/
@@ -407,6 +414,11 @@
             __putFILE(push_init_file, _stok) ;
                 }
             else
+            if (_stok[0] == "INIT-NEAR")
+                {
+            __putREAL(push_init_near, _stok) ;
+                }
+            else
         /*---------------------------- read HFUN keywords */
             if (_stok[0] == "HFUN_FILE")
                 {
@@ -533,6 +545,11 @@
             if (_stok[0] == "MESH_ITER")
                 {
             __putINTS(push_mesh_iter, _stok) ;
+                }
+            else
+            if (_stok[0] == "MESH_RULE")
+                {
+            __putINTS(push_mesh_rule, _stok) ;
                 }
             else
         /*---------------------------- read OPTM keywords */
