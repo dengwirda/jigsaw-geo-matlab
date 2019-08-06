@@ -1,0 +1,803 @@
+function example(varargin)
+%EXAMPLE build example meshes for JIGSAW(GEO).
+%
+%   EXAMPLE(N) calls the N-TH demo problem. The following 
+%   demo problems are currently available:
+%
+% - DEMO-1: generate a uniform resolution 150KM global grid.
+%
+% - DEMO-2: generate a regionally-refined global-grid, with 
+%   a high-resolution "patch" (25KM resolution) embedded wi- 
+%   thin a uniformly resolved 150km background grid.
+%
+%   DEMO-3: build "smooth" mesh-spacing functions from noisy
+%   + discontinuous input data using MARCHE.
+%
+% - DEMO-4: generate a multi-resolution grid for the arctic 
+%   ocean basin, with local refinement along coastlines and
+%   shallow ridges. Global grid resolution is 100KM, backgr-
+%   ound arctic resolution is 50KM and min. adaptive resolu-
+%   tion is 25KM.
+%
+% - DEMO-5: generate a grid for the Australian region, using
+%   scaled ocean-depth as a mesh-spacing indicator.
+%
+% - DEMO-6: generate a "multi-part" mesh of the (contiguous)
+%   USA, using state boundaries to partition the mesh.
+%
+%   See also JIGSAW
+%
+
+%-----------------------------------------------------------
+%   Darren Engwirda
+%   github.com/dengwirda/jigsaw-geo-matlab
+%   05-Aug-2019
+%   darren.engwirda@columbia.edu
+%-----------------------------------------------------------
+%
+
+    close all ; initjig ;
+    
+    demo =  +1;
+
+    if (nargin >= 1), demo = varargin{1}; end
+       
+    switch (demo)
+        case 1, demo_1 ;
+        case 2, demo_2 ;
+        case 3, demo_3 ;
+        case 4, demo_4 ;
+        case 5, demo_5 ;
+        case 6, demo_6 ;
+        
+        otherwise
+        error( ...
+    'example:invalidSelection','Invalid selection!') ;
+    end
+
+end
+
+function demo_1
+% DEMO-1: generate a uniform resolution (150KM) global grid. 
+%   JIGSAW is combined with a bisection procedure to improve
+%   the regularity of the grid topology.
+
+%------------------------------------ setup files for JIGSAW
+
+    rootpath = fileparts( ...
+        mfilename( 'fullpath' ) ) ;
+
+    opts.geom_file = ...                % domian file
+        fullfile(rootpath,...
+        'cache','globe-geom.msh') ;
+    
+    opts.jcfg_file = ...                % config file
+        fullfile(rootpath,...
+        'cache','globe.jig') ;
+    
+    opts.mesh_file = ...                % output file
+        fullfile(rootpath,...
+        'cache','globe-mesh.msh') ;
+
+%------------------------------------ define JIGSAW geometry
+
+    geom.mshID = 'ELLIPSOID-MESH' ;
+    geom.radii = 6371 * ones(3,1) ;
+    
+    savemsh (opts.geom_file,geom) ;
+    
+%------------------------------------ build mesh via JIGSAW! 
+    
+    opts.hfun_scal = 'absolute';
+    opts.hfun_hmax = +150.;
+    
+    opts.mesh_dims = +2 ;               % 2-dim. simplexes
+    
+    opts.optm_qlim = +.95 ;
+    opts.optm_qtol = +1.E-05 ;
+    
+    mesh = bisect_sphere(opts, 2) ;
+    
+    topo = loadmsh( ...
+        fullfile(rootpath, ...
+            'files', 'topo.msh')) ;
+         
+    plotsphere(geom,mesh,[],topo) ;
+
+    drawnow ;        
+    set(figure(1),'units','normalized', ...
+    'position',[.05,.50,.25,.30]) ;
+    
+    set(figure(2),'units','normalized', ...
+    'position',[.05,.10,.25,.30]) ;
+    
+end
+
+function demo_2
+% DEMO-2 -- generate a regionally-refined global grid with a 
+%   high-resolution "patch" (@25KM) embedded within a 
+%   uniform background grid (@150KM).
+%   JIGSAW is combined with a bisection procedure to improve
+%   the regularity of the grid topology.
+
+%------------------------------------ setup files for JIGSAW
+
+    rootpath = fileparts( ...
+        mfilename( 'fullpath' ) ) ;
+
+    opts.geom_file = ...                % domian file
+        fullfile(rootpath,...
+        'cache','globe-geom.msh') ;
+    
+    opts.jcfg_file = ...                % config file
+        fullfile(rootpath,...
+        'cache','globe.jig') ;
+    
+    opts.mesh_file = ...                % output file
+        fullfile(rootpath,...
+        'cache','globe-mesh.msh') ;
+
+    opts.hfun_file = ...                % sizing file
+        fullfile(rootpath,...
+        'cache','globe-hfun.msh') ;
+    
+%------------------------------------ define JIGSAW geometry
+
+    geom.mshID = 'ELLIPSOID-MESH' ;
+    geom.radii = 6371 * ones(3,1) ;
+    
+    savemsh (opts.geom_file,geom) ;
+    
+%------------------------------------ compute HFUN over GEOM
+        
+    topo = loadmsh(fullfile( ...
+        rootpath, 'files', 'topo.msh' ) );
+    
+    xpos = topo.point.coord{1};
+    ypos = topo.point.coord{2};
+    zlev = reshape( ...
+    topo.value,length(ypos),length(xpos));
+    
+   [XPOS,YPOS] = meshgrid(xpos,ypos);
+    
+    XPOS = XPOS * pi/180 ;
+    YPOS = YPOS * pi/180 ;
+   
+    hfun =-150. * exp(-0.8*(XPOS+.7).^2 ...
+                      -0.8*(YPOS-.5).^2 ...
+                  ) ;
+    hfun(hfun < -125.) = -125. ;
+    hfun = +150.0 + hfun ;
+    
+    hmat.mshID = 'ELLIPSOID-GRID';
+    hmat.radii = geom.radii;
+    hmat.point.coord{1} = XPOS(1,:) ;
+    hmat.point.coord{2} = YPOS(:,1) ;
+    hmat.value = single(hfun) ;
+    
+    savemsh(opts.hfun_file,hmat) ;
+    
+%------------------------------------ build mesh via JIGSAW! 
+    
+    fprintf(1,'  Constructing MESH...\n');
+    
+    opts.hfun_scal = 'absolute';
+    opts.hfun_hmax = +inf ;
+    opts.hfun_hmin = +0.0 ;
+    
+    opts.mesh_dims = +2 ;               % 2-dim. simplexes
+    
+    opts.optm_qlim = +.95 ; 
+    opts.optm_qtol = +1.E-05 ;
+   
+    mesh = bisect_sphere(opts, 2) ;
+    
+    plotsphere(geom,mesh,hmat,topo) ;
+    
+    drawnow ;        
+    set(figure(1),'units','normalized', ...
+    'position',[.30,.50,.25,.30]) ;
+    
+    set(figure(2),'units','normalized', ...
+    'position',[.05,.50,.25,.30]) ;
+    set(figure(3),'units','normalized', ...
+    'position',[.05,.10,.25,.30]) ;
+
+end
+
+function demo_3
+% DEMO-3 --- use MARCHE to build "smooth" mesh-spacing data
+%   from noisy/discontinuous inputs.
+
+%------------------------------------ setup files for JIGSAW
+
+    rootpath = fileparts( ...
+        mfilename( 'fullpath' ) ) ;
+
+    opts.geom_file = ...                % domian file
+        fullfile(rootpath,...
+        'cache','globe-geom.msh') ;
+    
+    opts.jcfg_file = ...                % config file
+        fullfile(rootpath,...
+        'cache','globe.jig') ;
+    
+    opts.mesh_file = ...                % output file
+        fullfile(rootpath,...
+        'cache','globe-mesh.msh') ;
+
+    opts.hfun_file = ...                % sizing file
+        fullfile(rootpath,...
+        'cache','globe-hfun.msh') ;
+    
+%------------------------------------ define JIGSAW geometry
+
+    geom.mshID = 'ELLIPSOID-MESH' ;
+    geom.radii = 6371 * ones(3,1) ;
+    
+    savemsh (opts.geom_file,geom) ;
+    
+%------------------------------------ compute HFUN over GEOM
+        
+    fprintf(1,'  Loading TOPO data...\n');
+        
+    topo = loadmsh(fullfile( ...
+        rootpath, 'files', 'topo.msh' ) );
+    
+    xpos = topo.point.coord{1};
+    ypos = topo.point.coord{2};
+    zlev = reshape( ...
+    topo.value,length(ypos),length(xpos));
+    
+   [nlat,nlon] = size(zlev);
+
+    radE = 6371.0E+00 ;
+   
+    fprintf(1,'  Forming HFUN data...\n');
+   
+   [XPOS,YPOS] = meshgrid (xpos,ypos) ;
+      
+    hfn0 = +100. ;                      % global spacing
+    hfn2 = +20.;                        % adapt. spacing
+    hfn3 = +50.;                        % arctic spacing
+    
+    hfun = +hfn0*ones(nlat,nlon) ;
+    
+    htop = sqrt(max(-zlev(:),eps))/1.5;
+    htop = max(htop,hfn2);
+    htop = min(htop,hfn3);
+    htop(zlev>0.) = hfn0 ;
+    
+    hfun(YPOS>+45.) = htop(YPOS>+45.) ;
+
+%------------------------------------ set HFUN grad.-limiter
+    
+    dhdx = +.05;                        % max. gradients
+       
+    hmat.mshID = 'ELLIPSOID-GRID' ;
+    hmat.radii = radE ;
+    hmat.point.coord{1} = xpos*pi/180 ;
+    hmat.point.coord{2} = ypos*pi/180 ;
+    hmat.value = single(hfun) ;
+    hmat.slope = dhdx*ones(size(hfun));
+    
+    savemsh (opts.hfun_file,hmat) ;
+ 
+%------------------------------------ set HFUN grad.-limiter
+
+    hlim = marche(opts) ;
+    
+    plotsphere(geom,[],hmat,topo) ;   
+    plotsphere(geom,[],hlim,topo) ;
+
+    drawnow ;        
+    set(figure(1),'units','normalized', ...
+    'position',[.05,.50,.25,.30]) ;
+    title('H(x): raw data');
+
+    set(figure(2),'units','normalized', ...
+    'position',[.30,.50,.25,.30]) ;
+    title('H(x): smoothed');    
+
+end
+
+function demo_4
+% DEMO-4 --- generate a multi-resolution grid for the arctic 
+%   ocean basin, with local refinement along coastlines and
+%   shallow ridges. Global grid resolution is 100KM, backgr-
+%   ound arctic resolution is 50KM and min. adaptive resolu-
+%   tion is 25KM.
+%   JIGSAW is combined with a bisection procedure to improve
+%   the regularity of the grid topology.
+
+%------------------------------------ setup files for JIGSAW
+
+    rootpath = fileparts( ...
+        mfilename( 'fullpath' ) ) ;
+
+    opts.geom_file = ...                % domian file
+        fullfile(rootpath,...
+        'cache','globe-geom.msh') ;
+    
+    opts.jcfg_file = ...                % config file
+        fullfile(rootpath,...
+        'cache','globe.jig') ;
+    
+    opts.mesh_file = ...                % output file
+        fullfile(rootpath,...
+        'cache','globe-mesh.msh') ;
+
+    opts.hfun_file = ...                % sizing file
+        fullfile(rootpath,...
+        'cache','globe-hfun.msh') ;
+    
+%------------------------------------ define JIGSAW geometry
+
+    geom.mshID = 'ELLIPSOID-MESH' ;
+    geom.radii = 6371 * ones(3,1) ;
+    
+    savemsh (opts.geom_file,geom) ;
+    
+%------------------------------------ compute HFUN over GEOM
+        
+    fprintf(1,'  Loading TOPO data...\n');
+        
+    topo = loadmsh(fullfile( ...
+        rootpath, 'files', 'topo.msh' ) );
+    
+    xpos = topo.point.coord{1};
+    ypos = topo.point.coord{2};
+    zlev = reshape( ...
+    topo.value,length(ypos),length(xpos));
+    
+   [nlat,nlon] = size(zlev);
+
+    radE = 6371.0E+00 ;
+   
+    fprintf(1,'  Forming HFUN data...\n');
+   
+   [XPOS,YPOS] = meshgrid (xpos,ypos) ;
+      
+    hfn0 = +100. ;                      % global spacing
+    hfn2 = +20.;                        % adapt. spacing
+    hfn3 = +50.;                        % arctic spacing
+    
+    hfun = +hfn0*ones(nlat,nlon) ;
+    
+    htop = sqrt(max(-zlev(:),eps))/1.5;
+    htop = max(htop,hfn2);
+    htop = min(htop,hfn3);
+    htop(zlev>0.) = hfn0 ;
+    
+    hfun(YPOS>+50.) = htop(YPOS>+50.) ;
+
+%------------------------------------ set HFUN grad.-limiter
+    
+    dhdx = +.05;                        % max. gradients
+       
+    hmat.mshID = 'ELLIPSOID-GRID';
+    hmat.radii = radE ;
+    hmat.point.coord{1} = xpos*pi/180 ;
+    hmat.point.coord{2} = ypos*pi/180 ;
+    hmat.value = single(hfun) ;
+    hmat.slope = dhdx*ones(size(hfun));
+    
+    savemsh(opts.hfun_file,hmat) ;
+ 
+%------------------------------------ set HFUN grad.-limiter
+
+    hmat = marche(opts) ;
+       
+%------------------------------------ build mesh via JIGSAW! 
+    
+    fprintf(1,'  Constructing MESH...\n');
+    
+    opts.hfun_scal = 'absolute';
+    opts.hfun_hmax = +inf ;
+    opts.hfun_hmin = +0.0 ;
+    
+    opts.mesh_dims = +2 ;               % 2-dim. simplexes
+    
+    opts.optm_qlim = +.95 ;
+    opts.optm_qtol = +1.E-05 ;
+    
+    mesh = bisect_sphere(opts, 2) ;
+   
+    plotsphere(geom,mesh,hmat,topo) ;
+
+    drawnow ;        
+    set(figure(1),'units','normalized', ...
+    'position',[.30,.50,.25,.30]) ;
+    
+    set(figure(2),'units','normalized', ...
+    'position',[.05,.50,.25,.30]) ;
+    set(figure(3),'units','normalized', ...
+    'position',[.05,.10,.25,.30]) ;
+    
+end
+
+function demo_5
+% DEMO-5 -- generate a 2-dim. grid for the Australian region 
+%   using scaled ocean-depth as a mesh-spacing indicator.
+%   A local stereographic projection is employed.
+ 
+%------------------------------------ setup files for JIGSAW
+
+    rootpath = fileparts( ...
+        mfilename( 'fullpath' ) ) ;
+
+    opts.geom_file = ...                % domian file
+        fullfile(rootpath,...
+        'cache','aust-proj.msh') ;
+    
+    opts.jcfg_file = ...                % config file
+        fullfile(rootpath,...
+        'cache','aust.jig') ;
+    
+    opts.mesh_file = ...                % output file
+        fullfile(rootpath,...
+        'cache','aust-mesh.msh') ;
+
+    opts.hfun_file = ...                % sizing file
+        fullfile(rootpath,...
+        'cache','aust-hfun.msh') ;
+    
+%------------------------------------ setup TOPO for spacing
+  
+    fprintf(1,'  Loading TOPO data...\n');
+
+    geom = loadmsh(fullfile( ...
+        rootpath,'files','aust.msh'));
+    
+    topo = loadmsh(fullfile( ...
+        rootpath,'files','topo.msh'));
+  
+    alon = topo.point.coord{1};
+    alat = topo.point.coord{2};
+    zlev = reshape( ...
+    topo.value,length(alat),length(alon));
+    
+    xmin = min(geom.point.coord(:,1));  % only keep AU-bit
+    xmax = max(geom.point.coord(:,1));
+    ymin = min(geom.point.coord(:,2));
+    ymax = max(geom.point.coord(:,2));
+
+    xone = find(alon>=xmin,1,'first');
+    xend = find(alon<=xmax,1, 'last');
+    
+    xone = xone - 1 ;
+    xend = xend + 1 ;
+    
+    yone = find(alat>=ymin,1,'first');
+    yend = find(alat<=ymax,1, 'last');
+    
+    yone = yone - 1 ;
+    yend = yend + 1 ;
+    
+    alon = alon(xone:xend) ;
+    alat = alat(yone:yend) ;
+    zlev = zlev(yone:yend,xone:xend) ;
+
+%------------------------------------ compute HFUN from TOPO    
+        
+    fprintf(1,'  Forming HFUN data...\n'); 
+    
+    hmin = +10. ;                       % min. H(X) [deg.]
+    hmax = +100. ;                      % max. H(X)
+    
+    hfun = sqrt(max(-zlev,eps))/.5 ;    % scale with H^1/2
+    hfun = max(hfun,hmin);
+    hfun = min(hfun,hmax); 
+
+    dhdx = +.15 *ones(size(hfun));      % smoothing limits
+
+    hmat.mshID = 'ELLIPSOID-GRID';
+    hmat.radii = 6371.E+00;
+    hmat.point.coord{1} = ...
+                alon * pi / 180. ;
+    hmat.point.coord{2} = ...
+                alat * pi / 180. ;
+    hmat.value = hfun ;
+    hmat.slope = dhdx ;
+    
+%------------------------------------ do stereographic proj.    
+   
+    fprintf(1,'  Forming PROJ data...\n');
+
+    geom.point.coord(:,1:2) = ...
+    geom.point.coord(:,1:2) * pi/180;
+    
+    proj.kind  = 'STEREOGRAPHIC' ;
+    proj.rrad  = 6371.E+00;
+    proj.xmid  = ...
+        mean(geom.point.coord(:, 1));
+    proj.ymid  = ...
+        mean(geom.point.coord(:, 2));
+  
+   [GPRJ] = project(geom,proj,'fwd');
+   [HPRJ] = project(hmat,proj,'fwd');
+
+    savemsh(opts.geom_file,GPRJ) ;
+    savemsh(opts.hfun_file,HPRJ) ;
+
+%------------------------------------ set HFUN grad.-limiter
+    
+    HPRJ = marche  (opts) ;
+    
+%------------------------------------ build mesh via JIGSAW! 
+   
+    fprintf(1,'  Constructing MESH...\n');
+   
+    opts.hfun_scal = 'absolute';        % null HFUN limits
+    opts.hfun_hmax = +inf ;             
+    opts.hfun_hmin = 0.00 ;
+    
+    opts.mesh_dims = +2 ;               % 2-dim. simplexes
+    
+    opts.mesh_eps1 = 1.00 ;
+    
+   %opts.geom_feat = true ;
+   %opts.mesh_top1 = true ;
+    
+    opts.verbosity = +2 ;
+    
+    MPRJ = jigsaw  (opts) ;
+    
+    plotplanar(GPRJ,MPRJ,HPRJ) ;
+
+    drawnow ;        
+    set(figure(1),'units','normalized', ...
+    'position',[.05,.50,.25,.30]) ;
+    set(figure(2),'units','normalized', ...
+    'position',[.05,.10,.25,.30]) ;
+    set(figure(3),'units','normalized', ...
+    'position',[.30,.50,.25,.30]) ;
+    set(figure(4),'units','normalized', ...
+    'position',[.30,.10,.25,.30]) ;
+    
+end
+
+function demo_6
+%DEMO-6 --- generate a "multi-part" mesh of the (contiguous)
+%   USA, using state boundaries to partition the mesh.
+%   A local stereographic projection is employed.
+
+%------------------------------------ setup files for JIGSAW
+
+    rootpath = fileparts( ...
+        mfilename( 'fullpath' ) ) ;
+
+    opts.geom_file = ...                % domian file
+        fullfile(rootpath,...
+        'cache','us48-proj.msh') ;
+    
+    opts.jcfg_file = ...                % config file
+        fullfile(rootpath,...
+        'cache','us48.jig') ;
+    
+    opts.mesh_file = ...                % output file
+        fullfile(rootpath,...
+        'cache','us48-mesh.msh') ;
+    
+%------------------------------------ import GEOM. from file
+    
+    geom = loadmsh(fullfile( ...
+        rootpath,'files','us48.msh')) ;
+   
+%------------------------------------ do stereographic proj.    
+   
+    geom.point.coord(:,1:2) = ...
+    geom.point.coord(:,1:2) * pi/180;
+    
+    proj.kind  = 'STEREOGRAPHIC' ;
+    proj.rrad  = 6371.E+00;
+    proj.xmid  = ...
+        mean(geom.point.coord(:, 1));
+    proj.ymid  = ...
+        mean(geom.point.coord(:, 2));
+  
+   [GEOM] = project(geom,proj,'fwd');
+    
+    savemsh(opts.geom_file,GEOM) ;
+    
+%------------------------------------ create mesh via JIGSAW
+    
+    fprintf(1,'  Constructing MESH...\n');
+    
+    opts.hfun_hmax = .005 ;
+    
+    opts.mesh_dims = +2 ;               % 2-dim. simplexes
+    opts.mesh_eps1 = +1/6 ;
+   
+    MESH = jigsaw  (opts) ;
+    
+    plotplanar(GEOM,MESH,[]) ;
+
+    drawnow ;        
+    set(figure(1),'units','normalized', ...
+    'position',[.05,.50,.25,.30]) ;
+    set(figure(2),'units','normalized', ...
+    'position',[.30,.50,.25,.30]) ;
+    set(figure(3),'units','normalized', ...
+    'position',[.30,.10,.25,.30]) ;
+
+end
+
+function plotsphere(geom,mesh,hfun,topo)
+%PLOT-SPHERE draw JIGSAW output for sphere problems.
+
+    if (~isempty(topo))
+        xpos = topo.point.coord{1};
+        ypos = topo.point.coord{2};
+        zlev = reshape( ...
+        topo.value,length(ypos),length(xpos));
+    else
+        zlev = [] ;    
+    end
+
+    if (~isempty(hfun))
+    switch (upper(hfun.mshID))
+        case{'EUCLIDEAN-GRID', ...
+             'ELLIPSOID-GRID'}
+%------------------------------------ disp. 'grid' functions
+        hfun.value = reshape(hfun.value, ...
+            length(hfun.point.coord{2}), ...
+            length(hfun.point.coord{1})  ...
+            ) ;
+        if (all(size(hfun.value)==size(zlev)))
+            vals = hfun.value ;
+            vals(zlev>0.) = inf ;
+        else
+            vals = hfun.value ;    
+        end
+        figure('color','w');
+        surf(hfun.point.coord{1}*180/pi, ...
+             hfun.point.coord{2}*180/pi, ...
+             vals) ;
+        view(2); axis image; hold on ;
+        shading interp;
+        title('JIGSAW HFUN data') ; 
+    end    
+    end
+    
+    if (~isempty(mesh))
+%------------------------------------ draw unstructured mesh 
+    if (~isempty(topo))
+        tlev = findalt( ...
+            geom,mesh,xpos,ypos,zlev);
+        W   = tlev <= +0. ;
+        D   = tlev >  +0. ;
+        figure('color','w') ;
+        patch ('faces',mesh.tria3.index(W,1:3), ...
+            'vertices',mesh.point.coord(:,1:3), ...
+            'facevertexcdata',tlev(W), ...
+            'facecolor','flat', ...
+            'edgecolor','k') ;
+        hold on; axis image off;
+        patch ('faces',mesh.tria3.index(D,1:3), ...
+            'vertices',mesh.point.coord(:,1:3), ...
+            'facecolor','w', ...
+            'edgecolor','none');
+        set(gca,'clipping','off') ;
+        caxis([min(zlev(:))*4./3., +0.]);
+        colormap('hot');
+        brighten(+0.75);
+    else
+        figure('color','w') ;
+        patch ('faces',mesh.tria3.index(:,1:3), ...
+            'vertices',mesh.point.coord(:,1:3), ...
+            'facecolor','w', ...
+            'edgecolor','k') ;
+        hold on; axis image off;
+        set(gca,'clipping','off') ;
+    end
+    drawcost(mesh, hfun) ;
+    end
+    
+end
+
+function plotplanar(geom,mesh,hfun)
+%PLOT-PLANAR draw JIGSAW output for planar problems.
+  
+    if (~isempty(geom))
+%------------------------------------ draw domain boundaries
+        figure('color','w');
+        patch ('faces',geom.edge2.index(:,1:2), ...
+            'vertices',geom.point.coord(:,1:2), ...
+            'facecolor','w', ...
+            'edgecolor',[.1,.1,.1], ...
+            'linewidth',1.5) ;
+        hold on; axis image;
+        title('JIGSAW GEOM data') ;
+    end
+
+    if (~isempty(hfun))
+    switch (upper(hfun.mshID))
+        case{'EUCLIDEAN-GRID', ...
+             'ELLIPSOID-GRID'}
+%------------------------------------ disp. 'grid' functions
+        hfun.value = reshape(hfun.value, ...
+            length(hfun.point.coord{2}), ...
+            length(hfun.point.coord{1})  ...
+            ) ;
+        figure('color','w') ;
+        surf(hfun.point.coord{1}, ...
+             hfun.point.coord{2}, ...
+             hfun.value) ;
+        view(2); axis image; hold on ;
+        shading interp;
+        title('JIGSAW HFUN data') ;
+        
+        case{'EUCLIDEAN-MESH', ...
+             'ELLIPSOID-MESH'}
+%------------------------------------ disp. 'mesh' functions
+        figure('color','w') ;
+        patch ('faces',hfun.tria3.index(:,1:3), ...
+            'vertices',hfun.point.coord(:,1:2), ...
+            'facevertexcdata',hfun.value, ...
+            'facecolor','flat', ...
+            'edgecolor','none') ;
+        view(2); axis image; hold on ;
+        title('JIGSAW HFUN data') ;      
+    end 
+    end
+
+    if (~isempty(mesh))
+%------------------------------------ draw unstructured mesh
+        figure('color','w');
+        P = mesh.tria3.index (:,4);
+        if ( all (P == +0))
+        patch ('faces',mesh.tria3.index(:,1:3), ...
+            'vertices',mesh.point.coord(:,1:2), ...
+            'facecolor','w', ...
+            'edgecolor',[.2,.2,.2]) ;
+        hold on; axis image;    
+        else
+        for ip = 1 : max(P)
+        I = P == ip;
+        patch ('faces',mesh.tria3.index(I,1:3), ...
+            'vertices',mesh.point.coord(:,1:2), ...
+            'facecolor', rand(1,3), ...
+            'edgecolor',[.2,.2,.2]) ;
+        hold on; axis image;
+        end
+        end
+        patch ('faces',mesh.edge2.index(:,1:2), ...
+            'vertices',mesh.point.coord(:,1:2), ...
+            'facecolor','w', ...
+            'edgecolor',[.1,.1,.1], ...
+            'linewidth',1.5) ;
+        if (~isempty(geom))
+        patch ('faces',geom.edge2.index(:,1:2), ...
+            'vertices',geom.point.coord(:,1:2), ...
+            'facecolor','w', ...
+            'edgecolor',[.1,.1,.8], ...
+            'linewidth',1.5) ;
+        end
+        title('JIGSAW TRIA mesh') ;
+
+        drawcost (mesh,hfun) ;
+    end
+    
+end
+
+function [zlev] = ...
+    findalt(geom,mesh,alon,alat,topo)
+%FINDALT calc. an "altitude" for each tria-cell in the mesh.
+
+    xsph = R3toS2( ...
+        geom.radii, mesh.point.coord(:, 1:3));
+             
+    xlat = xsph(:,2) * 180 / pi;
+    xlon = xsph(:,1) * 180 / pi;
+    
+    xlev = interp2 (alon,alat,topo,xlon,xlat);
+    
+    zlev = xlev (mesh.tria3.index(:,1)) ...
+         + xlev (mesh.tria3.index(:,2)) ...
+         + xlev (mesh.tria3.index(:,3)) ;
+    zlev = zlev / +3.0 ;
+
+end
+
+
