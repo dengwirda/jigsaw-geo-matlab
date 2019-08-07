@@ -17,8 +17,8 @@
 `JIGSAW(GEO)` requires the `JIGSAW` meshing package be installed and available on the `MATLAB` / `OCTAVE` path. `JIGSAW`'s `MATLAB` / `OCTAVE` interface is available <a href="https://github.com/dengwirda/jigsaw-matlab">here</a>. Once installed, the test problems can be run via:
 
     Clone/download + unpack this repository.
-    From `MATLAB` / `OCTAVE`:
-    Ensure `JIGSAW-MATLAB` is available on the path.
+    From MATLAB / OCTAVE:
+    Ensure JIGSAW-MATLAB is available on the path.
     Run example.m
 
 Note: installation of `JIGSAW` requires a `c++` compiler and the `cmake` utility. `JIGSAW` may also be installed as a `conda` package. See <a href="https://github.com/dengwirda/jigsaw">here</a> for details.
