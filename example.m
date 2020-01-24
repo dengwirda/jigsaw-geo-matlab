@@ -7,17 +7,17 @@ function example(varargin)
 % - DEMO-1: generate a uniform resolution 150KM global grid.
 %
 % - DEMO-2: generate a regionally-refined global-grid, with 
-%   a high-resolution "patch" (25KM resolution) embedded wi- 
-%   thin a uniformly resolved 150km background grid.
+%   a high-resolution "patch" (37.5KM resolution) embedded 
+%   within a uniformly resolved 150KM background grid.
 %
 %   DEMO-3: build "smooth" mesh-spacing functions from noisy
 %   + discontinuous input data using MARCHE.
 %
 % - DEMO-4: generate a multi-resolution grid for the arctic 
 %   ocean basin, with local refinement along coastlines and
-%   shallow ridges. Global grid resolution is 100KM, backgr-
-%   ound arctic resolution is 50KM and min. adaptive resolu-
-%   tion is 25KM.
+%   shallow ridges. Global grid resolution is 150KM, backgr-
+%   ound arctic resolution is 67KM and min. adaptive resolu-
+%   tion is 33KM.
 %
 % - DEMO-5: generate a grid for the Australian region, using
 %   scaled ocean-depth as a mesh-spacing indicator.
@@ -31,7 +31,7 @@ function example(varargin)
 %-----------------------------------------------------------
 %   Darren Engwirda
 %   github.com/dengwirda/jigsaw-geo-matlab
-%   05-Aug-2019
+%   23-Jan-2020
 %   darren.engwirda@columbia.edu
 %-----------------------------------------------------------
 %
@@ -49,6 +49,7 @@ function example(varargin)
         case 4, demo_4 ;
         case 5, demo_5 ;
         case 6, demo_6 ;
+        case 7, demo_7 ;
         
         otherwise
         error( ...
@@ -67,7 +68,7 @@ function demo_1
     rootpath = fileparts( ...
         mfilename( 'fullpath' ) ) ;
 
-    opts.geom_file = ...                % domian file
+    opts.geom_file = ...                % domain file
         fullfile(rootpath,...
         'cache','globe-geom.msh') ;
     
@@ -78,7 +79,7 @@ function demo_1
     opts.mesh_file = ...                % output file
         fullfile(rootpath,...
         'cache','globe-mesh.msh') ;
-
+    
 %------------------------------------ define JIGSAW geometry
 
     geom.mshID = 'ELLIPSOID-MESH' ;
@@ -89,15 +90,15 @@ function demo_1
 %------------------------------------ build mesh via JIGSAW! 
     
     opts.hfun_scal = 'absolute';
-    opts.hfun_hmax = +150.;
+    opts.hfun_hmax = +150. ;
     
     opts.mesh_dims = +2 ;               % 2-dim. simplexes
     
     opts.optm_qlim = +.95 ;
-    opts.optm_qtol = +1.E-05 ;
-    
-    mesh = bisect_sphere(opts, 2) ;
-    
+    opts.optm_iter = + 32 ;
+   
+    mesh = tetris(opts, +3) ;
+   
     topo = loadmsh( ...
         fullfile(rootpath, ...
             'files', 'topo.msh')) ;
@@ -115,8 +116,8 @@ end
 
 function demo_2
 % DEMO-2 -- generate a regionally-refined global grid with a 
-%   high-resolution "patch" (@25KM) embedded within a 
-%   uniform background grid (@150KM).
+%   high-resolution "patch" (@37.5KM) embedded within a 
+%   uniform background grid (@150.KM).
 %   JIGSAW is combined with a bisection procedure to improve
 %   the regularity of the grid topology.
 
@@ -125,7 +126,7 @@ function demo_2
     rootpath = fileparts( ...
         mfilename( 'fullpath' ) ) ;
 
-    opts.geom_file = ...                % domian file
+    opts.geom_file = ...                % domain file
         fullfile(rootpath,...
         'cache','globe-geom.msh') ;
     
@@ -163,17 +164,17 @@ function demo_2
     XPOS = XPOS * pi/180 ;
     YPOS = YPOS * pi/180 ;
    
-    hfun =-150. * exp(-0.8*(XPOS+.7).^2 ...
-                      -0.8*(YPOS-.5).^2 ...
+    hfun =-150. * exp(-1.5*(XPOS+1.).^2 ...
+                      -1.5*(YPOS-.5).^2 ...
                   ) ;
-    hfun(hfun < -125.) = -125. ;
+    hfun(hfun < -112.5) = -112.5 ;
     hfun = +150.0 + hfun ;
     
     hmat.mshID = 'ELLIPSOID-GRID';
     hmat.radii = geom.radii;
     hmat.point.coord{1} = XPOS(1,:) ;
     hmat.point.coord{2} = YPOS(:,1) ;
-    hmat.value = single(hfun) ;
+    hmat.value = single(hfun);
     
     savemsh(opts.hfun_file,hmat) ;
     
@@ -188,9 +189,9 @@ function demo_2
     opts.mesh_dims = +2 ;               % 2-dim. simplexes
     
     opts.optm_qlim = +.95 ; 
-    opts.optm_qtol = +1.E-05 ;
-   
-    mesh = bisect_sphere(opts, 2) ;
+    opts.optm_iter = + 32 ;
+    
+    mesh = tetris(opts, +3) ;
     
     plotsphere(geom,mesh,hmat,topo) ;
     
@@ -214,7 +215,7 @@ function demo_3
     rootpath = fileparts( ...
         mfilename( 'fullpath' ) ) ;
 
-    opts.geom_file = ...                % domian file
+    opts.geom_file = ...                % domain file
         fullfile(rootpath,...
         'cache','globe-geom.msh') ;
     
@@ -222,10 +223,6 @@ function demo_3
         fullfile(rootpath,...
         'cache','globe.jig') ;
     
-    opts.mesh_file = ...                % output file
-        fullfile(rootpath,...
-        'cache','globe-mesh.msh') ;
-
     opts.hfun_file = ...                % sizing file
         fullfile(rootpath,...
         'cache','globe-hfun.msh') ;
@@ -243,39 +240,34 @@ function demo_3
         
     topo = loadmsh(fullfile( ...
         rootpath, 'files', 'topo.msh' ) );
-    
-    xpos = topo.point.coord{1};
-    ypos = topo.point.coord{2};
-    zlev = reshape( ...
-    topo.value,length(ypos),length(xpos));
-    
-   [nlat,nlon] = size(zlev);
-
-    radE = 6371.0E+00 ;
    
     fprintf(1,'  Forming HFUN data...\n');
    
+    xpos = topo.point.coord{1};
+    ypos = topo.point.coord{2};
+    zlev = topo.value;
+    
    [XPOS,YPOS] = meshgrid (xpos,ypos) ;
       
-    hfn0 = +100. ;                      % global spacing
-    hfn2 = +20.;                        % adapt. spacing
-    hfn3 = +50.;                        % arctic spacing
+    hfn0 = +150. ;                      % global spacing
+    hfn2 = +33.;                        % adapt. spacing
+    hfn3 = +67.;                        % arctic spacing
     
-    hfun = +hfn0*ones(nlat,nlon) ;
+    hfun = +hfn0*ones(size(zlev)) ;
     
-    htop = sqrt(max(-zlev(:),eps))/1.5;
+    htop = sqrt(max(-zlev(:),eps))/1. ;
     htop = max(htop,hfn2);
     htop = min(htop,hfn3);
     htop(zlev>0.) = hfn0 ;
     
-    hfun(YPOS>+45.) = htop(YPOS>+45.) ;
+    hfun(YPOS>=50.) = htop(YPOS>=50.) ;
 
 %------------------------------------ set HFUN grad.-limiter
     
     dhdx = +.05;                        % max. gradients
        
     hmat.mshID = 'ELLIPSOID-GRID' ;
-    hmat.radii = radE ;
+    hmat.radii = geom.radii ;
     hmat.point.coord{1} = xpos*pi/180 ;
     hmat.point.coord{2} = ypos*pi/180 ;
     hmat.value = single(hfun) ;
@@ -304,9 +296,9 @@ end
 function demo_4
 % DEMO-4 --- generate a multi-resolution grid for the arctic 
 %   ocean basin, with local refinement along coastlines and
-%   shallow ridges. Global grid resolution is 100KM, backgr-
-%   ound arctic resolution is 50KM and min. adaptive resolu-
-%   tion is 25KM.
+%   shallow ridges. Global grid resolution is 150KM, backgr-
+%   ound arctic resolution is 67KM and min. adaptive resolu-
+%   tion is 33KM.
 %   JIGSAW is combined with a bisection procedure to improve
 %   the regularity of the grid topology.
 
@@ -315,7 +307,7 @@ function demo_4
     rootpath = fileparts( ...
         mfilename( 'fullpath' ) ) ;
 
-    opts.geom_file = ...                % domian file
+    opts.geom_file = ...                % domain file
         fullfile(rootpath,...
         'cache','globe-geom.msh') ;
     
@@ -358,18 +350,18 @@ function demo_4
    
    [XPOS,YPOS] = meshgrid (xpos,ypos) ;
       
-    hfn0 = +100. ;                      % global spacing
-    hfn2 = +20.;                        % adapt. spacing
+    hfn0 = +150. ;                      % global spacing
+    hfn2 = +25.;                        % adapt. spacing
     hfn3 = +50.;                        % arctic spacing
     
     hfun = +hfn0*ones(nlat,nlon) ;
     
-    htop = sqrt(max(-zlev(:),eps))/1.5;
+    htop = sqrt(max(-zlev(:),eps))/1. ;
     htop = max(htop,hfn2);
     htop = min(htop,hfn3);
     htop(zlev>0.) = hfn0 ;
     
-    hfun(YPOS>+50.) = htop(YPOS>+50.) ;
+    hfun(YPOS>=40.) = htop(YPOS>=40.) ;
 
 %------------------------------------ set HFUN grad.-limiter
     
@@ -399,10 +391,10 @@ function demo_4
     opts.mesh_dims = +2 ;               % 2-dim. simplexes
     
     opts.optm_qlim = +.95 ;
-    opts.optm_qtol = +1.E-05 ;
+    opts.optm_iter = + 32 ;
     
-    mesh = bisect_sphere(opts, 2) ;
-   
+    mesh = tetris(opts, +3) ;
+    
     plotsphere(geom,mesh,hmat,topo) ;
 
     drawnow ;        
@@ -426,7 +418,7 @@ function demo_5
     rootpath = fileparts( ...
         mfilename( 'fullpath' ) ) ;
 
-    opts.geom_file = ...                % domian file
+    opts.geom_file = ...                % domain file
         fullfile(rootpath,...
         'cache','aust-proj.msh') ;
     
@@ -507,11 +499,11 @@ function demo_5
     geom.point.coord(:,1:2) = ...
     geom.point.coord(:,1:2) * pi/180;
     
-    proj.kind  = 'STEREOGRAPHIC' ;
-    proj.rrad  = 6371.E+00;
-    proj.xmid  = ...
+    proj.prjID  = 'STEREOGRAPHIC' ;
+    proj.radii  = 6371.E+00;
+    proj.xbase  = ...
         mean(geom.point.coord(:, 1));
-    proj.ymid  = ...
+    proj.ybase  = ...
         mean(geom.point.coord(:, 2));
   
    [GPRJ] = project(geom,proj,'fwd');
@@ -533,13 +525,8 @@ function demo_5
     opts.hfun_hmin = 0.00 ;
     
     opts.mesh_dims = +2 ;               % 2-dim. simplexes
-    
+   
     opts.mesh_eps1 = 1.00 ;
-    
-   %opts.geom_feat = true ;
-   %opts.mesh_top1 = true ;
-    
-    opts.verbosity = +2 ;
     
     MPRJ = jigsaw  (opts) ;
     
@@ -567,7 +554,7 @@ function demo_6
     rootpath = fileparts( ...
         mfilename( 'fullpath' ) ) ;
 
-    opts.geom_file = ...                % domian file
+    opts.geom_file = ...                % domain file
         fullfile(rootpath,...
         'cache','us48-proj.msh') ;
     
@@ -589,11 +576,11 @@ function demo_6
     geom.point.coord(:,1:2) = ...
     geom.point.coord(:,1:2) * pi/180;
     
-    proj.kind  = 'STEREOGRAPHIC' ;
-    proj.rrad  = 6371.E+00;
-    proj.xmid  = ...
+    proj.prjID  = 'STEREOGRAPHIC' ;
+    proj.radii  = 6371.E+00;
+    proj.xbase  = ...
         mean(geom.point.coord(:, 1));
-    proj.ymid  = ...
+    proj.ybase  = ...
         mean(geom.point.coord(:, 2));
   
    [GEOM] = project(geom,proj,'fwd');
@@ -608,7 +595,7 @@ function demo_6
     
     opts.mesh_dims = +2 ;               % 2-dim. simplexes
     opts.mesh_eps1 = +1/6 ;
-   
+    
     MESH = jigsaw  (opts) ;
     
     plotplanar(GEOM,MESH,[]) ;
@@ -680,7 +667,6 @@ function plotsphere(geom,mesh,hfun,topo)
             'edgecolor','none');
         set(gca,'clipping','off') ;
         caxis([min(zlev(:))*4./3., +0.]);
-        colormap('hot');
         brighten(+0.75);
     else
         figure('color','w') ;
@@ -749,7 +735,7 @@ function plotplanar(geom,mesh,hfun)
         if ( all (P == +0))
         patch ('faces',mesh.tria3.index(:,1:3), ...
             'vertices',mesh.point.coord(:,1:2), ...
-            'facecolor','w', ...
+            'facecolor',[.9,.9,.9], ...
             'edgecolor',[.2,.2,.2]) ;
         hold on; axis image;    
         else
@@ -757,7 +743,7 @@ function plotplanar(geom,mesh,hfun)
         I = P == ip;
         patch ('faces',mesh.tria3.index(I,1:3), ...
             'vertices',mesh.point.coord(:,1:2), ...
-            'facecolor', rand(1,3), ...
+            'facecolor', .5*rand(1,3)+.5, ...
             'edgecolor',[.2,.2,.2]) ;
         hold on; axis image;
         end
@@ -765,8 +751,8 @@ function plotplanar(geom,mesh,hfun)
         patch ('faces',mesh.edge2.index(:,1:2), ...
             'vertices',mesh.point.coord(:,1:2), ...
             'facecolor','w', ...
-            'edgecolor',[.1,.1,.1], ...
-            'linewidth',1.5) ;
+            'edgecolor',[.8,.1,.1], ...
+            'linewidth',2.5) ;
         if (~isempty(geom))
         patch ('faces',geom.edge2.index(:,1:2), ...
             'vertices',geom.point.coord(:,1:2), ...
