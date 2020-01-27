@@ -31,7 +31,7 @@ function example(varargin)
 %-----------------------------------------------------------
 %   Darren Engwirda
 %   github.com/dengwirda/jigsaw-geo-matlab
-%   23-Jan-2020
+%   27-Jan-2020
 %   darren.engwirda@columbia.edu
 %-----------------------------------------------------------
 %
@@ -164,11 +164,9 @@ function demo_2
     XPOS = XPOS * pi/180 ;
     YPOS = YPOS * pi/180 ;
    
-    hfun =-150. * exp(-1.5*(XPOS+1.).^2 ...
-                      -1.5*(YPOS-.5).^2 ...
-                  ) ;
-    hfun(hfun < -112.5) = -112.5 ;
-    hfun = +150.0 + hfun ;
+    hfun = +150.0 - 112.5 * exp( -( ...
+        +1.5 * (XPOS + 1.0).^2 ...
+        +1.5 * (YPOS - 0.5).^2).^4) ;
     
     hmat.mshID = 'ELLIPSOID-GRID';
     hmat.radii = geom.radii;
