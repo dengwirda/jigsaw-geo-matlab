@@ -66,19 +66,19 @@ function demo_1
 %------------------------------------ setup files for JIGSAW
 
     rootpath = fileparts( ...
-        mfilename( 'fullpath' ) ) ;
+        mfilename( 'fullpath' )) ;
 
     opts.geom_file = ...                % domain file
         fullfile(rootpath,...
-        'cache','globe-geom.msh') ;
+        'cache','eSPH-geom.msh') ;
     
     opts.jcfg_file = ...                % config file
         fullfile(rootpath,...
-        'cache','globe.jig') ;
+        'cache','eSPH.jig') ;
     
     opts.mesh_file = ...                % output file
         fullfile(rootpath,...
-        'cache','globe-mesh.msh') ;
+        'cache','eSPH-mesh.msh') ;
     
 %------------------------------------ define JIGSAW geometry
 
@@ -124,23 +124,23 @@ function demo_2
 %------------------------------------ setup files for JIGSAW
 
     rootpath = fileparts( ...
-        mfilename( 'fullpath' ) ) ;
+        mfilename( 'fullpath' )) ;
 
     opts.geom_file = ...                % domain file
         fullfile(rootpath,...
-        'cache','globe-geom.msh') ;
+        'cache','eSPH-geom.msh') ;
     
     opts.jcfg_file = ...                % config file
         fullfile(rootpath,...
-        'cache','globe.jig') ;
+        'cache','eSPH.jig') ;
     
     opts.mesh_file = ...                % output file
         fullfile(rootpath,...
-        'cache','globe-mesh.msh') ;
+        'cache','eSPH-mesh.msh') ;
 
     opts.hfun_file = ...                % sizing file
         fullfile(rootpath,...
-        'cache','globe-hfun.msh') ;
+        'cache','eSPH-hfun.msh') ;
     
 %------------------------------------ define JIGSAW geometry
 
@@ -211,19 +211,19 @@ function demo_3
 %------------------------------------ setup files for JIGSAW
 
     rootpath = fileparts( ...
-        mfilename( 'fullpath' ) ) ;
+        mfilename( 'fullpath' )) ;
 
     opts.geom_file = ...                % domain file
         fullfile(rootpath,...
-        'cache','globe-geom.msh') ;
+        'cache','eSPH-geom.msh') ;
     
     opts.jcfg_file = ...                % config file
         fullfile(rootpath,...
-        'cache','globe.jig') ;
+        'cache','eSPH.jig') ;
     
     opts.hfun_file = ...                % sizing file
         fullfile(rootpath,...
-        'cache','globe-hfun.msh') ;
+        'cache','eSPH-hfun.msh') ;
     
 %------------------------------------ define JIGSAW geometry
 
@@ -258,11 +258,11 @@ function demo_3
     htop = min(htop,hfn3);
     htop(zlev>0.) = hfn0 ;
     
-    hfun(YPOS>=50.) = htop(YPOS>=50.) ;
+    hfun(YPOS>=40.) = htop(YPOS>=40.) ;
 
 %------------------------------------ set HFUN grad.-limiter
     
-    dhdx = +.05;                        % max. gradients
+    dhdx = +0.050 ;                      % max. gradients
        
     hmat.mshID = 'ELLIPSOID-GRID' ;
     hmat.radii = geom.radii ;
@@ -303,23 +303,23 @@ function demo_4
 %------------------------------------ setup files for JIGSAW
 
     rootpath = fileparts( ...
-        mfilename( 'fullpath' ) ) ;
+        mfilename( 'fullpath' )) ;
 
     opts.geom_file = ...                % domain file
         fullfile(rootpath,...
-        'cache','globe-geom.msh') ;
+        'cache','eSPH-geom.msh') ;
     
     opts.jcfg_file = ...                % config file
         fullfile(rootpath,...
-        'cache','globe.jig') ;
+        'cache','eSPH.jig') ;
     
     opts.mesh_file = ...                % output file
         fullfile(rootpath,...
-        'cache','globe-mesh.msh') ;
+        'cache','eSPH-mesh.msh') ;
 
     opts.hfun_file = ...                % sizing file
         fullfile(rootpath,...
-        'cache','globe-hfun.msh') ;
+        'cache','eSPH-spac.msh') ;
     
 %------------------------------------ define JIGSAW geometry
 
@@ -349,8 +349,8 @@ function demo_4
    [XPOS,YPOS] = meshgrid (xpos,ypos) ;
       
     hfn0 = +150. ;                      % global spacing
-    hfn2 = +25.;                        % adapt. spacing
-    hfn3 = +50.;                        % arctic spacing
+    hfn2 = +33.;                        % adapt. spacing
+    hfn3 = +67.;                        % arctic spacing
     
     hfun = +hfn0*ones(nlat,nlon) ;
     
@@ -363,7 +363,7 @@ function demo_4
 
 %------------------------------------ set HFUN grad.-limiter
     
-    dhdx = +.05;                        % max. gradients
+    dhdx = +0.050 ;                     % max. gradients
        
     hmat.mshID = 'ELLIPSOID-GRID';
     hmat.radii = radE ;
@@ -414,7 +414,7 @@ function demo_5
 %------------------------------------ setup files for JIGSAW
 
     rootpath = fileparts( ...
-        mfilename( 'fullpath' ) ) ;
+        mfilename( 'fullpath' )) ;
 
     opts.geom_file = ...                % domain file
         fullfile(rootpath,...
@@ -497,12 +497,14 @@ function demo_5
     geom.point.coord(:,1:2) = ...
     geom.point.coord(:,1:2) * pi/180;
     
-    proj.prjID  = 'STEREOGRAPHIC' ;
+    proj.prjID  = 'STEREOGRAPHIC';
     proj.radii  = 6371.E+00;
-    proj.xbase  = ...
-        mean(geom.point.coord(:, 1));
-    proj.ybase  = ...
-        mean(geom.point.coord(:, 2));
+    proj.xbase  = 0.5 * ( ...
+        min(geom.point.coord(:,1)) ...
+      + max(geom.point.coord(:,1)) ); 
+    proj.ybase  = 0.5 * ( ...
+        min(geom.point.coord(:,2)) ...
+      + max(geom.point.coord(:,2)) );
   
    [GPRJ] = project(geom,proj,'fwd');
    [HPRJ] = project(hmat,proj,'fwd');
@@ -550,7 +552,7 @@ function demo_6
 %------------------------------------ setup files for JIGSAW
 
     rootpath = fileparts( ...
-        mfilename( 'fullpath' ) ) ;
+        mfilename( 'fullpath' )) ;
 
     opts.geom_file = ...                % domain file
         fullfile(rootpath,...
@@ -574,12 +576,14 @@ function demo_6
     geom.point.coord(:,1:2) = ...
     geom.point.coord(:,1:2) * pi/180;
     
-    proj.prjID  = 'STEREOGRAPHIC' ;
+    proj.prjID  = 'STEREOGRAPHIC';
     proj.radii  = 6371.E+00;
-    proj.xbase  = ...
-        mean(geom.point.coord(:, 1));
-    proj.ybase  = ...
-        mean(geom.point.coord(:, 2));
+    proj.xbase  = 0.5 * ( ...
+        min(geom.point.coord(:,1)) ...
+      + max(geom.point.coord(:,1)) ); 
+    proj.ybase  = 0.5 * ( ...
+        min(geom.point.coord(:,2)) ...
+      + max(geom.point.coord(:,2)) );
   
    [GEOM] = project(geom,proj,'fwd');
     
