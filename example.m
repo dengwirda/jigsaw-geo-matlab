@@ -97,7 +97,7 @@ function demo_1
     opts.optm_qlim = +.95 ;
     opts.optm_iter = + 32 ;
    
-    mesh = tetris(opts, +3) ;
+    mesh = tetris(opts, +4) ;
    
     topo = loadmsh( ...
         fullfile(rootpath, ...
@@ -189,7 +189,7 @@ function demo_2
     opts.optm_qlim = +.95 ; 
     opts.optm_iter = + 32 ;
     
-    mesh = tetris(opts, +3) ;
+    mesh = tetris(opts, +4) ;
     
     plotsphere(geom,mesh,hmat,topo) ;
     
@@ -391,7 +391,7 @@ function demo_4
     opts.optm_qlim = +.95 ;
     opts.optm_iter = + 32 ;
     
-    mesh = tetris(opts, +3) ;
+    mesh = tetris(opts, +4) ;
     
     plotsphere(geom,mesh,hmat,topo) ;
 
