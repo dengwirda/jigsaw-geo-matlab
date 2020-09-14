@@ -8,7 +8,7 @@
 
 `JIGSAW(GEO)` can be used to produce high-quality 'generalised' Delaunay / Voronoi tessellations for unstructured finite-volume / element type models. Grids can be generated in local two-dimensional domains, and over general spheroidal surfaces. Mesh resolution can be adapted to follow complex user-defined metrics, including: topographic contours, discrete solution profiles or coastal features. This enables the construction of complex, multi-resolution climate process models, with simulation fidelity enhanced in regions of interest.
 
-`JIGSAW(GEO)` is typically able to produce the very high-quality staggered unstructured grids required by contemporary unstructued general circulation models (i.e. <a href="https://github.com/MPAS-Dev/MPAS-Release">`MPAS`</a>, <a href="https://research.csiro.au/cem/software/ems/hydro/unstructured-compas/">`COMPAS`</a>, <a href="http://fesom.de/">`FESOM`</a>, <a href="https://www.mpimet.mpg.de/en/science/models/icon-esm/">`ICON`</a>, etc), generating highly optimised, multi-resolution meshes that are `locally-orthogonal`, `mutually-centroidal` and `self-centred`.
+`JIGSAW(GEO)` is typically able to produce the very high-quality staggered unstructured grids required by contemporary unstructued general circulation models (i.e. <a href="https://github.com/MPAS-Dev/MPAS-Release">`MPAS`</a>, <a href="https://research.csiro.au/cem/software/ems/hydro/unstructured-compas/">`COMPAS`</a>, <a href="http://fesom.de/">`FESOM`</a>, etc), generating highly optimised, multi-resolution meshes that are `locally-orthogonal`, `mutually-centroidal` and `self-centred`.
 
 `JIGSAW(GEO)` depends on the <a href="https://github.com/dengwirda/jigsaw-matlab">`JIGSAW-MATLAB`</a> package; a `MATLAB` / `OCTAVE` interface to the underlying `JIGSAW` meshing library.
 
@@ -31,8 +31,9 @@ The following set of example problems are available in `example.m`:
     example(2); % generate a regionally-refined global grid
     example(3); % build smooth mesh-spacing functions from noisy input data
     example(4); % generate a complex, variable resolution global grid
-    example(5); % generate a coastal mesh for the Australasian region
-    example(6); % generate a multi-part mesh for the (contiguous) USA
+    example(5); % generate structured icosahedral and cubedsphere meshes
+    example(6); % generate a coastal mesh for the Australasian region
+    example(7); % generate a multi-part mesh for the (contiguous) USA
 
 Additional material and discussion can be found in the worked examples <a href=https://github.com/dengwirda/jigsaw-geo-tutorial>here</a>.
 
