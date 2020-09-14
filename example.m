@@ -100,7 +100,13 @@ function demo_1
     opts.optm_qlim = +.95 ;
     opts.optm_iter = + 32 ;
 
-    mesh = tetris(opts, +4) ;
+    rbar = mean(geom.radii) ;
+
+    nlev = round(log2( ...
+        rbar / sin(.4 * pi) / opts.hfun_hmax) ...
+    ) ;
+
+    mesh = tetris(opts, nlev - 1) ;
 
     topo = loadmsh( ...
         fullfile(rootpath, ...
@@ -192,7 +198,13 @@ function demo_2
     opts.optm_qlim = +.95 ;
     opts.optm_iter = + 32 ;
 
-    mesh = tetris(opts, +4) ;
+    rbar = mean(geom.radii(:)) ;
+    hbar = mean(hmat.value(:)) ;
+
+    nlev = round(log2( ...
+        rbar / sin(.4 * pi) / hbar) ) ;
+
+    mesh = tetris(opts, nlev - 1) ;
 
     plotsphere(geom,mesh,hmat,topo) ;
 
@@ -394,7 +406,13 @@ function demo_4
     opts.optm_qlim = +.95 ;
     opts.optm_iter = + 32 ;
 
-    mesh = tetris(opts, +4) ;
+    rbar = mean(geom.radii(:)) ;
+    hbar = mean(hmat.value(:)) ;
+
+    nlev = round(log2( ...
+        rbar / sin(.4 * pi) / hbar) ) ;
+
+    mesh = tetris(opts, nlev - 1) ;
 
     plotsphere(geom,mesh,hmat,topo) ;
 
